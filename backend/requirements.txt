@@ -1,0 +1,31 @@
+# Python Backend Dependencies
+
+# Web Framework
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+pydantic==2.5.3
+pydantic-settings==2.1.0
+
+# Database
+ibm-db==3.2.0
+ibm-db-sa==0.4.0
+sqlalchemy==2.0.25
+
+# Configuration & Environment
+python-dotenv==1.0.0
+pyyaml==6.0.1
+
+# COBOL Integration (if using specific libraries)
+# Add any specific COBOL bridge libraries here
+
+# Utilities
+requests==2.31.0
+python-multipart==0.0.6
+
+# Development & Testing
+pytest==7.4.4
+pytest-asyncio==0.23.3
+pytest-cov==4.1.0
+black==23.12.1
+flake8==7.0.0
+mypy==1.8.0
