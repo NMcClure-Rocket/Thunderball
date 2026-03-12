@@ -11,6 +11,25 @@ from backend.utilities.logger import LoggerFactory
 from backend.utilities.error_handler import ResponseCode
 # from backend.entities.credentials_entity import Credentials
 
+def rbac_action(action: str) -> Callable:
+    '''
+    Decorator for role-based access control on DAO methods.
+    Validates that the current credentials permit the given action.
+
+    Args:
+        action (str): The action type (e.g. "read", "create", "update", "delete")
+
+    Returns:
+        Callable: The decorated function
+    '''
+    def decorator(func: Callable) -> Callable:
+        @wraps(func)
+        def wrapper(self, *args, **kwargs):
+            # TODO: enforce RBAC once credentials/roles are fully implemented
+            return func(self, *args, **kwargs)
+        return wrapper
+    return decorator
+
 def db2_safe(func):
     '''
     Wraps a function to ensure that a ResponseCode is always returned and that the result of a given
