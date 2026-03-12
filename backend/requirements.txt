@@ -1,19 +1,19 @@
 # Python Backend Dependencies
 
 # Web Framework
-fastapi==0.109.0
-uvicorn[standard]==0.27.0
-pydantic==2.5.3
-pydantic-settings==2.1.0
+fastapi==0.135.1
+uvicorn[standard]==0.41.0
+pydantic==2.12.5
+pydantic-settings==2.13.1
 
 # Database
-ibm-db==3.2.0
-ibm-db-sa==0.4.0
-sqlalchemy==2.0.25
+ibm-db==3.2.8
+ibm-db-sa==0.4.3
+sqlalchemy==2.0.48
 
 # Configuration & Environment
-python-dotenv==1.0.0
-pyyaml==6.0.1
+python-dotenv==1.2.2
+pyyaml==6.0.3
 
 # COBOL Integration (if using specific libraries)
 # Add any specific COBOL bridge libraries here
