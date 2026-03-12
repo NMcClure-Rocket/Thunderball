@@ -7,20 +7,14 @@ import ibm_db_dbi
 from abc import ABC
 from typing import Any, Callable, Optional, List, Dict
 from functools import wraps
-from backend.utilities.error_handler import (
-    ResponseCode, 
-    DB2ErrorHandler, 
-    ErrorSeverity,
-    success_response,
-    not_found_error,
-    malformed_content_error
-)
-
+from backend.utilities.logger import LoggerFactory
+from backend.utilities.error_handler import ResponseCode
+# from backend.entities.credentials_entity import Credentials
 
 def db2_safe(func):
     '''
     Wraps a function to ensure that a ResponseCode is always returned and that the result of a given
-    function is added to data. Specifically handles DB2 and SQL exceptions.
+    function is added to data.
 
     Args:
         func (Any): base function to be wrapped
@@ -35,10 +29,12 @@ def db2_safe(func):
             result = func(*args, **kwargs)
             if isinstance(result, ResponseCode):
                 return result  #Don't wrap again
-            return ResponseCode(error_tag=None, data=result)
+            return ResponseCode("GeneralSuccess", result)
         except Exception as e:
-            # Use DB2ErrorHandler to categorize the exception
-            return DB2ErrorHandler.parse_exception(e)
+            error_tag = e.__class__.__name__
+            error_msg = str(e)
+            data = f"DatabaseError: {error_tag} - {error_msg}"
+            return ResponseCode(error_tag=error_tag, data=data)
     return wrapper
 
 class DatabaseAccessObject(ABC):
@@ -47,9 +43,11 @@ class DatabaseAccessObject(ABC):
     Each extension can define a custom ROLE_MATRIX for role-based access control.
     
     Subclasses must implement:
-        - _get_primary_key(): Returns the name of the primary key column
-        - _dict_from_row(row, columns): Converts a database row to a dictionary
+        - get_primary_key(): Returns the name of the primary key column
+        - get_table_name(): Returns the name of the DB2 table
+        - dict_from_row(row): Converts a database row to a dictionary
     '''
+   
 
     def __init__(self, table_name: str, connection: ibm_db_dbi.Connection):
         '''
@@ -59,6 +57,11 @@ class DatabaseAccessObject(ABC):
         '''
         self._table_name = table_name
         self._connection = connection
+        self.__logger = LoggerFactory.get_general_logger()
+        self.__credentials = None
+
+    def get_credentials(self):
+        return self.__credentials
 
     def _get_primary_key(self) -> str:
         '''
@@ -93,19 +96,24 @@ class DatabaseAccessObject(ABC):
             params (tuple): Query parameters for parameterized queries
             
         Returns:
-            Any: The query cursor
+            Any: The query result
         '''
-        cursor = self._connection.cursor()
-        if params:
-            cursor.execute(query, params)
-        else:
-            cursor.execute(query)
-        return cursor
+        try:
+            cursor = self._connection.cursor()
+            if params:
+                cursor.execute(query, params)
+            else:
+                cursor.execute(query)
+            return cursor
+        except Exception as e:
+            self.__logger.error(f"Database error executing query: {str(e)}")
+            raise
 
+   
     #Hook method; this should set any default field values; just override it
     def _prepare_entry(self, entry: dict[str, Any]) -> dict[str, Any]:
         '''
-        Hook method that can be overridden to set default field values for new records.
+        Hooks to a function and overrides to give default values for MongoDB documents
 
         Args:
             entry (dict[str, Any]): the entry to be processed
@@ -113,8 +121,24 @@ class DatabaseAccessObject(ABC):
         Returns:
             entry (dict[str, Any]): the entry after processing (usually defining a default field)
         '''
-        return entry  # Default: no changes
+        return entry  #Default: no changes
 
+    def set_credentials(self, credentials: Credentials) -> None:
+        '''
+        Sets the current credentials of the DAO
+
+        Args:
+            credentials (Credentials): the credentials given by the authorization server to use for role-based access control
+        '''
+        self.__credentials = credentials
+
+    def clear_credentials(self) -> None:
+        '''
+        Clears any set credentials by setting the current one t "None"
+        '''
+        self.__credentials = None
+
+    
     @db2_safe
     def get_by_key(self, ID: str) -> ResponseCode:
         '''
@@ -124,8 +148,10 @@ class DatabaseAccessObject(ABC):
             ID (str): the primary key value
 
         Returns:
-            ResponseCode: ResponseCode with the record as a dictionary, or error if not found
+            ResponseCode (ResponseCode): After being wrapped, it will return a ResponseCode
+            with the record as a dictionary
         '''
+        self.__logger.debug(f"Getting {self.__class__.__name__} record by ID {ID}.")
         primary_key = self._get_primary_key()
         query = f"SELECT * FROM {self._table_name} WHERE {primary_key} = ?"
         
@@ -133,11 +159,12 @@ class DatabaseAccessObject(ABC):
         row = cursor.fetchone()
         
         if row is None:
-            return not_found_error(f"Record with {primary_key}={ID}")
+            return ResponseCode(error_tag="ResourceNotFound")
         
         columns = [desc[0] for desc in cursor.description]
-        return success_response(self._dict_from_row(row, columns))
+        return self._dict_from_row(row, columns)
 
+    @rbac_action("read")
     @db2_safe
     def get_by_fields(self, filter: dict[str, Any]) -> ResponseCode:
         '''
@@ -147,10 +174,13 @@ class DatabaseAccessObject(ABC):
             filter (dict[str, Any]): a dictionary with column names as keys and values to match
 
         Returns:
-            ResponseCode: ResponseCode with records as a list of dictionaries, or error if none found
+            ResponseCode (ResponseCode): After being wrapped, it will return a ResponseCode with the
+            records as a list of dictionaries
         '''
         if not filter:
-            return malformed_content_error("Filter must not be empty")
+            return ResponseCode("MalformedContent", "Filter must not be empty.")
+        
+        self.__logger.debug(f"Getting {self.__class__.__name__} record by fields {filter}.")
         
         # Build WHERE clause
         conditions = [f"{col} = ?" for col in filter.keys()]
@@ -161,11 +191,12 @@ class DatabaseAccessObject(ABC):
         rows = cursor.fetchall()
         
         if not rows:
-            return not_found_error("No matching records")
+            return ResponseCode(error_tag="ResourceNotFound")
         
         columns = [desc[0] for desc in cursor.description]
-        return success_response([self._dict_from_row(row, columns) for row in rows])
+        return [self._dict_from_row(row, columns) for row in rows]
 
+    @rbac_action("read")
     @db2_safe
     def get_all_records(self, limit: int = None) -> ResponseCode:
         '''
@@ -175,8 +206,11 @@ class DatabaseAccessObject(ABC):
             limit (int optional): an integer that determines the number of records to return. By default, it is set to None and returns the entire set
 
         Returns:
-            ResponseCode: ResponseCode with records from the table as a list of dictionaries, or error if none found
+            ResponseCode (ResponseCode): After being wrapped, it will return a ResponseCode with the
+            records from the table as a list of dictionaries
         '''
+        self.__logger.debug(f"Getting all {self.__class__.__name__} records with limit {limit}.")
+        
         query = f"SELECT * FROM {self._table_name}"
         if limit is not None:
             query += f" FETCH FIRST {limit} ROWS ONLY"
@@ -185,11 +219,12 @@ class DatabaseAccessObject(ABC):
         rows = cursor.fetchall()
         
         if not rows:
-            return not_found_error("No records found")
+            return ResponseCode(error_tag="ResourceNotFound")
         
         columns = [desc[0] for desc in cursor.description]
-        return success_response([self._dict_from_row(row, columns) for row in rows])
+        return [self._dict_from_row(row, columns) for row in rows]
 
+    @rbac_action("read")
     @db2_safe
     def get_random(self, numReturned: int = 1, filter: dict[str, Any] = None) -> ResponseCode:
         '''
@@ -200,9 +235,10 @@ class DatabaseAccessObject(ABC):
             filter (dict[str, Any] optional): a dictionary with column names and values to filter
 
         Returns:
-            ResponseCode: ResponseCode with records as a list of dictionaries, or error if none found
+            ResponseCode (ResponseCode): After being wrapped, it will return a ResponseCode with the records as a list of dictionaries
         '''
         filter = filter or {}
+        self.__logger.debug(f"Getting {numReturned} random {self.__class__.__name__} record by fields {filter}.")
         
         # Build WHERE clause if filter exists
         where_clause = ""
@@ -219,11 +255,16 @@ class DatabaseAccessObject(ABC):
         rows = cursor.fetchall()
         
         if not rows:
-            return not_found_error("No matching records found")
+            self.__logger.warning(f"Requested {numReturned}, but no records found.")
+            return ResponseCode(error_tag="ResourceNotFound")
+        
+        if len(rows) < numReturned:
+            self.__logger.warning(f"Requested {numReturned}, but only returned {len(rows)} records.")
         
         columns = [desc[0] for desc in cursor.description]
-        return success_response([self._dict_from_row(row, columns) for row in rows])
+        return [self._dict_from_row(row, columns) for row in rows]
 
+    @rbac_action("read")
     @db2_safe
     def get_short_record(self, numReturned: int, filter: dict[str, Any] = None, max_length: int = 80) -> ResponseCode:
         '''
@@ -236,9 +277,10 @@ class DatabaseAccessObject(ABC):
             max_length (int optional): an integer that determines the max length of the content field. Defaults to 80
 
         Returns:
-            ResponseCode: ResponseCode with records as a list of dictionaries, or error if none found
+            ResponseCode (ResponseCode): After being wrapped, it will return a ResponseCode with the records as a list of dictionaries
         '''
         filter = filter or {}
+        self.__logger.debug(f"Getting {numReturned} random short (less than {max_length} characters) {self.__class__.__name__} record by fields {filter}.")
         
         # Build WHERE clause with both filter and length condition
         conditions = []
@@ -262,11 +304,16 @@ class DatabaseAccessObject(ABC):
         rows = cursor.fetchall()
         
         if not rows:
-            return not_found_error("No matching records found")
+            self.__logger.warning(f"Requested {numReturned}, but no records found matching criteria.")
+            return ResponseCode(error_tag="ResourceNotFound")
+        
+        if len(rows) < numReturned:
+            self.__logger.warning(f"Requested {numReturned}, but only returned {len(rows)} records.")
         
         columns = [desc[0] for desc in cursor.description]
-        return success_response([self._dict_from_row(row, columns) for row in rows])
+        return [self._dict_from_row(row, columns) for row in rows]
 
+    @rbac_action("update")
     @db2_safe
     def update_record(self, ID: str, updates: dict[str, Any]) -> ResponseCode:
         '''
@@ -277,10 +324,12 @@ class DatabaseAccessObject(ABC):
             updates (dict[str, Any]): a dictionary with column names and new values
 
         Returns:
-            ResponseCode: ResponseCode indicating success or error
+            ResponseCode (ResponseCode): After being wrapped, it will return a ResponseCode with the ID
         '''
         if not updates:
-            return malformed_content_error("Update payload must not be empty")
+            return ResponseCode("MalformedContent", "Update payload must not be empty.")
+        
+        self.__logger.debug(f"Updating {self.__class__.__name__} with ID {ID}: {updates}.")
         
         primary_key = self._get_primary_key()
         
@@ -299,8 +348,10 @@ class DatabaseAccessObject(ABC):
         # Commit the transaction
         self._connection.commit()
         
-        return success_response({"updated_id": ID})
+        self.__logger.debug(f"Update completed for ID {ID}")
+        return ID
 
+    @rbac_action("create")
     @db2_safe
     def create_record(self, entry: dict[str, Any]) -> ResponseCode:
         '''
@@ -310,9 +361,10 @@ class DatabaseAccessObject(ABC):
             entry (dict[str, Any]): a dictionary of columns and values to insert
 
         Returns:
-            ResponseCode: ResponseCode indicating success with the created record
+            ResponseCode (ResponseCode): After being wrapped, it will return a ResponseCode with the new primary key
         '''
         entry = self._prepare_entry(entry)  # Determines if there should be default field values; override in subclass
+        self.__logger.debug(f"Creating {self.__class__.__name__} record: {entry}.")
         
         # Build INSERT statement
         columns = list(entry.keys())
@@ -326,8 +378,10 @@ class DatabaseAccessObject(ABC):
         # Commit the transaction
         self._connection.commit()
         
-        return success_response(entry)
+        self.__logger.debug(f"Created new record")
+        return ResponseCode("PostSuccess", str(entry))
 
+    @rbac_action("delete")
     @db2_safe
     def delete_record(self, ID: str) -> ResponseCode:
         '''
@@ -337,8 +391,10 @@ class DatabaseAccessObject(ABC):
             ID (str): the primary key value
 
         Returns:
-            ResponseCode: ResponseCode indicating success or error
+            ResponseCode (ResponseCode): After being wrapped, it will return a ResponseCode with the deleted count
         '''
+        self.__logger.debug(f"Deleting {self.__class__.__name__} record with ID {ID}.")
+        
         primary_key = self._get_primary_key()
         query = f"DELETE FROM {self._table_name} WHERE {primary_key} = ?"
         
@@ -347,8 +403,10 @@ class DatabaseAccessObject(ABC):
         # Commit the transaction
         self._connection.commit()
         
-        return success_response({"deleted_id": ID})
+        self.__logger.debug(f"Delete completed for ID {ID}")
+        return {"deleted_count": 1}
 
+    @rbac_action("delete")
     @db2_safe
     def delete_record_by_field(self, filter: dict[str, Any]) -> ResponseCode:
         '''
@@ -358,12 +416,14 @@ class DatabaseAccessObject(ABC):
             filter (dict[str, Any]): a dictionary with column name and value to match for deletion
 
         Returns:
-            ResponseCode: ResponseCode indicating success with deleted count
+            ResponseCode (ResponseCode): After being wrapped, it will return a ResponseCode with the deleted count
         '''
         if not filter:
-            return malformed_content_error("Delete filter must not be empty")
+            return ResponseCode("MalformedContent", "Delete filter must not be empty.")
         if len(filter) > 1:
-            return malformed_content_error("Delete filter must contain only one field")
+            return ResponseCode("MalformedContent", "Delete filter must contain only one field.")
+        
+        self.__logger.debug(f"Deleting {self.__class__.__name__} records by filter {filter}.")
         
         # Build WHERE clause
         col = list(filter.keys())[0]
@@ -376,4 +436,5 @@ class DatabaseAccessObject(ABC):
         # Commit the transaction
         self._connection.commit()
         
-        return success_response({"deleted_count": cursor.rowcount if cursor.rowcount else 0})
+        self.__logger.debug(f"Delete completed for filter {filter}")
+        return {"deleted_count": cursor.rowcount if cursor.rowcount else 0}
