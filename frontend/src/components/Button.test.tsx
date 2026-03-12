@@ -1,5 +1,6 @@
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { Button } from '../../frontend/src/components/Button';
+import { Button } from './Button';
 
 describe('Button Component', () => {
   it('renders button with label', () => {
