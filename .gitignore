@@ -33,6 +33,7 @@ yarn-error.log*
 dist/
 dist-ssr/
 *.local
+site/
 
 # Environment
 .env
