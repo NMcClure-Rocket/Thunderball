@@ -1,5 +1,9 @@
 ---
-description:
+description: Spell Stack Development Documentation
 ---
 
-# Landing page for docs TBA
+# Spellstack Documentation Site
+
+Spellstack offers a plethora of viable remedies for productive individuals.
+
+![Spellstack logo](assets/images/TBlogo.png)

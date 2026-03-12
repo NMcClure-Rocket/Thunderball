@@ -1,0 +1,52 @@
+site_name: Spellstack 
+site_url: https://spellstack.com
+theme: 
+  icon:
+    admonition:
+      note: octicons/tag-16
+      abstract: octicons/checklist-16
+      info: octicons/info-16
+      tip: octicons/squirrel-16
+      success: octicons/check-16
+      question: octicons/question-16
+      warning: octicons/alert-16
+      failure: octicons/x-circle-16
+      danger: octicons/zap-16
+      bug: octicons/bug-16
+      example: octicons/beaker-16
+      quote: octicons/quote-16
+  name: material
+  logo: assets/images/TBlogo.png
+  favicon: assets/images/TBlogo.png
+  palette:
+    primary: green
+    accent: light blue
+  font:
+    text: Roboto
+    code: Roboto Mono
+  
+nav:
+  - Home: index.md
+  - Release Notes:
+      - v 0.0.1: Release-Notes/Release-Notes-v-0.0.1.md
+  - API User Guides: 
+      - Getting Started with Spellstack API: API-User-Guides/Getting-Started-with-Spellstack-API.md
+      - Configuring Spellstack API: API-User-Guides/Configuring-Spellstack-API.md
+
+
+
+markdown_extensions:
+  - attr_list
+  - toc: 
+      toc_depth: 3
+  - admonition
+  - md_in_html
+  - tables
+  - pymdownx.blocks.caption
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+plugins:
+  - glightbox
