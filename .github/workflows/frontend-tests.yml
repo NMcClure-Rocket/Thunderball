@@ -28,7 +28,7 @@ jobs:
     
     - name: Run tests
       run: |
-        if find . -name '*.test.*' -o -name '*.spec.*' | grep -qv node_modules; then
+        if find . \( -name '*.test.*' -o -name '*.spec.*' \) | grep -v node_modules | grep -q .; then
           npm test
         else
           echo "::warning::No frontend tests found. Add test files (*.test.ts/tsx) to get started."
