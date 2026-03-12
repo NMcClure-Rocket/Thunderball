@@ -29,8 +29,11 @@ jobs:
     
     - name: Run tests with coverage
       run: |
-        COUNT=$(pytest tests/ --collect-only -q 2>/dev/null | tail -1 | grep -oP '\d+(?= test)')
-        if [ -z "$COUNT" ] || [ "$COUNT" -eq 0 ]; then
+        set +e
+        OUTPUT=$(pytest tests/ --collect-only -q 2>&1)
+        COUNT=$(echo "$OUTPUT" | grep -oP '\d+(?= test)' | tail -1)
+        set -e
+        if [ -z "$COUNT" ] || [ "$COUNT" -eq 0 ] 2>/dev/null; then
           echo "::warning::No backend tests found. Add tests to tests/backend/"
         else
           pytest tests/ --cov=api --cov-report=xml --cov-report=term

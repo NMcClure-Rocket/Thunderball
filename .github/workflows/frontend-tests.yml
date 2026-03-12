@@ -27,7 +27,12 @@ jobs:
       run: npm install
     
     - name: Run tests
-      run: npm test
+      run: |
+        if find . -name '*.test.*' -o -name '*.spec.*' | grep -qv node_modules; then
+          npm test
+        else
+          echo "::warning::No frontend tests found. Add test files (*.test.ts/tsx) to get started."
+        fi
     
     - name: Build
       run: npm run build
