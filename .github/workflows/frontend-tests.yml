@@ -1,0 +1,46 @@
+name: Frontend Tests
+
+on:
+  push:
+    branches: [ main, dev, 'feat-**' ]
+  pull_request:
+    branches: [ main, dev, 'feat-**' ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+        cache: 'npm'
+        cache-dependency-path: frontend/package-lock.json
+    
+    - name: Install dependencies
+      run: npm install
+    
+    - name: Run tests
+      run: |
+        if find . -name '*.test.*' -o -name '*.spec.*' | grep -qv node_modules; then
+          npm test
+        else
+          echo "::warning::No frontend tests found. Add test files (*.test.ts/tsx) to get started."
+        fi
+    
+    - name: Build
+      run: npm run build
+    
+    - name: Upload build artifacts
+      uses: actions/upload-artifact@v4
+      if: success()
+      with:
+        name: frontend-build
+        path: frontend/dist
+        retention-days: 7
