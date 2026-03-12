@@ -2,9 +2,9 @@ name: Dependency Check
 
 on:
   push:
-    branches: [ main, dev ]
+    branches: [ main, dev, 'feat-**' ]
   pull_request:
-    branches: [ main, dev ]
+    branches: [ main, dev, 'feat-**' ]
   schedule:
     # Run weekly on Monday at 9:00 AM UTC
     - cron: '0 9 * * 1'
@@ -27,7 +27,7 @@ jobs:
         cache-dependency-path: frontend/package-lock.json
     
     - name: Install dependencies
-      run: npm ci
+      run: npm install
     
     - name: Check for outdated packages
       run: npm outdated || true
