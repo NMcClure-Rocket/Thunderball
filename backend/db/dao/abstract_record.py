@@ -7,9 +7,9 @@ import ibm_db_dbi
 from abc import ABC
 from typing import Any, Callable, Optional, List, Dict
 from functools import wraps
-# from all_the_buzz.utilities.logger import LoggerFactory
-# from all_the_buzz.utilities.error_handler import ResponseCode
-# from all_the_buzz.entities.credentials_entity import Credentials
+from backend.utilities.logger import LoggerFactory
+from backend.utilities.error_handler import ResponseCode
+# from backend.entities.credentials_entity import Credentials
 
 def db2_safe(func):
     '''
