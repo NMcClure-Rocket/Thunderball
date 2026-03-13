@@ -63,9 +63,8 @@ class DatabaseAccessObject(ABC):
     Each extension can define a custom ROLE_MATRIX for role-based access control.
 
     Subclasses must implement:
-        - get_primary_key(): Returns the name of the primary key column
-        - get_table_name(): Returns the name of the DB2 table
-        - dict_from_row(row): Converts a database row to a dictionary
+        - _get_primary_key(): Returns the name of the primary key column
+        - _dict_from_row(row, columns): Converts a database row tuple to a dictionary
     '''
 
 
@@ -160,6 +159,7 @@ class DatabaseAccessObject(ABC):
         self.__credentials = None
 
 
+    @rbac_action("read")
     @db2_safe
     def get_by_key(self, ID: str) -> ResponseCode:
         '''
@@ -287,7 +287,8 @@ class DatabaseAccessObject(ABC):
 
     @rbac_action("read")
     @db2_safe
-    def get_short_record(self, numReturned: int, filter: dict[str, Any] = None, max_length: int = 80) -> ResponseCode:
+    def get_short_record(self, numReturned: int, filter: dict[str, Any] = None,
+                         max_length: int = 80, content_column: str = "CONTENT") -> ResponseCode:
         '''
         Return a set number of random records given an optional filter that also have a content
         field less than the given max_length
@@ -296,6 +297,7 @@ class DatabaseAccessObject(ABC):
             numReturned (int): an integer that determines the number of records returned
             filter (dict[str, Any] optional): a dictionary with column names and values to filter
             max_length (int optional): an integer that determines the max length of the content field. Defaults to 80
+            content_column (str optional): the name of the column to apply the length filter to. Defaults to "CONTENT"
 
         Returns:
             ResponseCode (ResponseCode): After being wrapped, it will return a ResponseCode with the records as a list of dictionaries
@@ -312,8 +314,8 @@ class DatabaseAccessObject(ABC):
                 conditions.append(f"{col} = ?")
                 params.append(val)
 
-        # Add length condition for content field
-        conditions.append("LENGTH(CONTENT) < ?")
+        # Add length condition for the specified content column
+        conditions.append(f"LENGTH({content_column}) < ?")
         params.append(max_length)
 
         where_clause = " WHERE " + " AND ".join(conditions)
@@ -382,7 +384,9 @@ class DatabaseAccessObject(ABC):
             entry (dict[str, Any]): a dictionary of columns and values to insert
 
         Returns:
-            ResponseCode (ResponseCode): After being wrapped, it will return a ResponseCode with the new primary key
+            ResponseCode (ResponseCode): After being wrapped, it will return a ResponseCode with the
+            inserted entry as a string. Note: DB2 does not expose the generated primary key here;
+            use IDENTITY_VAL_LOCAL() in a subsequent query if the PK is needed.
         '''
         entry = self._prepare_entry(entry)  # Determines if there should be default field values; override in subclass
         self.__logger.debug(f"Creating {self.__class__.__name__} record: {entry}.")
@@ -419,13 +423,13 @@ class DatabaseAccessObject(ABC):
         primary_key = self._get_primary_key()
         query = f"DELETE FROM {self._table_name} WHERE {primary_key} = ?"
 
-        self._execute_query(query, (ID,))
+        cursor = self._execute_query(query, (ID,))
 
         # Commit the transaction
         self._connection.commit()
 
         self.__logger.debug(f"Delete completed for ID {ID}")
-        return {"deleted_count": 1}
+        return {"deleted_count": cursor.rowcount if cursor.rowcount else 0}
 
     @rbac_action("delete")
     @db2_safe
