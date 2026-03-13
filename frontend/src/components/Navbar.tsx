@@ -11,7 +11,6 @@ export default function Navbar({ onLogout }: NavbarProps) {
         <Link to="/" style={{ marginRight: '15px' }}>Home</Link>
         <Link to="/catalog" style={{ marginRight: '15px' }}>Catalog</Link>
         <Link to="/checkout" style={{ marginRight: '15px' }}>Checkout</Link>
-        <Link to="/create-account" style={{ marginRight: '15px' }}>Create Account</Link>
         <Link to="/order-history" style={{ marginRight: '15px' }}>Order History</Link>
       </div>
       <button
