@@ -10,7 +10,7 @@ export default function Navbar({ onLogout }: NavbarProps) {
       <div>
         <Link to="/" style={{ marginRight: '15px' }}>Home</Link>
         <Link to="/catalog" style={{ marginRight: '15px' }}>Catalog</Link>
-        <Link to="/checkout" style={{ marginRight: '15px' }}>Checkout</Link>
+        <Link to="/shopping-cart" style={{ marginRight: '15px' }}>Shopping Cart</Link>
         <Link to="/order-history" style={{ marginRight: '15px' }}>Order History</Link>
       </div>
       <button
