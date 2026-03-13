@@ -55,7 +55,7 @@ jobs:
         flake8 api/ --count --exit-zero --max-complexity=10 --max-line-length=100 --statistics
     
     - name: Run Pylint
-      run: pylint api/ --fail-under=7.0 --disable=C0114,C0115,C0116
+      run: pylint api/ --fail-under=8.5 --disable=C0114,C0115,C0116
     
     - name: Run Mypy
       run: mypy api/

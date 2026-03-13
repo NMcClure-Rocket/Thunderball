@@ -1,11 +1,13 @@
-# Copyright (C) 2025 Team White
+﻿# Copyright (C) 2025 Team White
 # Licensed under the MIT License
 # See LICENSE for more details
-
-import ibm_db
+"""Standardised error handling, response codes, and DB2 error mapping utilities."""
 from enum import Enum
 from typing import Optional, Any, Dict
 from datetime import datetime
+
+import ibm_db
+
 from backend.utilities.logger import LoggerFactory
 
 
@@ -29,26 +31,26 @@ class DB2ErrorCode(Enum):
     CONNECTION_TIMEOUT = "DB2_CONNECTION_TIMEOUT"
     CONNECTION_CLOSED = "DB2_CONNECTION_CLOSED"
     AUTHENTICATION_FAILED = "DB2_AUTHENTICATION_FAILED"
-    
+
     # SQL errors
     SYNTAX_ERROR = "SQL_SYNTAX_ERROR"
     CONSTRAINT_VIOLATION = "SQL_CONSTRAINT_VIOLATION"
     COLUMN_NOT_FOUND = "SQL_COLUMN_NOT_FOUND"
     TABLE_NOT_FOUND = "SQL_TABLE_NOT_FOUND"
-    
+
     # Data errors
     DATA_TYPE_MISMATCH = "SQL_DATA_TYPE_MISMATCH"
     VALUE_TOO_LONG = "SQL_VALUE_TOO_LONG"
     NULL_CONSTRAINT_VIOLATION = "SQL_NULL_CONSTRAINT_VIOLATION"
     DUPLICATE_KEY = "SQL_DUPLICATE_KEY"
     FOREIGN_KEY_VIOLATION = "SQL_FOREIGN_KEY_VIOLATION"
-    
+
     # Statement errors
     DEADLOCK = "DB2_DEADLOCK"
     LOCK_TIMEOUT = "DB2_LOCK_TIMEOUT"
     PERMISSION_DENIED = "DB2_PERMISSION_DENIED"
     RESOURCE_UNAVAILABLE = "DB2_RESOURCE_UNAVAILABLE"
-    
+
     # General errors
     GENERAL_ERROR = "DB2_GENERAL_ERROR"
     UNKNOWN_ERROR = "UNKNOWN_ERROR"
@@ -59,7 +61,7 @@ class ResponseCode:
     Standardized response code class for all DAO and service operations.
     Provides consistent error handling for DB2/SQL operations.
     """
-    
+
     def __init__(
         self,
         error_tag: Optional[str] = None,
@@ -72,7 +74,7 @@ class ResponseCode:
     ):
         """
         Initialize a ResponseCode object.
-        
+
         Args:
             error_tag (str, optional): Standard error code. None indicates success
             data (Any, optional): Response data payload
@@ -90,7 +92,7 @@ class ResponseCode:
         self.message = message or self._get_default_message(error_tag)
         self.timestamp = timestamp or datetime.now()
         self.is_success = error_tag is None
-    
+
     def _get_default_message(self, error_tag: Optional[str]) -> str:
         """Get default message for common error tags"""
         messages = {
@@ -111,7 +113,7 @@ class ResponseCode:
             DB2ErrorCode.PERMISSION_DENIED.value: "Insufficient database permissions",
         }
         return messages.get(error_tag, f"Error: {error_tag}")
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert ResponseCode to dictionary for JSON serialization"""
         return {
@@ -124,7 +126,7 @@ class ResponseCode:
             "data": self.data,
             "timestamp": self.timestamp.isoformat() if isinstance(self.timestamp, datetime) else str(self.timestamp)
         }
-    
+
     def __repr__(self) -> str:
         """String representation of ResponseCode"""
         status = "SUCCESS" if self.is_success else "FAILED"
@@ -135,7 +137,7 @@ class ResponseCode:
     def log_response(self, operation_name: str = "Database Operation") -> None:
         """
         Log the response with appropriate level based on severity.
-        
+
         Args:
             operation_name (str): Name of the operation for logging context
         """
@@ -161,7 +163,7 @@ class DB2ErrorHandler:
     """
     Handles DB2 and SQL-specific errors with proper categorization and logging.
     """
-    
+
     # SQLState codes for DB2
     SQLSTATE_MAPPING = {
         "00000": ("Success", ErrorSeverity.INFO),
@@ -204,20 +206,20 @@ class DB2ErrorHandler:
     }
 
     @staticmethod
-    def parse_db2_error(db_connection) -> ResponseCode:
+    def parse_db2_error(db_connection) -> ResponseCode:  # pylint: disable=unused-argument
         """
         Parse DB2 error from connection object and return ResponseCode.
-        
+
         Args:
             db_connection: The DB2 connection object with error info
-            
+
         Returns:
             ResponseCode: Properly formatted error response
         """
         try:
             sqlstate = ibm_db.conn_error()
             error_msg = ibm_db.conn_errormsg()
-            
+
             # Parse native error code if available
             parts = error_msg.split("]")
             native_error = None
@@ -226,13 +228,13 @@ class DB2ErrorHandler:
                     native_error = int(parts[0].strip("["))
                 except (ValueError, IndexError):
                     native_error = None
-            
+
             response = DB2ErrorHandler.create_error_response(
                 sqlstate=sqlstate,
                 native_error=native_error,
                 message=error_msg
             )
-            
+
             # Log the parsed error
             response.log_response(f"DB2 Connection Error (SQLSTATE: {sqlstate})")
             return response
@@ -243,23 +245,23 @@ class DB2ErrorHandler:
                 severity=ErrorSeverity.CRITICAL,
                 message=f"Failed to parse DB2 error: {str(e)}"
             )
-    
+
     @staticmethod
     def parse_exception(exception: Exception) -> ResponseCode:
         """
         Parse a Python exception and convert to ResponseCode with DB2 context.
-        
+
         Args:
             exception (Exception): The exception to parse
-            
+
         Returns:
             ResponseCode: Properly formatted error response
         """
         error_class = exception.__class__.__name__
         error_msg = str(exception)
-        
+
         response = None
-        
+
         # Map common exceptions to DB2 error codes
         if "connection" in error_msg.lower():
             response = ResponseCode(
@@ -315,11 +317,11 @@ class DB2ErrorHandler:
                 severity=ErrorSeverity.ERROR,
                 message=f"{error_class}: {error_msg}"
             )
-        
+
         # Log the parsed exception
         response.log_response(f"Exception Handling ({error_class})")
         return response
-    
+
     @staticmethod
     def create_error_response(
         sqlstate: Optional[str] = None,
@@ -328,12 +330,12 @@ class DB2ErrorHandler:
     ) -> ResponseCode:
         """
         Create an error ResponseCode based on SQLSTATE code.
-        
+
         Args:
             sqlstate (str, optional): 5-character SQLSTATE code
             native_error (int, optional): Native DB2 error code
             message (str, optional): Error message
-            
+
         Returns:
             ResponseCode: Properly categorized error response
         """
@@ -345,7 +347,7 @@ class DB2ErrorHandler:
             msg = message or "Unknown DB2 error"
             severity = ErrorSeverity.ERROR
             error_tag = DB2ErrorCode.GENERAL_ERROR.value
-        
+
         response = ResponseCode(
             error_tag=error_tag,
             severity=severity,
@@ -353,11 +355,11 @@ class DB2ErrorHandler:
             native_error=native_error,
             message=message or msg
         )
-        
+
         # Log the created error response
         response.log_response(f"DB2 Error Created (SQLSTATE: {sqlstate})")
         return response
-    
+
     @staticmethod
     def _map_sqlstate_to_error_tag(sqlstate: str) -> str:
         """Map SQLSTATE code to error tag"""
@@ -386,38 +388,38 @@ class OperationResult:
     Wrapper for operation results with built-in error handling.
     Provides a fluent API for chaining operations with error context.
     """
-    
+
     def __init__(self, response_code: ResponseCode):
         """
         Initialize OperationResult with a ResponseCode.
-        
+
         Args:
             response_code (ResponseCode): The response code for this operation
         """
         self.response_code = response_code
         self.operations = []
-    
+
     def is_successful(self) -> bool:
         """Check if operation was successful"""
         return self.response_code.is_success
-    
+
     def get_data(self) -> Any:
         """Get the operation data"""
         return self.response_code.data
-    
+
     def get_error_tag(self) -> Optional[str]:
         """Get the error tag"""
         return self.response_code.error_tag
-    
+
     def get_message(self) -> str:
         """Get the error message"""
         return self.response_code.message
-    
+
     def add_context(self, context: str) -> "OperationResult":
         """Add context information to the operation"""
         self.operations.append(context)
         return self
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """Convert to dictionary for serialization"""
         return {
@@ -425,13 +427,13 @@ class OperationResult:
             "response": self.response_code.to_dict(),
             "operations": self.operations
         }
-    
+
     def __repr__(self) -> str:
         return f"OperationResult({self.response_code})"
 
 
 # Common success responses
-def success_response(data: Any = None, message: str = "GeneralSuccess") -> ResponseCode:
+def success_response(data: Any = None, message: str = "GeneralSuccess") -> ResponseCode:  # pylint: disable=unused-argument
     """Create a success response"""
     return ResponseCode(error_tag=None, data=data)
 
@@ -472,7 +474,7 @@ def malformed_content_error(details: str = "") -> ResponseCode:
 
 def permission_error(action: str = "", role: str = "") -> ResponseCode:
     """Create a 'permission denied' error response"""
-    msg = f"Insufficient permissions"
+    msg = "Insufficient permissions"
     if action:
         msg += f" to {action}"
     if role:
