@@ -3,7 +3,7 @@ FastAPI main application entrypoint
 """
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from server import router
+from api.server import router
 import logging
 
 # Configure logging
@@ -24,6 +24,17 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.get("/")
+async def root():
+    return {"message": "Thunderball API is running"}
+
+
+@app.get("/health")
+async def health():
+    return {"status": "healthy"}
+
 
 # Register all routes from server.py
 app.include_router(router)
