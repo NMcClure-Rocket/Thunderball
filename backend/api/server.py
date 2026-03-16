@@ -1,10 +1,13 @@
 """
 API route definitions – all endpoints live here
 """
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, FastAPI
 from pydantic import BaseModel, Field
 from typing import Any, Dict, List
 import time
+
+# Create the FastAPI app instance
+app = FastAPI()
 
 router = APIRouter()
 
@@ -66,3 +69,15 @@ async def purchase(body: PurchaseRequest):
         "qty": body.qty,
         "total": total,
     }
+    
+@app.get("/")
+async def root():
+    return {"message": "Thunderball API is running"}
+
+
+@app.get("/health")
+async def health():
+    return {"status": "healthy"}
+
+
+app.include_router(router)

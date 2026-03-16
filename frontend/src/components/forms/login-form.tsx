@@ -11,7 +11,7 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
-  const baseURL = "http://localhost:8000";
+  const baseURL = "http://127.0.0.1:8000";
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,7 +37,7 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
           pass: password
         })
       });
-
+        console.log(response)
       // Check if response is successful
       if (response.status === 200) {
         const data = await response.json();
