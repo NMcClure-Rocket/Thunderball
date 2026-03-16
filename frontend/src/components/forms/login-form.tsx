@@ -24,29 +24,37 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
   };
 
   return (
-    <div style={{ padding: '20px', maxWidth: '400px', margin: '50px auto' }}>
-      <h1>Login</h1>
+    <div style={{
+      padding: '40px',
+      maxWidth: '420px',
+      margin: '80px auto',
+      backgroundColor: 'var(--color-surface)',
+      borderRadius: '8px',
+      border: '1px solid var(--color-border)',
+      boxShadow: '0 4px 16px rgba(30,50,112,0.12)',
+    }}>
+      <h1 style={{ color: 'var(--font-dark)', marginTop: 0 }}>Login</h1>
       <form onSubmit={handleSubmit}>
         <div style={{ marginBottom: '15px' }}>
-          <label>
+          <label style={{ color: 'var(--font-dark)', fontWeight: 600 }}>
             Email:
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              style={{ display: 'block', marginTop: '5px', padding: '8px', width: '100%', boxSizing: 'border-box' }}
+              style={{ display: 'block', marginTop: '5px', padding: '8px', width: '100%', boxSizing: 'border-box', border: '1px solid var(--color-border)', borderRadius: '4px' }}
             />
           </label>
         </div>
 
         <div style={{ marginBottom: '15px' }}>
-          <label>
+          <label style={{ color: 'var(--font-dark)', fontWeight: 600 }}>
             Password:
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              style={{ display: 'block', marginTop: '5px', padding: '8px', width: '100%', boxSizing: 'border-box' }}
+              style={{ display: 'block', marginTop: '5px', padding: '8px', width: '100%', boxSizing: 'border-box', border: '1px solid var(--color-border)', borderRadius: '4px' }}
             />
           </label>
         </div>
@@ -55,16 +63,22 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
           type="submit"
           style={{
             padding: '10px 20px',
-            backgroundColor: '#007bff',
-            color: 'white',
-            border: 'none',
+            backgroundColor: 'transparent',
+            color: 'var(--color-secondary)',
+            border: '2px solid var(--color-secondary)',
             cursor: 'pointer',
             width: '100%',
             marginBottom: '10px',
-            borderRadius: '4px'
+            borderRadius: '20px',
+            fontWeight: 700,
+            fontSize: '1rem',
+            outline: 'none',
+            transition: 'background-color 0.2s, color 0.2s',
           }}
+          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.backgroundColor = 'var(--color-secondary)'; (e.currentTarget as HTMLButtonElement).style.color = 'var(--font-light)'; }}
+          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.backgroundColor = 'transparent'; (e.currentTarget as HTMLButtonElement).style.color = 'var(--color-secondary)'; }}
         >
-          Submit
+          Login
         </button>
       </form>
 
@@ -72,13 +86,19 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
         onClick={handleCreateAccount}
         style={{
           padding: '10px 20px',
-          backgroundColor: '#28a745',
-          color: 'white',
-          border: 'none',
+          backgroundColor: 'transparent',
+          color: 'var(--color-accent)',
+          border: '2px solid var(--color-accent)',
           cursor: 'pointer',
           width: '100%',
-          borderRadius: '4px'
+          borderRadius: '20px',
+          fontWeight: 600,
+          fontSize: '1rem',
+          outline: 'none',
+          transition: 'background-color 0.2s, color 0.2s',
         }}
+        onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.backgroundColor = 'var(--color-accent)'; (e.currentTarget as HTMLButtonElement).style.color = 'var(--font-light)'; }}
+        onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.backgroundColor = 'transparent'; (e.currentTarget as HTMLButtonElement).style.color = 'var(--color-accent)'; }}
       >
         Create Account
       </button>

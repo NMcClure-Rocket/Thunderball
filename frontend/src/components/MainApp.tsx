@@ -9,9 +9,9 @@ import OrderHistory from '../pages/order-hist';
 
 export default function MainApp({ onLogout }: { onLogout: () => void }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', backgroundColor: 'var(--color-bg)' }}>
       <Navbar onLogout={onLogout} />
-      <div style={{ flex: 1 }}>
+      <div style={{ flex: 1, paddingTop: '60px' }}>
         <Routes>
           <Route path="/" element={<Main />} />
           <Route path="/catalog" element={<Catalog />} />
