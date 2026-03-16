@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import '../css/App.css';
 import LoginPage from '../pages/login-page';
+import CreateAccount from '../pages/create-acc';
 import MainApp from './MainApp';
+import '../css/App.css'; // ← Add this import
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -18,11 +19,13 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* If not logged in, show login page */}
         {!isLoggedIn ? (
-          <Route path="*" element={<LoginPage onLogin={handleLogin} />} />
+          <>
+            <Route path="/" element={<LoginPage onLogin={handleLogin} />} />
+            <Route path="/create-account" element={<CreateAccount />} />
+            <Route path="*" element={<LoginPage onLogin={handleLogin} />} />
+          </>
         ) : (
-          /* If logged in, show the main app with navbar and routes */
           <Route path="*" element={<MainApp onLogout={handleLogout} />} />
         )}
       </Routes>
