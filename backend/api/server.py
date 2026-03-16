@@ -3,12 +3,13 @@ API route definitions – all endpoints live here
 """
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
+from typing import Any, Dict, List
 import time
 
 router = APIRouter()
 
 # ── Base-price table (inventory data) ──────────────────────────
-inventory = [
+inventory: List[Dict[str, Any]] = [
     {"id": 1, "name": "Duck Spell A", "price": 9.99,  "image": "duck-a.png"},
     {"id": 2, "name": "Duck Spell B", "price": 12.50, "image": "duck-b.png"},
     {"id": 3, "name": "Fire Spell",   "price": 5.00,  "image": "fire.png"},
@@ -57,7 +58,7 @@ async def purchase(body: PurchaseRequest):
     if not item:
         raise HTTPException(status_code=404, detail="item not found")
 
-    total = item["price"] * body.qty
+    total = float(item["price"]) * body.qty
     return {
         "status": "ok",
         "orderId": int(time.time() * 1000),
