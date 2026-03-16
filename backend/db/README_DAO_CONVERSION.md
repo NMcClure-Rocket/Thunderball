@@ -38,8 +38,8 @@ Located in `backend/db/dao/abstract_record.py`
 - **Primary Key**: `CUSTOMERID`
 - Managing customer information
 
-#### 2. **BillAddyDAO** (`bill_addy_dao.py`)
-- **Table**: `USER18.BILLING_ADDRESS`
+#### 2. **ShippingAddressDAO** (`shipping_address_dao.py`)
+- **Table**: `USER18.SHIPPINGADDRESS`
 - **Primary Key**: `BILL_ADDY_ID`
 - Managing billing address information
 

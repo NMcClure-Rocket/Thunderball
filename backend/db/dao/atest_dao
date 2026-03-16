@@ -1,0 +1,147 @@
+# Copyright (C) 2025 Team White
+# Licensed under the MIT License
+# See LICENSE for more details
+
+"""
+DAO smoke tester for the DB2-backed DAOs in this repository.
+
+Usage examples:
+    python backend/db/dao/atest_dao
+    python backend/db/dao/atest_dao --limit 10
+    python backend/db/dao/atest_dao --dao BasePriceDAO
+"""
+
+from __future__ import annotations
+
+import argparse
+import importlib
+import sys
+from pathlib import Path
+from typing import TYPE_CHECKING, Any, Dict, List, Tuple, Type
+
+# Ensure the repository root is on sys.path when this file is run directly.
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+from backend.db.connector import conn
+
+if TYPE_CHECKING:
+    import ibm_db_dbi
+
+
+def _load_dao_registry() -> Dict[str, Type]:
+    """
+    Lazily import DAO classes so we only load them when a DB connection is available.
+    """
+    dao_specs = {
+        "BasePriceDAO": "backend.db.dao.base_price_dao:BasePriceDAO",
+        "ShippingAddressDAO": "backend.db.dao.shipping_address_dao:ShippingAddressDAO",
+        "CCIDao": "backend.db.dao.cci_dao:CCIDao",
+        "CustomerDAO": "backend.db.dao.customer_dao:CustomerDAO",
+        "InventoryDAO": "backend.db.dao.inventory_dao:InventoryDAO",
+        "OrderDAO": "backend.db.dao.order_dao:OrderDAO",
+    }
+
+    registry: Dict[str, Type] = {}
+    for name, import_path in dao_specs.items():
+        module_name, class_name = import_path.split(":", 1)
+        module = importlib.import_module(module_name)
+        registry[name] = getattr(module, class_name)
+    return registry
+
+
+def _extract_rows(result: object) -> Tuple[bool, int, str]:
+    """
+    Normalize DAO response into an (ok, row_count, note) tuple.
+    """
+    if isinstance(result, list):
+        return True, len(result), "list"
+
+    # DatabaseAccessObject methods are wrapped in ResponseCode objects.
+    if hasattr(result, "error_tag") and hasattr(result, "data"):
+        error_tag = getattr(result, "error_tag", "")
+        data = getattr(result, "data", None)
+
+        if error_tag and error_tag != "GeneralSuccess":
+            return False, 0, str(error_tag)
+
+        if isinstance(data, list):
+            return True, len(data), "response.data list"
+        return True, 0, "response.data not list"
+
+    return False, 0, f"unexpected return type: {type(result).__name__}"
+
+
+def run_smoke_test(connection: Any, limit: int, dao_name: str | None = None) -> int:
+    """
+    Instantiate DAOs and call get_all_records(limit=...).
+
+    Returns:
+        int: process-style status code (0 = success, 1 = failure)
+    """
+    dao_registry = _load_dao_registry()
+
+    selected: List[Tuple[str, Type]]
+    if dao_name:
+        if dao_name not in dao_registry:
+            print(f"[ERROR] Unknown DAO '{dao_name}'. Options: {', '.join(sorted(dao_registry.keys()))}")
+            return 1
+        selected = [(dao_name, dao_registry[dao_name])]
+    else:
+        selected = sorted(dao_registry.items(), key=lambda item: item[0])
+
+    print(f"Running DAO smoke test with limit={limit}")
+    print("-" * 70)
+
+    failures = 0
+    for name, dao_class in selected:
+        try:
+            dao = dao_class(connection)
+            result = dao.get_all_records(limit=limit)
+            ok, row_count, note = _extract_rows(result)
+
+            if ok:
+                print(f"[PASS] {name:<14} rows={row_count:<5} ({note})")
+            else:
+                failures += 1
+                print(f"[FAIL] {name:<14} {note}")
+
+        except Exception as exc:  # noqa: BLE001 - smoke test should report any failure
+            failures += 1
+            print(f"[FAIL] {name:<14} exception={exc}")
+
+    print("-" * 70)
+    if failures:
+        print(f"Completed with {failures} failure(s).")
+        return 1
+
+    print("All DAO smoke tests passed.")
+    return 0
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Run DB2 DAO smoke tests for this project.")
+    parser.add_argument(
+        "--limit",
+        type=int,
+        default=5,
+        help="Number of rows to fetch per DAO (default: 5)",
+    )
+    parser.add_argument(
+        "--dao",
+        type=str,
+        default=None,
+        help="Run only one DAO by class name (e.g. BasePriceDAO)",
+    )
+    return parser.parse_args()
+
+
+if __name__ == "__main__":
+    args = parse_args()
+
+    if conn is None:
+        print("[ERROR] DB2 connection is not available. Check backend/db/connector.py settings.")
+        raise SystemExit(1)
+
+    raise SystemExit(run_smoke_test(conn, limit=args.limit, dao_name=args.dao))
