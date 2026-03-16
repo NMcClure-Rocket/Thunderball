@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import CatalogEntry from '../components/widgets/catalog-entry';
+import AddToCart from '../components/widgets/add-to-cart';
 import '../css/catalog.css';
 
 interface Product {
@@ -12,6 +13,7 @@ interface Product {
 export default function Catalog() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
 
   // Placeholder data for now
   const placeholderData: Product[] = [
@@ -102,21 +104,38 @@ export default function Catalog() {
     rows.push(products.slice(i, i + 4));
   }
 
+  const handleAddToCart = (cartItem: any) => {
+    alert(`Added ${cartItem.name} to cart!`);
+  };
+
   return (
     <div className="catalog-container">
       {rows.map((row, rowIndex) => (
         <div key={rowIndex} className="catalog-row">
           {row.map((product) => (
-            <CatalogEntry
+            <div
               key={product.id}
-              id={product.id}
-              name={product.name}
-              price={product.price}
-              img={product.img}
-            />
+              onClick={() => setSelectedProductId(product.id)}
+              style={{ cursor: 'pointer' }}
+            >
+              <CatalogEntry
+                id={product.id}
+                name={product.name}
+                price={product.price}
+                img={product.img}
+              />
+            </div>
           ))}
         </div>
       ))}
+
+      {selectedProductId && (
+        <AddToCart
+          priceId={selectedProductId}
+          onClose={() => setSelectedProductId(null)}
+          onAddToCart={handleAddToCart}
+        />
+      )}
     </div>
   );
 }
