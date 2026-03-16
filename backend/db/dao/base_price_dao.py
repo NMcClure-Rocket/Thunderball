@@ -1,6 +1,7 @@
 # Copyright (C) 2025 Team White
 # Licensed under the MIT License
 # See LICENSE for more details
+"""Data Access Object for the USER18.BASE_PRICE DB2 table."""
 
 from typing import Any, Dict, List
 import ibm_db_dbi
@@ -42,7 +43,7 @@ class BasePriceDAO(DatabaseAccessObject):
         Returns:
             Dict[str, Any]: Dictionary representation of the database row
         '''
-        return {col: val for col, val in zip(columns, row)}
+        return dict(zip(columns, row))
 
     # Custom methods specific to BasPrice operations can be added here
     # For example:

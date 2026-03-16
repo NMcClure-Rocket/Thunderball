@@ -1,17 +1,18 @@
-# Copyright (C) 2025 Team White
+﻿# Copyright (C) 2025 Team White
 # Licensed under the MIT License
 # See LICENSE for more details
-
-import ibm_db
-import ibm_db_dbi
+"""Abstract base class and shared decorators for all DB2 Data Access Objects."""
 from abc import ABC
-from typing import Any, Callable, Optional, List, Dict
+from typing import Any, Callable, List, Dict
 from functools import wraps
+
+import ibm_db_dbi
+
 from backend.utilities.logger import LoggerFactory
 from backend.utilities.error_handler import ResponseCode
-# from backend.entities.credentials_entity import Credentials
+from backend.entities.credentials_entity import Credentials
 
-def rbac_action(action: str) -> Callable:
+def rbac_action(action: str) -> Callable:  # pylint: disable=unused-argument
     '''
     Decorator for role-based access control on DAO methods.
     Validates that the current credentials permit the given action.
@@ -60,13 +61,12 @@ class DatabaseAccessObject(ABC):
     '''
     This class is an abstract class that all DAO objects extend from to access their corresponding DB2 tables.
     Each extension can define a custom ROLE_MATRIX for role-based access control.
-    
+
     Subclasses must implement:
-        - get_primary_key(): Returns the name of the primary key column
-        - get_table_name(): Returns the name of the DB2 table
-        - dict_from_row(row): Converts a database row to a dictionary
+        - _get_primary_key(): Returns the name of the primary key column
+        - _dict_from_row(row, columns): Converts a database row tuple to a dictionary
     '''
-   
+
 
     def __init__(self, table_name: str, connection: ibm_db_dbi.Connection):
         '''
@@ -80,13 +80,14 @@ class DatabaseAccessObject(ABC):
         self.__credentials = None
 
     def get_credentials(self):
+        '''Returns the currently set credentials, or None if not set.'''
         return self.__credentials
 
     def _get_primary_key(self) -> str:
         '''
         Abstract method to be implemented by subclasses.
         Returns the name of the primary key column for the table.
-        
+
         Returns:
             str: The primary key column name
         '''
@@ -96,11 +97,11 @@ class DatabaseAccessObject(ABC):
         '''
         Abstract method to be implemented by subclasses.
         Converts a database row tuple to a dictionary.
-        
+
         Args:
             row (tuple): The database row
             columns (List[str]): The column names
-            
+
         Returns:
             Dict[str, Any]: Dictionary representation of the row
         '''
@@ -109,11 +110,11 @@ class DatabaseAccessObject(ABC):
     def _execute_query(self, query: str, params: tuple = None) -> Any:
         '''
         Helper method to execute a DB2 query and handle errors.
-        
+
         Args:
             query (str): The SQL query to execute
             params (tuple): Query parameters for parameterized queries
-            
+
         Returns:
             Any: The query result
         '''
@@ -128,7 +129,7 @@ class DatabaseAccessObject(ABC):
             self.__logger.error(f"Database error executing query: {str(e)}")
             raise
 
-   
+
     #Hook method; this should set any default field values; just override it
     def _prepare_entry(self, entry: dict[str, Any]) -> dict[str, Any]:
         '''
@@ -157,7 +158,8 @@ class DatabaseAccessObject(ABC):
         '''
         self.__credentials = None
 
-    
+
+    @rbac_action("read")
     @db2_safe
     def get_by_key(self, ID: str) -> ResponseCode:
         '''
@@ -173,13 +175,13 @@ class DatabaseAccessObject(ABC):
         self.__logger.debug(f"Getting {self.__class__.__name__} record by ID {ID}.")
         primary_key = self._get_primary_key()
         query = f"SELECT * FROM {self._table_name} WHERE {primary_key} = ?"
-        
+
         cursor = self._execute_query(query, (ID,))
         row = cursor.fetchone()
-        
+
         if row is None:
             return ResponseCode(error_tag="ResourceNotFound")
-        
+
         columns = [desc[0] for desc in cursor.description]
         return self._dict_from_row(row, columns)
 
@@ -198,20 +200,20 @@ class DatabaseAccessObject(ABC):
         '''
         if not filter:
             return ResponseCode("MalformedContent", "Filter must not be empty.")
-        
+
         self.__logger.debug(f"Getting {self.__class__.__name__} record by fields {filter}.")
-        
+
         # Build WHERE clause
         conditions = [f"{col} = ?" for col in filter.keys()]
         where_clause = " AND ".join(conditions)
         query = f"SELECT * FROM {self._table_name} WHERE {where_clause}"
-        
+
         cursor = self._execute_query(query, tuple(filter.values()))
         rows = cursor.fetchall()
-        
+
         if not rows:
             return ResponseCode(error_tag="ResourceNotFound")
-        
+
         columns = [desc[0] for desc in cursor.description]
         return [self._dict_from_row(row, columns) for row in rows]
 
@@ -229,17 +231,17 @@ class DatabaseAccessObject(ABC):
             records from the table as a list of dictionaries
         '''
         self.__logger.debug(f"Getting all {self.__class__.__name__} records with limit {limit}.")
-        
+
         query = f"SELECT * FROM {self._table_name}"
         if limit is not None:
             query += f" FETCH FIRST {limit} ROWS ONLY"
-        
+
         cursor = self._execute_query(query)
         rows = cursor.fetchall()
-        
+
         if not rows:
             return ResponseCode(error_tag="ResourceNotFound")
-        
+
         columns = [desc[0] for desc in cursor.description]
         return [self._dict_from_row(row, columns) for row in rows]
 
@@ -258,77 +260,79 @@ class DatabaseAccessObject(ABC):
         '''
         filter = filter or {}
         self.__logger.debug(f"Getting {numReturned} random {self.__class__.__name__} record by fields {filter}.")
-        
+
         # Build WHERE clause if filter exists
         where_clause = ""
         params = list(filter.values()) if filter else []
-        
+
         if filter:
             conditions = [f"{col} = ?" for col in filter.keys()]
             where_clause = " WHERE " + " AND ".join(conditions)
-        
+
         # DB2 uses RAND() for random ordering
         query = f"SELECT * FROM {self._table_name}{where_clause} ORDER BY RAND() FETCH FIRST {numReturned} ROWS ONLY"
-        
+
         cursor = self._execute_query(query, tuple(params) if params else None)
         rows = cursor.fetchall()
-        
+
         if not rows:
             self.__logger.warning(f"Requested {numReturned}, but no records found.")
             return ResponseCode(error_tag="ResourceNotFound")
-        
+
         if len(rows) < numReturned:
             self.__logger.warning(f"Requested {numReturned}, but only returned {len(rows)} records.")
-        
+
         columns = [desc[0] for desc in cursor.description]
         return [self._dict_from_row(row, columns) for row in rows]
 
     @rbac_action("read")
     @db2_safe
-    def get_short_record(self, numReturned: int, filter: dict[str, Any] = None, max_length: int = 80) -> ResponseCode:
+    def get_short_record(self, numReturned: int, filter: dict[str, Any] = None,
+                         max_length: int = 80, content_column: str = "CONTENT") -> ResponseCode:
         '''
-        Return a set number of random records given an optional filter that also have a content 
+        Return a set number of random records given an optional filter that also have a content
         field less than the given max_length
 
         Args:
             numReturned (int): an integer that determines the number of records returned
             filter (dict[str, Any] optional): a dictionary with column names and values to filter
             max_length (int optional): an integer that determines the max length of the content field. Defaults to 80
+            content_column (str optional): the name of the column to apply the length filter to. Defaults to "CONTENT"
 
         Returns:
             ResponseCode (ResponseCode): After being wrapped, it will return a ResponseCode with the records as a list of dictionaries
         '''
         filter = filter or {}
         self.__logger.debug(f"Getting {numReturned} random short (less than {max_length} characters) {self.__class__.__name__} record by fields {filter}.")
-        
+
         # Build WHERE clause with both filter and length condition
         conditions = []
         params = []
-        
+
         if filter:
             for col, val in filter.items():
                 conditions.append(f"{col} = ?")
                 params.append(val)
-        
-        # Add length condition for content field
-        conditions.append(f"LENGTH(CONTENT) < ?")
+
+        # Add length condition for the specified content column
+        conditions.append(f"LENGTH({content_column}) < ?")
         params.append(max_length)
-        
+
         where_clause = " WHERE " + " AND ".join(conditions)
-        
+
         # DB2 query with random ordering and length filter
         query = f"SELECT * FROM {self._table_name}{where_clause} ORDER BY RAND() FETCH FIRST {numReturned} ROWS ONLY"
-        
+
         cursor = self._execute_query(query, tuple(params))
         rows = cursor.fetchall()
-        
+
         if not rows:
             self.__logger.warning(f"Requested {numReturned}, but no records found matching criteria.")
             return ResponseCode(error_tag="ResourceNotFound")
-        
+
         if len(rows) < numReturned:
             self.__logger.warning(f"Requested {numReturned}, but only returned {len(rows)} records.")
-        
+
         columns = [desc[0] for desc in cursor.description]
         return [self._dict_from_row(row, columns) for row in rows]
 
@@ -347,26 +351,26 @@ class DatabaseAccessObject(ABC):
         '''
         if not updates:
             return ResponseCode("MalformedContent", "Update payload must not be empty.")
-        
+
         self.__logger.debug(f"Updating {self.__class__.__name__} with ID {ID}: {updates}.")
-        
+
         primary_key = self._get_primary_key()
-        
+
         # Build SET clause
         set_clauses = [f"{col} = ?" for col in updates.keys()]
         set_clause = ", ".join(set_clauses)
-        
+
         # Build query with primary key as WHERE condition
         query = f"UPDATE {self._table_name} SET {set_clause} WHERE {primary_key} = ?"
-        
+
         # Combine update values with ID for the WHERE clause
         params = tuple(list(updates.values()) + [ID])
-        
-        cursor = self._execute_query(query, params)
-        
+
+        self._execute_query(query, params)
+
         # Commit the transaction
         self._connection.commit()
-        
+
         self.__logger.debug(f"Update completed for ID {ID}")
         return ID
 
@@ -380,24 +384,26 @@ class DatabaseAccessObject(ABC):
             entry (dict[str, Any]): a dictionary of columns and values to insert
 
         Returns:
-            ResponseCode (ResponseCode): After being wrapped, it will return a ResponseCode with the new primary key
+            ResponseCode (ResponseCode): After being wrapped, it will return a ResponseCode with the
+            inserted entry as a string. Note: DB2 does not expose the generated primary key here;
+            use IDENTITY_VAL_LOCAL() in a subsequent query if the PK is needed.
         '''
         entry = self._prepare_entry(entry)  # Determines if there should be default field values; override in subclass
         self.__logger.debug(f"Creating {self.__class__.__name__} record: {entry}.")
-        
+
         # Build INSERT statement
         columns = list(entry.keys())
         placeholders = ", ".join(["?" for _ in columns])
         column_names = ", ".join(columns)
-        
+
         query = f"INSERT INTO {self._table_name} ({column_names}) VALUES ({placeholders})"
-        
-        cursor = self._execute_query(query, tuple(entry.values()))
-        
+
+        self._execute_query(query, tuple(entry.values()))
+
         # Commit the transaction
         self._connection.commit()
-        
-        self.__logger.debug(f"Created new record")
+
+        self.__logger.debug("Created new record")
         return ResponseCode("PostSuccess", str(entry))
 
     @rbac_action("delete")
@@ -413,17 +419,17 @@ class DatabaseAccessObject(ABC):
             ResponseCode (ResponseCode): After being wrapped, it will return a ResponseCode with the deleted count
         '''
         self.__logger.debug(f"Deleting {self.__class__.__name__} record with ID {ID}.")
-        
+
         primary_key = self._get_primary_key()
         query = f"DELETE FROM {self._table_name} WHERE {primary_key} = ?"
-        
+
         cursor = self._execute_query(query, (ID,))
-        
+
         # Commit the transaction
         self._connection.commit()
-        
+
         self.__logger.debug(f"Delete completed for ID {ID}")
-        return {"deleted_count": 1}
+        return {"deleted_count": cursor.rowcount if cursor.rowcount else 0}
 
     @rbac_action("delete")
     @db2_safe
@@ -441,19 +447,19 @@ class DatabaseAccessObject(ABC):
             return ResponseCode("MalformedContent", "Delete filter must not be empty.")
         if len(filter) > 1:
             return ResponseCode("MalformedContent", "Delete filter must contain only one field.")
-        
+
         self.__logger.debug(f"Deleting {self.__class__.__name__} records by filter {filter}.")
-        
+
         # Build WHERE clause
         col = list(filter.keys())[0]
         val = list(filter.values())[0]
-        
+
         query = f"DELETE FROM {self._table_name} WHERE {col} = ?"
-        
+
         cursor = self._execute_query(query, (val,))
-        
+
         # Commit the transaction
         self._connection.commit()
-        
+
         self.__logger.debug(f"Delete completed for filter {filter}")
         return {"deleted_count": cursor.rowcount if cursor.rowcount else 0}
