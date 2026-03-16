@@ -58,4 +58,4 @@ jobs:
       run: pylint api/ --fail-under=8.5 --disable=C0114,C0115,C0116
     
     - name: Run Mypy
-      run: mypy api/
+      run: mypy api/ --explicit-package-bases

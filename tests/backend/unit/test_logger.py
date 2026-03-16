@@ -262,8 +262,10 @@ class TestInitialize:
         assert LoggerFactory._use_smart_logger is False
 
     def test_creates_log_files_when_missing(self):
+        def _exists(path):
+            return str(path).endswith(".yaml")
         with patch("os.makedirs"), \
-             patch("os.path.exists", return_value=False), \
+             patch("os.path.exists", side_effect=_exists), \
              patch("builtins.open", mock_open()) as mock_file, \
              patch("yaml.safe_load", return_value=_MINIMAL_CONFIG), \
              patch("logging.config.dictConfig"):

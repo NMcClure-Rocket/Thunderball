@@ -39,13 +39,13 @@ sys.modules.setdefault(
 # Now it's safe to import backend modules.
 # ---------------------------------------------------------------------------
 from backend.db.dao.base_price_dao import BasePriceDAO        # noqa: E402
-from backend.db.dao.bill_addy_dao import BillAddyDAO          # noqa: E402
 from backend.db.dao.cci_dao import CCIDao                     # noqa: E402
 from backend.db.dao.customer_dao import CustomerDAO           # noqa: E402
 from backend.db.dao.inventory_dao import InventoryDAO         # noqa: E402
-from backend.db.dao.order_dao import OrderDAO                 # noqa: E402
-from backend.entities.credentials_entity import Credentials   # noqa: E402
-from backend.utilities.error_handler import ResponseCode      # noqa: E402
+from backend.db.dao.order_dao import OrderDAO                         # noqa: E402
+from backend.db.dao.shipping_address_dao import ShippingAddressDAO    # noqa: E402
+from backend.entities.credentials_entity import Credentials           # noqa: E402
+from backend.utilities.error_handler import ResponseCode              # noqa: E402
 
 
 # ---------------------------------------------------------------------------
@@ -90,7 +90,7 @@ def customer_dao(mock_connection):
 class TestBasePriceDAO:
     def test_table_name(self, mock_connection):
         dao = BasePriceDAO(mock_connection)
-        assert dao._table_name == "USER18.BASE_PRICE"
+        assert dao._table_name == "USER18.BASEPRICE"
 
     def test_primary_key(self, mock_connection):
         dao = BasePriceDAO(mock_connection)
@@ -107,20 +107,20 @@ class TestBasePriceDAO:
 
 
 # ===========================================================================
-# BillAddyDAO – table, primary key, row mapping
+# ShippingAddressDAO – table, primary key, row mapping
 # ===========================================================================
 
-class TestBillAddyDAO:
+class TestShippingAddressDAO:
     def test_table_name(self, mock_connection):
-        dao = BillAddyDAO(mock_connection)
-        assert dao._table_name == "USER18.BILLING_ADDRESS"
+        dao = ShippingAddressDAO(mock_connection)
+        assert dao._table_name == "USER18.SHIPPINGADDRESS"
 
     def test_primary_key(self, mock_connection):
-        dao = BillAddyDAO(mock_connection)
+        dao = ShippingAddressDAO(mock_connection)
         assert dao._get_primary_key() == "BILL_ADDY_ID"
 
     def test_dict_from_row(self, mock_connection):
-        dao = BillAddyDAO(mock_connection)
+        dao = ShippingAddressDAO(mock_connection)
         result = dao._dict_from_row(("A1", "123 Main St"), ["BILL_ADDY_ID", "STREET"])
         assert result == {"BILL_ADDY_ID": "A1", "STREET": "123 Main St"}
 
