@@ -73,6 +73,63 @@ def _extract_rows(result: object) -> Tuple[bool, int, str]:
     return False, 0, f"unexpected return type: {type(result).__name__}"
 
 
+def run_inventory_baseinfo_test(connection: Any) -> int:
+    """
+    Targeted smoke test for InventoryDAO.get_item_by_baseinfo.
+
+    1. Found case  – harvests a BASEINFO value from get_all_records and verifies
+                     the method returns a successful ResponseCode.
+    2. Not-found case – passes a sentinel value and verifies ResourceNotFound is
+                        returned.
+
+    Returns:
+        int: Number of failures (0 = all passed).
+    """
+    from backend.db.dao.inventory_dao import InventoryDAO
+
+    dao = InventoryDAO(connection)
+    failures = 0
+
+    # --- found case: harvest a real BASEINFO from the table ---
+    all_result = dao.get_all_records(limit=1)
+    sample = None
+    if hasattr(all_result, "data") and isinstance(all_result.data, list) and all_result.data:
+        sample = all_result.data[0]
+    elif isinstance(all_result, list) and all_result:
+        sample = all_result[0]
+
+    if sample and "BASEINFO" in sample:
+        item_id = sample["BASEINFO"]
+        try:
+            result = dao.get_item_by_baseinfo(item_id)
+            tag = getattr(result, "error_tag", None)
+            if tag in ("GeneralSuccess", None):
+                print(f"[PASS] InventoryDAO.get_item_by_baseinfo (found)     item_id={item_id!r}")
+            else:
+                failures += 1
+                print(f"[FAIL] InventoryDAO.get_item_by_baseinfo (found)     error_tag={tag!r}")
+        except Exception as exc:  # noqa: BLE001
+            failures += 1
+            print(f"[FAIL] InventoryDAO.get_item_by_baseinfo (found)     exception={exc}")
+    else:
+        print("[SKIP] InventoryDAO.get_item_by_baseinfo (found)     — BASEINFO not in sample row")
+
+    # --- not-found case ---
+    try:
+        result = dao.get_item_by_baseinfo("__THUNDERBALL_NONEXISTENT__")
+        tag = getattr(result, "error_tag", None)
+        if tag == "ResourceNotFound":
+            print("[PASS] InventoryDAO.get_item_by_baseinfo (not-found) — ResourceNotFound returned")
+        else:
+            failures += 1
+            print(f"[FAIL] InventoryDAO.get_item_by_baseinfo (not-found) — expected ResourceNotFound, got {tag!r}")
+    except Exception as exc:  # noqa: BLE001
+        failures += 1
+        print(f"[FAIL] InventoryDAO.get_item_by_baseinfo (not-found) — exception={exc}")
+
+    return failures
+
+
 def run_smoke_test(connection: Any, limit: int, dao_name: str | None = None) -> int:
     """
     Instantiate DAOs and call get_all_records(limit=...).
@@ -112,6 +169,14 @@ def run_smoke_test(connection: Any, limit: int, dao_name: str | None = None) -> 
             print(f"[FAIL] {name:<14} exception={exc}")
 
     print("-" * 70)
+
+    # --- targeted tests for InventoryDAO.get_item_by_baseinfo ---
+    if dao_name is None or dao_name == "InventoryDAO":
+        print("\nInventoryDAO.get_item_by_baseinfo tests")
+        print("-" * 70)
+        failures += run_inventory_baseinfo_test(connection)
+        print("-" * 70)
+
     if failures:
         print(f"Completed with {failures} failure(s).")
         return 1

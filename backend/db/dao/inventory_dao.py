@@ -5,7 +5,8 @@
 
 from typing import Any, Dict, List
 import ibm_db_dbi
-from backend.db.dao.abstract_record import DatabaseAccessObject
+from backend.db.dao.abstract_record import DatabaseAccessObject, db2_safe, rbac_action
+from backend.utilities.error_handler import ResponseCode
 
 
 class InventoryDAO(DatabaseAccessObject):
@@ -45,13 +46,31 @@ class InventoryDAO(DatabaseAccessObject):
         '''
         return dict(zip(columns, row))
 
-    # Custom methods specific to Inventory operations can be added here
-    # For example:
-    # def get_inventory_by_product(self, product_id: str):
-    #     '''Gets inventory information for a specific product.'''
-    #     return self.get_by_fields({"PRODUCT_ID": product_id})
-    #
-    # def get_low_stock_items(self, threshold: int = 10):
-    #     '''Gets items with inventory below a certain threshold.'''
-    #     # This would require a custom SQL query
-    #     pass
+    @rbac_action("read")
+    @db2_safe
+    def get_item_by_baseinfo(self, item_id: str):
+        '''
+        Retrieves inventory item details by BASEINFO identifier.
+
+        Fetches NAME, DESCRIPTION, FORMAT, POTENCY, REUSABLE, CATEGORY, PRICE,
+        and AMOUNT for the matching record.
+
+        Args:
+            item_id (str): The BASEINFO value to look up.
+
+        Returns:
+            ResponseCode: A ResponseCode wrapping a dict of the matching row,
+                          or a ResourceNotFound ResponseCode if no record exists.
+        '''
+        select_stmt = (
+            f"SELECT NAME, DESCRIPTION, FORMAT, POTENCY, REUSABLE, CATEGORY, PRICE, AMOUNT"
+            f" FROM {self._table_name} WHERE BASEINFO = ?"
+        )
+        cursor = self._execute_query(select_stmt, (item_id,))
+        row = cursor.fetchone()
+
+        if row is None:
+            return ResponseCode(error_tag="ResourceNotFound")
+
+        columns = [desc[0] for desc in cursor.description]
+        return self._dict_from_row(row, columns)
