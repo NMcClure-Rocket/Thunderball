@@ -1,6 +1,3 @@
-# Copyright (C) 2025 Team White
-# Licensed under the MIT License
-# See LICENSE for more details
 """Data Access Object for the USER18.INVENTORY DB2 table."""
 
 from typing import Any, Dict, List
