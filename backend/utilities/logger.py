@@ -96,8 +96,24 @@ class LoggerFactory:
                 with open(path, 'w', encoding='utf-8'):
                     pass
 
-        config_path = os.path.join(base_dir, 'configs', 'logging_config.yaml')
-        with open(config_path, 'r', encoding='utf-8') as f:
+        # Try known config locations; fallback to basicConfig if no YAML exists.
+        candidate_paths = [
+            os.path.join(base_dir, 'configs', 'logging_config.yaml'),
+            os.path.join(base_dir, 'config', 'logging_config.yaml'),
+            os.path.join(os.path.dirname(base_dir), 'config', 'logging_config.yaml'),
+        ]
+        config_path = next((p for p in candidate_paths if os.path.exists(p)), None)
+
+        if config_path is None:
+            logging.basicConfig(
+                level=logging.INFO,
+                format='%(asctime)s %(levelname)s %(name)s %(message)s'
+            )
+            LoggerFactory._use_smart_logger = False
+            LoggerFactory._initialized = True
+            return
+
+        with open(config_path, 'r') as f:
             config = yaml.safe_load(f)
 
         LoggerFactory._use_smart_logger = config.get("use_smart_logger", True)

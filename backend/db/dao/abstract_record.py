@@ -143,12 +143,12 @@ class DatabaseAccessObject(ABC):
         '''
         return entry  #Default: no changes
 
-    def set_credentials(self, credentials: Credentials) -> None:
+    def set_credentials(self, credentials: Any) -> None:
         '''
         Sets the current credentials of the DAO
 
         Args:
-            credentials (Credentials): the credentials given by the authorization server to use for role-based access control
+            credentials (Any): the credentials given by the authorization server to use for role-based access control
         '''
         self.__credentials = credentials
 
