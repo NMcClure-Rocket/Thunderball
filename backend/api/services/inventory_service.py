@@ -31,7 +31,7 @@ _inventory = [
             "description": "...",
             "format": "PDF",
             "potency": 7,
-            "reusable": "0",
+            "reusable": "",
             "category": "Conjuration",
             "price": 277.55,
             "amount": 3,

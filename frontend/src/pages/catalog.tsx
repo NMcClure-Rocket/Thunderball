@@ -31,11 +31,12 @@ export default function Catalog() {
         });
 
         if (response.status === 200) {
-          const data = await response.json();
+          let data = await response.json();
           console.log("Raw response:", data);
+          data = JSON.parse(data);
           
-          // Handle both array and object responses
-          const productArray = Array.isArray(data) ? data : data.items || [];
+          // Extract items from the response object
+          const productArray = data.items && Array.isArray(data.items) ? data.items : [];
           console.log("Products array:", productArray);
           
           setProducts(productArray);
