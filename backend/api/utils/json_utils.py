@@ -16,11 +16,9 @@ def baseprice_json(rows: List[Any]) -> str:
         A JSON string with a top-level "items" key.
     """
     inner_json = []
-    print(rows)
     for row in rows:
         r = list(row)
         json_row = {"id": r[0], "name": r[1], "price": float(r[2]), "image": r[3]}
-        print(json_row)
         inner_json.append(json_row)
 
     return json.dumps({"items": inner_json})

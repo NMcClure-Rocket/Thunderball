@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
 import Navbar from './Navbar';
+import Footer from './Footer';
 import Main from '../pages/main';
 import Catalog from '../pages/catalog';
 import Checkout from '../pages/checkout';
@@ -9,7 +10,7 @@ import ShoppingCart from '../pages/shopping-cart';
 
 export default function MainApp({ onLogout }: { onLogout: () => void }) {
   return (
-    <div>
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', backgroundColor: 'var(--color-bg)' }}>
       <Navbar onLogout={onLogout} />
       <Routes>
         <Route path="/" element={<Main />} />

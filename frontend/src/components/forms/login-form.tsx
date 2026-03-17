@@ -63,11 +63,19 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
   };
 // type="email" <----- PUT THIS IN THE EMAIL INPUT BOX (LINE 72)
   return (
-    <div style={{ padding: '20px', maxWidth: '400px', margin: '50px auto' }}>
-      <h1>Login</h1>
+    <div style={{
+      padding: '40px',
+      maxWidth: '420px',
+      margin: '80px auto',
+      backgroundColor: 'var(--color-surface)',
+      borderRadius: '8px',
+      border: '1px solid var(--color-border)',
+      boxShadow: '0 4px 16px rgba(30,50,112,0.12)',
+    }}>
+      <h1 style={{ color: 'var(--font-dark)', marginTop: 0 }}>Login</h1>
       <form onSubmit={handleSubmit}>
         <div style={{ marginBottom: '15px' }}>
-          <label>
+          <label style={{ color: 'var(--font-dark)', fontWeight: 600 }}>
             Email:
             <input
 
@@ -80,7 +88,7 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
         </div>
 
         <div style={{ marginBottom: '15px' }}>
-          <label>
+          <label style={{ color: 'var(--font-dark)', fontWeight: 600 }}>
             Password:
             <input
               type="password"

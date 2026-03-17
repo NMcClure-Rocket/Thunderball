@@ -1,0 +1,47 @@
+/* ================================================================
+   theme.css  —  Thunderball brand color tokens
+   Palette derived from the wizard-books logo:
+     Navy   #1e3270   wizard hat / bottom book  (primary)
+     Orange #e8880a   top book / amber          (secondary / CTA)
+     Purple #7b3fa0   middle book               (accent)
+     Gold   #f5c518   stars & sparkles          (highlight)
+
+   Import this file once — it is @imported at the top of index.css.
+   Use these variables everywhere instead of raw hex values.
+   ================================================================ */
+
+:root {
+  /* ── Raw brand palette ───────────────────────────────────── */
+  --color-navy:   #1e3270;
+  --color-orange: #e8880a;
+  --color-purple: #7b3fa0;
+  --color-gold:   #f5c518;
+
+  /* ── Semantic aliases ────────────────────────────────────── */
+  --color-primary:         var(--color-navy);
+  --color-primary-hover:   #162458;
+  --color-secondary:       var(--color-orange);
+  --color-secondary-hover: #c97409;
+  --color-accent:          var(--color-purple);
+  --color-highlight:       var(--color-gold);
+
+  /* ── Surfaces ────────────────────────────────────────────── */
+  --color-bg:      #f5f3ef;
+  --color-surface: #ffffff;
+  --color-border:  #c9c4e0;
+
+  /* ── Font contrast tiers ─────────────────────────────────── */
+  /* Use these to guarantee legibility against any background:  */
+  --font-light:  #f0eeff;   /* on dark surfaces: navy, purple, orange */
+  --font-medium: #5a557a;   /* on card / surface backgrounds         */
+  --font-dark:   #1a1040;   /* on light / white / bg-color surfaces  */
+
+  /* ── Text ────────────────────────────────────────────────── */
+  --color-text:         var(--font-dark);
+  --color-text-muted:   var(--font-medium);
+  --color-text-on-dark: var(--font-light);
+
+  /* ── Status ──────────────────────────────────────────────── */
+  --color-danger:  #c0392b;
+  --color-success: #1e7a3d;
+}
