@@ -9,17 +9,17 @@ clidriver_crt = clidriver_bin / "amd64.VC12.CRT"
 os.add_dll_directory(str(clidriver_bin))
 os.environ["PATH"] = str(clidriver_crt) + ";" + os.environ.get("PATH", "")
 
-import ibm_db
-import ibm_db_dbi
+import ibm_db  # noqa: E402
+import ibm_db_dbi  # noqa: E402
 
 conn_str = (
-    f"DATABASE=HL02HL2D;"
-    f"HOSTNAME=192.168.54.250;"
-    f"PORT=3600;"
-    f"PROTOCOL=TCPIP;"
-    f"AUTHENTICATION=SERVER;"
-    f"UID=USER12;"
-    f"PWD=35LLBAE_;"
+    "DATABASE=HL02HL2D;"
+    "HOSTNAME=192.168.54.250;"
+    "PORT=3600;"
+    "PROTOCOL=TCPIP;"
+    "AUTHENTICATION=SERVER;"
+    "UID=USER12;"
+    "PWD=35LLBAE_;"
 )
 
 try:

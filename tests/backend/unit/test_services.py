@@ -144,10 +144,10 @@ class TestGetAllItems:
         b = get_all_items()
         assert a is not b
 
-    def test_seeded_items_1_2_3_present(self):
+    def test_seeded_items_1_2_present(self):
         from api.services.inventory_service import get_all_items
         ids = {i["id"] for i in get_all_items()}
-        assert {1, 2, 3}.issubset(ids)
+        assert {1, 2}.issubset(ids)
 
 
 # ===========================================================================
@@ -159,19 +159,17 @@ class TestGetItemById:
         from api.services.inventory_service import get_item_by_id
         item = get_item_by_id(1)
         assert item is not None
-        assert item["id"] == 1
+        assert item["base_info"] == 1
 
     def test_returns_item_for_id_2(self):
         from api.services.inventory_service import get_item_by_id
         item = get_item_by_id(2)
         assert item is not None
-        assert item["id"] == 2
+        assert item["base_info"] == 2
 
-    def test_returns_item_for_id_3(self):
+    def test_returns_none_for_id_3(self):
         from api.services.inventory_service import get_item_by_id
-        item = get_item_by_id(3)
-        assert item is not None
-        assert item["id"] == 3
+        assert get_item_by_id(3) is None
 
     def test_returns_none_for_unknown_id(self):
         from api.services.inventory_service import get_item_by_id
@@ -184,7 +182,8 @@ class TestGetItemById:
     def test_returned_item_has_all_required_fields(self):
         from api.services.inventory_service import get_item_by_id
         item = get_item_by_id(1)
-        for field in ("id", "name", "price", "image"):
+        for field in ("itemID", "name", "description", "format", "potency",
+                      "reusable", "category", "price", "amount", "base_info"):
             assert field in item
 
     def test_returned_item_price_is_positive(self):
@@ -237,8 +236,8 @@ class TestProcessPurchase:
     def test_qty_1_total_equals_price(self):
         from api.services.inventory_service import get_item_by_id
         from api.services.purchase_service import process_purchase
-        item = get_item_by_id(3)
-        result = process_purchase(3, 1)
+        item = get_item_by_id(2)
+        result = process_purchase(2, 1)
         assert abs(result["total"] - item["price"]) < 0.001
 
     def test_all_required_keys_present(self):

@@ -10,7 +10,7 @@ import ibm_db_dbi
 
 from utilities.logger import LoggerFactory
 from utilities.error_handler import ResponseCode
-from entities.credentials_entity import Credentials
+
 
 def rbac_action(action: str) -> Callable:  # pylint: disable=unused-argument
     '''
@@ -56,6 +56,7 @@ def rbac_action(action: str) -> Callable:  # pylint: disable=unused-argument
 #             data = f"DatabaseError: {error_tag} - {error_msg}"
 #             return ResponseCode(error_tag=error_tag, data=data)
 #     return wrapper
+
 
 class DatabaseAccessObject(ABC):
     '''
@@ -129,8 +130,7 @@ class DatabaseAccessObject(ABC):
             self.__logger.error(f"Database error executing query: {str(e)}")
             raise
 
-
-    #Hook method; this should set any default field values; just override it
+    # Hook method; this should set any default field values; just override it
     def _prepare_entry(self, entry: dict[str, Any]) -> dict[str, Any]:
         '''
         Hooks to a function and overrides to give default values for MongoDB documents
@@ -141,7 +141,7 @@ class DatabaseAccessObject(ABC):
         Returns:
             entry (dict[str, Any]): the entry after processing (usually defining a default field)
         '''
-        return entry  #Default: no changes
+        return entry  # Default: no changes
 
     def set_credentials(self, credentials: Any) -> None:
         '''
@@ -157,7 +157,6 @@ class DatabaseAccessObject(ABC):
         Clears any set credentials by setting the current one t "None"
         '''
         self.__credentials = None
-
 
     @rbac_action("read")
     # @db2_safe
