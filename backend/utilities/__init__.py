@@ -5,7 +5,7 @@ This package contains utility classes and functions for error handling,
 logging, and common operations.
 """
 
-from backend.utilities.error_handler import (
+from utilities.error_handler import (
     ResponseCode,
     ErrorSeverity,
     DB2ErrorCode,

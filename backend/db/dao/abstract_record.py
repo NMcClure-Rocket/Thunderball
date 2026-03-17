@@ -8,9 +8,9 @@ from functools import wraps
 
 import ibm_db_dbi
 
-from backend.utilities.logger import LoggerFactory
-from backend.utilities.error_handler import ResponseCode
-from backend.entities.credentials_entity import Credentials
+from utilities.logger import LoggerFactory
+from utilities.error_handler import ResponseCode
+from entities.credentials_entity import Credentials
 
 def rbac_action(action: str) -> Callable:  # pylint: disable=unused-argument
     '''
@@ -31,31 +31,31 @@ def rbac_action(action: str) -> Callable:  # pylint: disable=unused-argument
         return wrapper
     return decorator
 
-def db2_safe(func):
-    '''
-    Wraps a function to ensure that a ResponseCode is always returned and that the result of a given
-    function is added to data.
+# def db2_safe(func):
+#     '''
+#     Wraps a function to ensure that a ResponseCode is always returned and that the result of a given
+#     function is added to data.
 
-    Args:
-        func (Any): base function to be wrapped
+#     Args:
+#         func (Any): base function to be wrapped
 
-    Returns:
-        wrapper (function): a wrapper that will return a ResponseCode with the error or result of the passed
-        in function
-    '''
-    @wraps(func)
-    def wrapper(*args, **kwargs) -> ResponseCode:
-        try:
-            result = func(*args, **kwargs)
-            if isinstance(result, ResponseCode):
-                return result  #Don't wrap again
-            return ResponseCode("GeneralSuccess", result)
-        except Exception as e:
-            error_tag = e.__class__.__name__
-            error_msg = str(e)
-            data = f"DatabaseError: {error_tag} - {error_msg}"
-            return ResponseCode(error_tag=error_tag, data=data)
-    return wrapper
+#     Returns:
+#         wrapper (function): a wrapper that will return a ResponseCode with the error or result of the passed
+#         in function
+#     '''
+#     @wraps(func)
+#     def wrapper(*args, **kwargs) -> ResponseCode:
+#         try:
+#             result = func(*args, **kwargs)
+#             if isinstance(result, ResponseCode):
+#                 return result  #Don't wrap again
+#             return ResponseCode("GeneralSuccess", result)
+#         except Exception as e:
+#             error_tag = e.__class__.__name__
+#             error_msg = str(e)
+#             data = f"DatabaseError: {error_tag} - {error_msg}"
+#             return ResponseCode(error_tag=error_tag, data=data)
+#     return wrapper
 
 class DatabaseAccessObject(ABC):
     '''
@@ -160,7 +160,7 @@ class DatabaseAccessObject(ABC):
 
 
     @rbac_action("read")
-    @db2_safe
+    # @db2_safe
     def get_by_key(self, ID: str) -> ResponseCode:
         '''
         Return DB2 record by primary key
@@ -186,7 +186,7 @@ class DatabaseAccessObject(ABC):
         return self._dict_from_row(row, columns)
 
     @rbac_action("read")
-    @db2_safe
+    # @db2_safe
     def get_by_fields(self, filter: dict[str, Any]) -> ResponseCode:
         '''
         Return DB2 records by given fields
@@ -218,7 +218,7 @@ class DatabaseAccessObject(ABC):
         return [self._dict_from_row(row, columns) for row in rows]
 
     @rbac_action("read")
-    @db2_safe
+    # @db2_safe
     def get_all_records(self, limit: int = None) -> ResponseCode:
         '''
         Return all (or the first x) DB2 records from a table
@@ -242,11 +242,12 @@ class DatabaseAccessObject(ABC):
         if not rows:
             return ResponseCode(error_tag="ResourceNotFound")
 
-        columns = [desc[0] for desc in cursor.description]
-        return [self._dict_from_row(row, columns) for row in rows]
+        # columns = [desc[0] for desc in cursor.description]
+        # return [self._dict_from_row(row, columns) for row in rows]
+        return rows
 
     @rbac_action("read")
-    @db2_safe
+    # @db2_safe
     def get_random(self, numReturned: int = 1, filter: dict[str, Any] = None) -> ResponseCode:
         '''
         Return a set number of random records given an optional filter
@@ -286,7 +287,7 @@ class DatabaseAccessObject(ABC):
         return [self._dict_from_row(row, columns) for row in rows]
 
     @rbac_action("read")
-    @db2_safe
+    # @db2_safe
     def get_short_record(self, numReturned: int, filter: dict[str, Any] = None,
                          max_length: int = 80, content_column: str = "CONTENT") -> ResponseCode:
         '''
@@ -337,7 +338,7 @@ class DatabaseAccessObject(ABC):
         return [self._dict_from_row(row, columns) for row in rows]
 
     @rbac_action("update")
-    @db2_safe
+    # @db2_safe
     def update_record(self, ID: str, updates: dict[str, Any]) -> ResponseCode:
         '''
         Updates a record with the given ID and updates
@@ -375,7 +376,7 @@ class DatabaseAccessObject(ABC):
         return ID
 
     @rbac_action("create")
-    @db2_safe
+    # @db2_safe
     def create_record(self, entry: dict[str, Any]) -> ResponseCode:
         '''
         Creates a record with the entry data given
@@ -407,7 +408,7 @@ class DatabaseAccessObject(ABC):
         return ResponseCode("PostSuccess", str(entry))
 
     @rbac_action("delete")
-    @db2_safe
+    # @db2_safe
     def delete_record(self, ID: str) -> ResponseCode:
         '''
         Deletes a record with the given primary key
@@ -432,7 +433,7 @@ class DatabaseAccessObject(ABC):
         return {"deleted_count": cursor.rowcount if cursor.rowcount else 0}
 
     @rbac_action("delete")
-    @db2_safe
+    # @db2_safe
     def delete_record_by_field(self, filter: dict[str, Any]) -> ResponseCode:
         '''
         Deletes records matching the given filter

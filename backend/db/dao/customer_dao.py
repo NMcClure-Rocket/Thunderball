@@ -5,7 +5,7 @@
 
 from typing import Any, Dict, List
 import ibm_db_dbi
-from backend.db.dao.abstract_record import DatabaseAccessObject
+from db.dao.abstract_record import DatabaseAccessObject
 
 
 class CustomerDAO(DatabaseAccessObject):
