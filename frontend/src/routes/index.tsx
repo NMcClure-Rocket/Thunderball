@@ -4,7 +4,8 @@ import Catalog from '../pages/catalog';
 import Checkout from '../pages/checkout';
 import CreateAccount from '../pages/create-acc';
 import OrderHistory from '../pages/order-hist';
-import Login from '../components/Login';
+import ShoppingCart from '../pages/shopping-cart';
+//import Login from '../components/Login';
 
 export default function AppRoutes() {
   return (
@@ -14,7 +15,7 @@ export default function AppRoutes() {
       <Route path="/checkout" element={<Checkout />} />
       <Route path="/create-account" element={<CreateAccount />} />
       <Route path="/order-history" element={<OrderHistory />} />
-      <Route path="/login" element={<Login />} />
+      <Route path="/shopping-cart" element={<ShoppingCart />} />
     </Routes>
   );
 }
