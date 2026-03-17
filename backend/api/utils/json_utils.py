@@ -40,14 +40,15 @@ def inventory_json(rows: List[Any]) -> str:
     for row in rows:
         r = list(row)
         json_row = {
-            "name": r[0],
-            "description": r[1],
-            "format": r[2],
-            "potency": r[3],
-            "reusable": r[4],
-            "category": r[5],
-            "price": float(r[6]),
-            "amount": r[7],
+            "itemid": r[0],
+            "name": r[1],
+            "description": r[2],
+            "format": r[3],
+            "potency": r[4],
+            "reusable": r[5],
+            "category": r[6],
+            "price": float(r[7]),
+            "amount": r[8],
         }
         inner_json.append(json_row)
 
