@@ -11,8 +11,8 @@ export default function OrderHistoryEntry({ orderId }: OrderHistoryEntryProps) {
   const [address, setAddress] = useState<string>('');
   const [quantity, setQuantity] = useState<string>('');
 
-  const fnames = ["Sam", "Joe", "Tom", "Matthew", "Trevor"];
-  const lnames = ["Darnold", "Flacco", "Brady", "Stafford", "Lawrence"];
+  const fnames = ["Sam", "Joe", "Tom", "Matthew", "Trevor", "Fred"];
+  const lnames = ["Darnold", "Flacco", "Brady", "Stafford", "Lawrence", "Tagovailoa"];
 
   const streets = ["Main St", "Oak Ave", "Elm Street", "Pine Road", "Maple Drive", "Cedar Lane"];
   const cities = ["Springfield", "Shelbyville", "Capital City", "Gotham", "Metropolis", "Smallville"];
