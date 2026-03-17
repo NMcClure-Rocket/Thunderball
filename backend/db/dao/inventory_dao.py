@@ -2,7 +2,7 @@
 
 from typing import Any, Dict, List
 import ibm_db_dbi
-from db.dao.abstract_record import DatabaseAccessObject, db2_safe, rbac_action
+from db.dao.abstract_record import DatabaseAccessObject, rbac_action
 from utilities.error_handler import ResponseCode
 
 
@@ -44,7 +44,6 @@ class InventoryDAO(DatabaseAccessObject):
         return dict(zip(columns, row))
 
     @rbac_action("read")
-    @db2_safe
     def get_item_by_baseinfo(self, item_id: str):
         '''
         Retrieves inventory item details by BASEINFO identifier.

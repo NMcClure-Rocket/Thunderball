@@ -219,7 +219,7 @@ class DatabaseAccessObject(ABC):
 
     @rbac_action("read")
     # @db2_safe
-    def get_all_records(self, limit: int = None) -> ResponseCode:
+    def get_all_records(self, limit: int = None) -> List[Any]:
         '''
         Return all (or the first x) DB2 records from a table
 
@@ -227,8 +227,7 @@ class DatabaseAccessObject(ABC):
             limit (int optional): an integer that determines the number of records to return. By default, it is set to None and returns the entire set
 
         Returns:
-            ResponseCode (ResponseCode): After being wrapped, it will return a ResponseCode with the
-            records from the table as a list of dictionaries
+            List[Any]: List of rows within the database for the given query.
         '''
         self.__logger.debug(f"Getting all {self.__class__.__name__} records with limit {limit}.")
 
@@ -239,8 +238,8 @@ class DatabaseAccessObject(ABC):
         cursor = self._execute_query(query)
         rows = cursor.fetchall()
 
-        if not rows:
-            return ResponseCode(error_tag="ResourceNotFound")
+        # if not rows:
+        #     return ResponseCode(error_tag="ResourceNotFound")
 
         # columns = [desc[0] for desc in cursor.description]
         # return [self._dict_from_row(row, columns) for row in rows]
