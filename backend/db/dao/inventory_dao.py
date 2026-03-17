@@ -19,7 +19,7 @@ class InventoryDAO(DatabaseAccessObject):
         Args:
             connection (ibm_db_dbi.Connection): The DB2 connection object
         '''
-        super().__init__("USER18.INVENTORY", connection)
+        super().__init__("USER12.INVENTORY", connection)
 
     def _get_primary_key(self) -> str:
         '''
@@ -44,8 +44,7 @@ class InventoryDAO(DatabaseAccessObject):
         return dict(zip(columns, row))
 
     @rbac_action("read")
-    # @db2_safe
-    def get_item_by_baseinfo(self, item_id: str):
+    def get_item_by_baseinfo(self, item_id: int) -> List[Any]:
         '''
         Retrieves inventory item details by BASEINFO identifier.
 
@@ -60,14 +59,15 @@ class InventoryDAO(DatabaseAccessObject):
                           or a ResourceNotFound ResponseCode if no record exists.
         '''
         select_stmt = (
-            f"SELECT NAME, DESCRIPTION, FORMAT, POTENCY, REUSABLE, CATEGORY, PRICE, AMOUNT"
+            f"SELECT ITEMID, NAME, DESCRIPTION, FORMAT, POTENCY, REUSABLE, CATEGORY, PRICE, AMOUNT"
             f" FROM {self._table_name} WHERE BASEINFO = ?"
         )
         cursor = self._execute_query(select_stmt, (item_id,))
-        row = cursor.fetchone()
+        rows = cursor.fetchall()
 
-        if row is None:
-            return ResponseCode(error_tag="ResourceNotFound")
+        # if row is None:
+        #     return ResponseCode(error_tag="ResourceNotFound")
 
-        columns = [desc[0] for desc in cursor.description]
-        return self._dict_from_row(row, columns)
+        # columns = [desc[0] for desc in cursor.description]
+        # return self._dict_from_row(row, columns)
+        return rows
