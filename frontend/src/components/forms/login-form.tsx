@@ -8,14 +8,52 @@ interface LoginFormProps {
 export default function LoginForm({ onLogin }: LoginFormProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const navigate = useNavigate();
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const baseURL = "http://localhost:8000";
+  
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email && password) {
-      onLogin();
-    } else {
-      alert('Please fill in all fields');
+    setError('');
+    setLoading(true);
+
+    // Validation
+    if (!email || !password) {
+      setError('Please fill in all fields');
+      setLoading(false);
+      return;
+    }
+
+    try {
+      // Call the POST /logon endpoint
+      const response = await fetch(`${baseURL}/logon`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user: email,
+          pass: password
+        })
+      });
+        console.log(response)
+      // Check if response is successful
+      if (response.status === 200) {
+        const data = await response.json();
+        console.log('Login successful:', data);
+        onLogin();
+      } else if (response.status === 401) {
+        const data = await response.json();
+        setError(data.status || 'Invalid credentials');
+      } else {
+        setError('An error occurred. Please try again.');
+      }
+    } catch (err) {
+      console.error('Error during login:', err);
+      setError('Failed to connect to server');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -42,7 +80,8 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              style={{ display: 'block', marginTop: '5px', padding: '8px', width: '100%', boxSizing: 'border-box', border: '1px solid var(--color-border)', borderRadius: '4px' }}
+              disabled={loading}
+              style={{ display: 'block', marginTop: '5px', padding: '8px', width: '100%', boxSizing: 'border-box' }}
             />
           </label>
         </div>
@@ -54,51 +93,57 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              style={{ display: 'block', marginTop: '5px', padding: '8px', width: '100%', boxSizing: 'border-box', border: '1px solid var(--color-border)', borderRadius: '4px' }}
+              disabled={loading}
+              style={{ display: 'block', marginTop: '5px', padding: '8px', width: '100%', boxSizing: 'border-box' }}
             />
           </label>
         </div>
 
+        {error && (
+          <div style={{
+            marginBottom: '15px',
+            padding: '10px',
+            backgroundColor: '#f8d7da',
+            color: '#721c24',
+            borderRadius: '4px',
+            border: '1px solid #f5c6cb'
+          }}>
+            {error}
+          </div>
+        )}
+
         <button
           type="submit"
+          disabled={loading}
           style={{
             padding: '10px 20px',
-            backgroundColor: 'transparent',
-            color: 'var(--color-secondary)',
-            border: '2px solid var(--color-secondary)',
-            cursor: 'pointer',
+            backgroundColor: loading ? '#6c757d' : '#007bff',
+            color: 'white',
+            border: 'none',
+            cursor: loading ? 'not-allowed' : 'pointer',
             width: '100%',
             marginBottom: '10px',
-            borderRadius: '20px',
-            fontWeight: 700,
-            fontSize: '1rem',
-            outline: 'none',
-            transition: 'background-color 0.2s, color 0.2s',
+            borderRadius: '4px',
+            opacity: loading ? 0.6 : 1
           }}
-          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.backgroundColor = 'var(--color-secondary)'; (e.currentTarget as HTMLButtonElement).style.color = 'var(--font-light)'; }}
-          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.backgroundColor = 'transparent'; (e.currentTarget as HTMLButtonElement).style.color = 'var(--color-secondary)'; }}
         >
-          Login
+          {loading ? 'Logging in...' : 'Submit'}
         </button>
       </form>
 
       <button
         onClick={handleCreateAccount}
+        disabled={loading}
         style={{
           padding: '10px 20px',
-          backgroundColor: 'transparent',
-          color: 'var(--color-accent)',
-          border: '2px solid var(--color-accent)',
-          cursor: 'pointer',
+          backgroundColor: '#28a745',
+          color: 'white',
+          border: 'none',
+          cursor: loading ? 'not-allowed' : 'pointer',
           width: '100%',
-          borderRadius: '20px',
-          fontWeight: 600,
-          fontSize: '1rem',
-          outline: 'none',
-          transition: 'background-color 0.2s, color 0.2s',
+          borderRadius: '4px',
+          opacity: loading ? 0.6 : 1
         }}
-        onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.backgroundColor = 'var(--color-accent)'; (e.currentTarget as HTMLButtonElement).style.color = 'var(--font-light)'; }}
-        onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.backgroundColor = 'transparent'; (e.currentTarget as HTMLButtonElement).style.color = 'var(--color-accent)'; }}
       >
         Create Account
       </button>
