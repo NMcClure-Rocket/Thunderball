@@ -19,7 +19,7 @@ class InventoryDAO(DatabaseAccessObject):
         Args:
             connection (ibm_db_dbi.Connection): The DB2 connection object
         '''
-        super().__init__("USER18.INVENTORY", connection)
+        super().__init__("USER12.INVENTORY", connection)
 
     def _get_primary_key(self) -> str:
         '''
@@ -59,11 +59,11 @@ class InventoryDAO(DatabaseAccessObject):
                           or a ResourceNotFound ResponseCode if no record exists.
         '''
         select_stmt = (
-            f"SELECT NAME, DESCRIPTION, FORMAT, POTENCY, REUSABLE, CATEGORY, PRICE, AMOUNT"
+            f"SELECT ITEMID, NAME, DESCRIPTION, FORMAT, POTENCY, REUSABLE, CATEGORY, PRICE, AMOUNT"
             f" FROM {self._table_name} WHERE BASEINFO = ?"
         )
         cursor = self._execute_query(select_stmt, (item_id,))
-        rows = cursor.fetchone()
+        rows = cursor.fetchall()
 
         # if row is None:
         #     return ResponseCode(error_tag="ResourceNotFound")

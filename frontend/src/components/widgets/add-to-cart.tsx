@@ -10,7 +10,7 @@ interface AddToCartProps {
 
 export interface CartItem {
   itemId: string;
-  priceId: string;
+  //priceId: string;
   name: string;
   description: string;
   format: string;
@@ -30,7 +30,7 @@ interface BasePriceItem {
 }
 
 interface InventoryItem {
-  itemID: number;
+  itemid: number;
   name: string;
   description: string;
   format: string;
@@ -74,10 +74,20 @@ export default function AddToCart({ priceId, onClose, onAddToCart }: AddToCartPr
           throw new Error('Failed to fetch inventory');
         }
 
-        const data = await response.json();
+        let data = await response.json();
         console.log("Inventory data:", data);
+        data = JSON.parse(data);
 
-        const items = Array.isArray(data) ? data : (data.items || []);
+        // Handle different response formats
+        let items = [];
+        if (Array.isArray(data)) {
+          items = data;
+        } else if (data.items && Array.isArray(data.items)) {
+          items = data.items;
+        } else if (data.rows && Array.isArray(data.rows)) {
+          items = data.rows;  // ✅ Handle {"rows": [...]} format
+        }
+        //const items = Array.isArray(data) ? data : (data.items || []);
         console.log("Items array:", items);
         
         if (items.length === 0) {
@@ -151,8 +161,8 @@ export default function AddToCart({ priceId, onClose, onAddToCart }: AddToCartPr
     }
 
     const cartItem: CartItem = {
-      itemId: selectedItem.itemID.toString(),
-      priceId: baseItem.id.toString(),
+      itemId: selectedItem.itemid.toString(),
+      //priceId: baseItem.id.toString(),
       name: selectedItem.name,
       description: selectedItem.description,
       format: selectedItem.format,
