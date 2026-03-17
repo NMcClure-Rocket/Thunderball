@@ -3,7 +3,7 @@ FastAPI main application entrypoint
 """
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from server import router
+from api.server import router
 import logging
 
 # Configure logging
