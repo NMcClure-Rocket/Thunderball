@@ -114,13 +114,13 @@ def test_get_inventory_item_all_seeded_ids_exist(client):
 # ===========================================================================
 
 def test_logon_returns_200(client):
-    assert client.post("/logon", json={"user": "alice", "pass": "secret"}).status_code == 200
+    assert client.post("/logon", json={"user": "jdoe", "pass": "mypassword"}).status_code == 200
 
 
 def test_logon_echoes_user(client):
-    body = client.post("/logon", json={"user": "alice", "pass": "secret"}).json()
+    body = client.post("/logon", json={"user": "jdoe", "pass": "mypassword"}).json()
     assert body["status"] == "ok"
-    assert body["user"] == "alice"
+    assert body["user"] == "jdoe"
 
 
 def test_logon_missing_fields_returns_422(client):
@@ -140,11 +140,11 @@ def test_logon_missing_user_returns_422(client):
 # ===========================================================================
 
 def test_purchase_returns_200(client):
-    assert client.post("/purchase", json={"itemId": 1, "qty": 2}).status_code == 200
+    assert client.post("/purchase", json={"itemId": 1, "qty": 2, "customerid": 1, "addressid": 1, "ccid": 1}).status_code == 200
 
 
 def test_purchase_payload_shape(client):
-    body = client.post("/purchase", json={"itemId": 1, "qty": 2}).json()
+    body = client.post("/purchase", json={"itemId": 1, "qty": 2, "customerid": 1, "addressid": 1, "ccid": 1}).json()
     assert body["status"] == "ok"
     assert "orderId" in body
     assert body["item"] is not None
@@ -155,29 +155,29 @@ def test_purchase_payload_shape(client):
 def test_purchase_total_is_price_times_qty(client):
     inventory = client.get("/inventory").json()["items"]
     item = next(i for i in inventory if i["id"] == 1)
-    body = client.post("/purchase", json={"itemId": 1, "qty": 3}).json()
+    body = client.post("/purchase", json={"itemId": 1, "qty": 3, "customerid": 1, "addressid": 1, "ccid": 1}).json()
     assert abs(body["total"] - item["price"] * 3) < 0.001
 
 
 def test_purchase_qty_zero_returns_400(client):
-    assert client.post("/purchase", json={"itemId": 1, "qty": 0}).status_code == 400
+    assert client.post("/purchase", json={"itemId": 1, "qty": 0, "customerid": 1, "addressid": 1, "ccid": 1}).status_code == 400
 
 
 def test_purchase_negative_qty_returns_400(client):
-    assert client.post("/purchase", json={"itemId": 1, "qty": -5}).status_code == 400
+    assert client.post("/purchase", json={"itemId": 1, "qty": -5, "customerid": 1, "addressid": 1, "ccid": 1}).status_code == 400
 
 
 def test_purchase_qty_error_detail(client):
-    body = client.post("/purchase", json={"itemId": 1, "qty": 0}).json()
+    body = client.post("/purchase", json={"itemId": 1, "qty": 0, "customerid": 1, "addressid": 1, "ccid": 1}).json()
     assert body["detail"] == "qty must be >= 1"
 
 
 def test_purchase_unknown_item_returns_404(client):
-    assert client.post("/purchase", json={"itemId": 9999, "qty": 1}).status_code == 404
+    assert client.post("/purchase", json={"itemId": 9999, "qty": 1, "customerid": 1, "addressid": 1, "ccid": 1}).status_code == 404
 
 
 def test_purchase_unknown_item_detail(client):
-    body = client.post("/purchase", json={"itemId": 9999, "qty": 1}).json()
+    body = client.post("/purchase", json={"itemId": 9999, "qty": 1, "customerid": 1, "addressid": 1, "ccid": 1}).json()
     assert body["detail"] == "item not found"
 
 
