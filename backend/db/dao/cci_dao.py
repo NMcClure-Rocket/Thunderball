@@ -1,7 +1,7 @@
 """Data Access Object for the USER18.CCI (Credit Card Information) DB2 table."""
 
 from typing import Any, Dict, List
-import ibm_db_dbi
+import ibm_db_dbi  # type: ignore[import-untyped]
 from db.dao.abstract_record import DatabaseAccessObject
 
 

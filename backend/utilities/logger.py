@@ -4,7 +4,7 @@ import logging
 import logging.config
 import os
 
-import yaml
+import yaml  # type: ignore[import-untyped]
 
 #Ensures logging security so that malicious user cannot define a new path
 ALLOWED_LOG_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "logs"))
@@ -130,7 +130,7 @@ class LoggerFactory:
         LoggerFactory._initialized = True
 
     @staticmethod
-    def get_general_logger() -> logging.Logger:
+    def get_general_logger() -> "_SmartLogger | logging.Logger":
         '''
         Returns the general logger. First initalizes LoggerFactory if not already initialized
 
@@ -146,7 +146,7 @@ class LoggerFactory:
         return LoggerFactory._general_logger
 
     @staticmethod
-    def get_security_logger() -> logging.Logger:
+    def get_security_logger() -> "_SmartLogger | logging.Logger":
         '''
         Returns the security logger. First initalizes LoggerFactory if not already initialized
 

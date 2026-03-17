@@ -6,7 +6,7 @@ from enum import Enum
 from typing import Optional, Any, Dict
 from datetime import datetime
 
-import ibm_db
+import ibm_db  # type: ignore[import-untyped]
 
 from utilities.logger import LoggerFactory
 
@@ -112,7 +112,7 @@ class ResponseCode:
             DB2ErrorCode.LOCK_TIMEOUT.value: "Lock timeout waiting for resource",
             DB2ErrorCode.PERMISSION_DENIED.value: "Insufficient database permissions",
         }
-        return messages.get(error_tag, f"Error: {error_tag}")
+        return messages.get(error_tag or "", f"Error: {error_tag}")
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert ResponseCode to dictionary for JSON serialization"""
@@ -397,7 +397,7 @@ class OperationResult:
             response_code (ResponseCode): The response code for this operation
         """
         self.response_code = response_code
-        self.operations = []
+        self.operations: list = []
 
     def is_successful(self) -> bool:
         """Check if operation was successful"""

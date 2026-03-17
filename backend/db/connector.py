@@ -6,11 +6,12 @@ venv_path = project_root / ".venv" / "Lib" / "site-packages" / "clidriver"
 clidriver_bin = venv_path / "bin"
 clidriver_crt = clidriver_bin / "amd64.VC12.CRT"
 
-os.add_dll_directory(str(clidriver_bin))
+if hasattr(os, "add_dll_directory"):
+    os.add_dll_directory(str(clidriver_bin))  # type: ignore[attr-defined]
 os.environ["PATH"] = str(clidriver_crt) + ";" + os.environ.get("PATH", "")
 
-import ibm_db  # noqa: E402
-import ibm_db_dbi  # noqa: E402
+import ibm_db  # noqa: E402  # type: ignore[import-untyped]
+import ibm_db_dbi  # noqa: E402  # type: ignore[import-untyped]
 
 conn_str = (
     "DATABASE=HL02HL2D;"
