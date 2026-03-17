@@ -88,7 +88,7 @@ export default function CreateAccountForm() {
             <label>
               Email:
               <input
-                type="email"
+                
                 name="email"
                 value={formData.email}
                 onChange={handleChange}

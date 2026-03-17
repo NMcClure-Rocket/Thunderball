@@ -1,6 +1,6 @@
 """Inventory routes."""
 from fastapi import APIRouter, HTTPException
-from api.services.inventory_service import get_all_items, get_item_by_id
+from api.services.inventory_service import get_all_items_by_id, get_all_items, get_item_by_id
 
 router = APIRouter()
 
@@ -12,7 +12,7 @@ async def get_inventory():
 
 @router.get("/inventory/{item_id}")
 async def get_inventory_item(item_id: int):
-    item = get_item_by_id(item_id)
+    item = get_all_items_by_id(item_id)
     if not item:
         raise HTTPException(status_code=404, detail="item not found")
     return item

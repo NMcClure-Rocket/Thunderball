@@ -42,6 +42,7 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
       if (response.status === 200) {
         const data = await response.json();
         console.log('Login successful:', data);
+        localStorage.removeItem('cart');
         onLogin();
       } else if (response.status === 401) {
         const data = await response.json();
@@ -60,7 +61,7 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
   const handleCreateAccount = () => {
     navigate('/create-account');
   };
-
+// type="email" <----- PUT THIS IN THE EMAIL INPUT BOX (LINE 72)
   return (
     <div style={{ padding: '20px', maxWidth: '400px', margin: '50px auto' }}>
       <h1>Login</h1>
@@ -69,7 +70,7 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
           <label>
             Email:
             <input
-              type="email"
+
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={loading}
