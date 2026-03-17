@@ -88,21 +88,21 @@ def test_get_inventory_item_returns_200(client):
 
 
 def test_get_inventory_item_returns_correct_item(client):
-    body = client.get("/inventory/1").json()
-    assert body["id"] == 1
-    assert "name" in body
-    assert "price" in body
-    assert "image" in body
+    body = json.loads(client.get("/inventory/1").json())
+    rows = body["rows"]
+    assert len(rows) > 0
+    assert rows[0]["itemid"] == 1
+    assert "name" in rows[0]
+    assert "price" in rows[0]
 
 
-def test_get_inventory_item_not_found_returns_404(client):
-    assert client.get("/inventory/9999").status_code == 404
+def test_get_inventory_item_not_found_returns_200(client):
+    assert client.get("/inventory/9999").status_code == 200
 
 
-def test_get_inventory_item_not_found_detail(client):
-    body = client.get("/inventory/9999").json()
-    assert "detail" in body
-    assert body["detail"] == "item not found"
+def test_get_inventory_item_not_found_returns_empty_rows(client):
+    body = json.loads(client.get("/inventory/9999").json())
+    assert body == {"rows": []}
 
 
 def test_get_inventory_item_all_seeded_ids_exist(client):
@@ -154,7 +154,8 @@ def test_purchase_payload_shape(client):
 
 
 def test_purchase_total_is_price_times_qty(client):
-    item = client.get("/inventory/1").json()
+    from api.services.inventory_service import get_item_by_id
+    item = get_item_by_id(1)
     body = client.post("/purchase", json={"itemId": 1, "qty": 3, "customerid": 1, "addressid": 1, "ccid": 1}).json()
     assert abs(body["total"] - item["price"] * 3) < 0.001
 

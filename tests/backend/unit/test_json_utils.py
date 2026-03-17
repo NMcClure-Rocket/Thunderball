@@ -9,10 +9,10 @@ from api.utils.json_utils import inventory_json, baseprice_json
 # Helpers
 # ---------------------------------------------------------------------------
 
-def _make_row(name="Fire Spell", description="Burns things", fmt="instant",
+def _make_row(item_id=1, name="Fire Spell", description="Burns things", fmt="instant",
               potency=5, reusable=True, category="offensive",
               price="9.99", amount=10):
-    return (name, description, fmt, potency, reusable, category, price, amount)
+    return (item_id, name, description, fmt, potency, reusable, category, price, amount)
 
 
 # ---------------------------------------------------------------------------
@@ -32,12 +32,13 @@ class TestInventoryJson:
 
     def test_single_row_mapped_correctly(self):
         row = _make_row(
-            name="Ice Spell", description="Freezes", fmt="channel",
+            item_id=99, name="Ice Spell", description="Freezes", fmt="channel",
             potency=3, reusable=False, category="defensive",
             price="14.50", amount=2,
         )
         parsed = json.loads(inventory_json([row]))
         record = parsed["rows"][0]
+        assert record["itemid"] == 99
         assert record["name"] == "Ice Spell"
         assert record["description"] == "Freezes"
         assert record["format"] == "channel"

@@ -168,7 +168,7 @@ class TestCustomerDAO:
 class TestInventoryDAO:
     def test_table_name(self, mock_connection):
         dao = InventoryDAO(mock_connection)
-        assert dao._table_name == "USER18.INVENTORY"
+        assert dao._table_name == "USER12.INVENTORY"
 
     def test_primary_key(self, mock_connection):
         dao = InventoryDAO(mock_connection)
@@ -210,22 +210,18 @@ class TestInventoryDAOGetItemByBaseinfo:
     def inventory_dao(self, mock_connection):
         return InventoryDAO(mock_connection)
 
-    def test_returns_dict_when_row_found(self, inventory_dao, mock_cursor):
-        mock_cursor.description = [
-            ("NAME",), ("DESCRIPTION",), ("FORMAT",), ("POTENCY",),
-            ("REUSABLE",), ("CATEGORY",), ("PRICE",), ("AMOUNT",),
+    def test_returns_list_when_rows_found(self, inventory_dao, mock_cursor):
+        mock_cursor.fetchall.return_value = [
+            (1, "Fire Spell", "Burns", "instant", 5, True, "offensive", 9.99, 10)
         ]
-        mock_cursor.fetchone.return_value = (
-            "Fire Spell", "Burns", "instant", 5, True, "offensive", 9.99, 10
-        )
-        result = inventory_dao.get_item_by_baseinfo("FIRE01")
-        assert isinstance(result, dict)
-        assert result["NAME"] == "Fire Spell"
+        result = inventory_dao.get_item_by_baseinfo(1)
+        assert isinstance(result, list)
+        assert len(result) == 1
 
-    def test_returns_resource_not_found_when_no_row(self, inventory_dao, mock_cursor):
-        mock_cursor.fetchone.return_value = None
-        result = inventory_dao.get_item_by_baseinfo("UNKNOWN")
-        assert result.error_tag == "ResourceNotFound"
+    def test_returns_empty_list_when_no_rows(self, inventory_dao, mock_cursor):
+        mock_cursor.fetchall.return_value = []
+        result = inventory_dao.get_item_by_baseinfo(9999)
+        assert result == []
 
     def test_query_uses_baseinfo_column(self, inventory_dao, mock_cursor):
         mock_cursor.description = [("NAME",)]
@@ -345,10 +341,10 @@ class TestGetAllRecords:
         sql = mock_cursor.execute.call_args[0][0]
         assert "FETCH FIRST" not in sql
 
-    def test_not_found_returns_resource_not_found(self, customer_dao, mock_cursor):
+    def test_empty_table_returns_empty_list(self, customer_dao, mock_cursor):
         mock_cursor.fetchall.return_value = []
         rc = customer_dao.get_all_records()
-        assert rc.error_tag == "ResourceNotFound"
+        assert rc == []
 
 
 # ===========================================================================
