@@ -44,7 +44,7 @@ class InventoryDAO(DatabaseAccessObject):
         return dict(zip(columns, row))
 
     @rbac_action("read")
-    def get_item_by_baseinfo(self, item_id: str):
+    def get_item_by_baseinfo(self, item_id: str) -> List[Any]:
         '''
         Retrieves inventory item details by BASEINFO identifier.
 
@@ -63,10 +63,11 @@ class InventoryDAO(DatabaseAccessObject):
             f" FROM {self._table_name} WHERE BASEINFO = ?"
         )
         cursor = self._execute_query(select_stmt, (item_id,))
-        row = cursor.fetchone()
+        rows = cursor.fetchone()
 
-        if row is None:
-            return ResponseCode(error_tag="ResourceNotFound")
+        # if row is None:
+        #     return ResponseCode(error_tag="ResourceNotFound")
 
-        columns = [desc[0] for desc in cursor.description]
-        return self._dict_from_row(row, columns)
+        # columns = [desc[0] for desc in cursor.description]
+        # return self._dict_from_row(row, columns)
+        return rows
