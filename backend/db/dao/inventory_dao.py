@@ -2,8 +2,8 @@
 
 from typing import Any, Dict, List
 import ibm_db_dbi
-from backend.db.dao.abstract_record import DatabaseAccessObject, db2_safe, rbac_action
-from backend.utilities.error_handler import ResponseCode
+from db.dao.abstract_record import DatabaseAccessObject, db2_safe, rbac_action
+from utilities.error_handler import ResponseCode
 
 
 class InventoryDAO(DatabaseAccessObject):
