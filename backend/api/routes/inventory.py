@@ -21,7 +21,7 @@ async def get_inventory():
 async def get_inventory_item(item_id: int):
     # item = get_item_by_id(item_id)
     dao = InventoryDAO(conn)
-    rows = dao.get_all_records()
+    rows = dao.get_item_by_baseinfo(item_id)
     items = inventory_json(rows)
     print(items)
     return items

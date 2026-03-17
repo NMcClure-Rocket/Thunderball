@@ -44,7 +44,7 @@ class InventoryDAO(DatabaseAccessObject):
         return dict(zip(columns, row))
 
     @rbac_action("read")
-    def get_item_by_baseinfo(self, item_id: str) -> List[Any]:
+    def get_item_by_baseinfo(self, item_id: int) -> List[Any]:
         '''
         Retrieves inventory item details by BASEINFO identifier.
 
