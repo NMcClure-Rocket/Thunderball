@@ -1,10 +1,14 @@
-export default function USStatesDropdown() {
-  
+interface USSStatesDropdownProps {
+    value: string;
+    onChange: (value: string) => void;
+  }
+
+export default function USStatesDropdown({value, onChange}: USSStatesDropdownProps) {
   return (
     <div>
-      <select>
-            <option value="AL">Alabama</option>
+      <select value={value} onChange={(e) => onChange(e.target.value)}>
             <option value="AK">Alaska</option>
+            <option value="AL">Alabama</option>
             <option value="AZ">Arizona</option>
             <option value="AR">Arkansas</option>
             <option value="CA">California</option>

@@ -18,7 +18,7 @@ class OrderDAO(DatabaseAccessObject):
         Args:
             connection (ibm_db_dbi.Connection): The DB2 connection object
         '''
-        super().__init__("USER18.ORDER", connection)
+        super().__init__("USER12.ORDER", connection)
 
     def _get_primary_key(self) -> str:
         '''

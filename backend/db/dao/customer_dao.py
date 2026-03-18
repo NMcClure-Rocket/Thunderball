@@ -4,7 +4,7 @@
 """Data Access Object for the USER18.CUSTOMER DB2 table."""
 
 from typing import Any, Dict, List
-import ibm_db_dbi  # type: ignore[import-untyped]
+import ibm_db_dbi
 from db.dao.abstract_record import DatabaseAccessObject
 
 
@@ -17,16 +17,16 @@ class CustomerDAO(DatabaseAccessObject):
     def __init__(self, connection: ibm_db_dbi.Connection):
         '''
         Initialize the CustomerDAO with the CUSTOMER table.
-
+        
         Args:
             connection (ibm_db_dbi.Connection): The DB2 connection object
         '''
-        super().__init__("USER18.CUSTOMER", connection)
+        super().__init__("USER12.CUSTOMER", connection)
 
     def _get_primary_key(self) -> str:
         '''
         Returns the primary key column name for the CUSTOMER table.
-
+        
         Returns:
             str: The name of the primary key column
         '''
@@ -35,11 +35,11 @@ class CustomerDAO(DatabaseAccessObject):
     def _dict_from_row(self, row: tuple, columns: List[str]) -> Dict[str, Any]:
         '''
         Converts a database row tuple into a dictionary.
-
+        
         Args:
             row (tuple): The database row as a tuple
             columns (List[str]): List of column names corresponding to the row values
-
+            
         Returns:
             Dict[str, Any]: Dictionary representation of the database row
         '''
@@ -50,3 +50,10 @@ class CustomerDAO(DatabaseAccessObject):
     # def get_customer_by_email(self, email: str):
     #     '''Gets a customer by their email address.'''
     #     return self.get_by_fields({"EMAIL": email})
+
+    def get_user_by_name(self, username: str) -> List[Any]:
+
+        select_stmt = (
+            f"SELECT USERID, PASSWORD"
+            f" FROM {self._table_name} WHERE EMAIL = ?"
+        )

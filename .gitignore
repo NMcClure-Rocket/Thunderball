@@ -61,12 +61,17 @@ logs/
 *.db
 *.sqlite
 
+# DB2 credentials (never commit)
+backend/config/Db_creds
+backend/db/cred.ini
+
 # COBOL Build Artifacts
 backend/cobol/build/*
 !backend/cobol/build/.gitkeep
 
 # Test Coverage
 .coverage
+.coverage.*
 htmlcov/
 .pytest_cache/
 
