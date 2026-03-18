@@ -109,7 +109,7 @@ class TestBasePriceDAO:
 class TestShippingAddressDAO:
     def test_table_name(self, mock_connection):
         dao = ShippingAddressDAO(mock_connection)
-        assert dao._table_name == "USER18.SHIPPINGADDRESS"
+        assert dao._table_name == "USER12.SHIPPINGADDRESS"
 
     def test_primary_key(self, mock_connection):
         dao = ShippingAddressDAO(mock_connection)
@@ -128,7 +128,7 @@ class TestShippingAddressDAO:
 class TestCCIDao:
     def test_table_name(self, mock_connection):
         dao = CCIDao(mock_connection)
-        assert dao._table_name == "USER18.CCI"
+        assert dao._table_name == "USER12.CCI"
 
     def test_primary_key(self, mock_connection):
         dao = CCIDao(mock_connection)
@@ -147,7 +147,7 @@ class TestCCIDao:
 class TestCustomerDAO:
     def test_table_name(self, mock_connection):
         dao = CustomerDAO(mock_connection)
-        assert dao._table_name == "USER18.CUSTOMER"
+        assert dao._table_name == "USER12.CUSTOMER"
 
     def test_primary_key(self, mock_connection):
         dao = CustomerDAO(mock_connection)
@@ -189,7 +189,7 @@ class TestInventoryDAO:
 class TestOrderDAO:
     def test_table_name(self, mock_connection):
         dao = OrderDAO(mock_connection)
-        assert dao._table_name == "USER18.ORDER"
+        assert dao._table_name == "USER12.ORDER"
 
     def test_primary_key(self, mock_connection):
         dao = OrderDAO(mock_connection)
@@ -442,7 +442,7 @@ class TestUpdateRecord:
     def test_correct_set_and_where_clause(self, customer_dao, mock_cursor):
         customer_dao.update_record("42", {"FIRST_NAME": "Bob", "LAST_NAME": "Jones"})
         sql, params = mock_cursor.execute.call_args[0]
-        assert "UPDATE USER18.CUSTOMER SET" in sql
+        assert "UPDATE USER12.CUSTOMER SET" in sql
         assert "FIRST_NAME = ?" in sql
         assert "WHERE CUSTOMERID = ?" in sql
         assert params[-1] == "42"
@@ -470,7 +470,7 @@ class TestCreateRecord:
         entry = {"CUSTOMERID": "99", "FIRST_NAME": "Carl"}
         customer_dao.create_record(entry)
         sql = mock_cursor.execute.call_args[0][0]
-        assert "INSERT INTO USER18.CUSTOMER" in sql
+        assert "INSERT INTO USER12.CUSTOMER" in sql
         assert "CUSTOMERID" in sql
         assert "?" in sql
 
@@ -503,7 +503,7 @@ class TestDeleteRecord:
     def test_correct_delete_sql_with_primary_key(self, customer_dao, mock_cursor):
         customer_dao.delete_record("42")
         sql, params = mock_cursor.execute.call_args[0]
-        assert "DELETE FROM USER18.CUSTOMER WHERE CUSTOMERID = ?" in sql
+        assert "DELETE FROM USER12.CUSTOMER WHERE CUSTOMERID = ?" in sql
         assert params == ("42",)
 
     @pytest.mark.skip(reason="requires db2_safe decorator")
@@ -539,7 +539,7 @@ class TestDeleteRecordByField:
     def test_correct_delete_sql_with_field(self, customer_dao, mock_cursor):
         customer_dao.delete_record_by_field({"LAST_NAME": "Smith"})
         sql, params = mock_cursor.execute.call_args[0]
-        assert "DELETE FROM USER18.CUSTOMER WHERE LAST_NAME = ?" in sql
+        assert "DELETE FROM USER12.CUSTOMER WHERE LAST_NAME = ?" in sql
         assert params == ("Smith",)
 
 
@@ -568,3 +568,82 @@ class TestCredentialManagement:
         customer_dao.set_credentials(creds1)
         customer_dao.set_credentials(creds2)
         assert customer_dao.get_credentials() is creds2
+
+
+# ===========================================================================
+# Credentials entity – __repr__
+# ===========================================================================
+
+class TestCredentialsRepr:
+    def test_repr_contains_role_and_user_id(self):
+        creds = Credentials(role="admin", user_id="u001")
+        assert repr(creds) == "Credentials(role='admin', user_id='u001')"
+
+    def test_repr_with_empty_defaults(self):
+        creds = Credentials()
+        assert repr(creds) == "Credentials(role='', user_id='')"
+
+
+# ===========================================================================
+# CCIDao – get_records_by_customerid and insert_cc
+# ===========================================================================
+
+class TestCCIDaoCustomMethods:
+    @pytest.fixture
+    def cci_dao(self, mock_connection):
+        return CCIDao(mock_connection)
+
+    def test_get_records_by_customerid_returns_rows(self, cci_dao, mock_cursor):
+        mock_cursor.fetchall.return_value = [
+            (4111111111111111, 123, "12/28", "Visa", "John", "Smith",
+             "1 Main St", "", "NYC", "NY", "US", "10001")
+        ]
+        result = cci_dao.get_records_by_customerid(1)
+        assert isinstance(result, list)
+        assert len(result) == 1
+
+    def test_get_records_by_customerid_empty_returns_empty_list(self, cci_dao, mock_cursor):
+        mock_cursor.fetchall.return_value = []
+        result = cci_dao.get_records_by_customerid(9999)
+        assert result == []
+
+    def test_get_records_by_customerid_query_uses_customerid(self, cci_dao, mock_cursor):
+        mock_cursor.fetchall.return_value = []
+        cci_dao.get_records_by_customerid(42)
+        sql, params = mock_cursor.execute.call_args[0]
+        assert "CUSTOMERID = ?" in sql
+        assert params == (42,)
+
+    def test_insert_cc_returns_existing_when_record_found(self, cci_dao, mock_cursor):
+        existing_row = (4111111111111111, 123, "12/28", "Visa", "John", "Smith",
+                        "1 Main St", "", "NYC", "NY", "US", "10001", 1)
+        mock_cursor.fetchall.return_value = [existing_row]
+        entry = [4111111111111111, 123, "12/28", "Visa", "John", "Smith",
+                 "1 Main St", "", "NYC", "NY", "US", "10001", 1]
+        result = cci_dao.insert_cc(entry)
+        assert result == [existing_row]
+        # INSERT should not have been called since record already exists
+        insert_calls = [
+            call for call in mock_cursor.execute.call_args_list
+            if "INSERT" in str(call)
+        ]
+        assert len(insert_calls) == 0
+
+    def test_insert_cc_inserts_when_no_existing_record(self, cci_dao, mock_cursor):
+        new_row = (1, 4111111111111111, 123, "12/28", "Visa", "John", "Smith",
+                   "1 Main St", "", "NYC", "NY", "US", "10001", 1)
+        # First SELECT (dedup check) → no rows; COUNT → 0; final SELECT → returns row
+        mock_cursor.fetchall.side_effect = [
+            [],          # initial SELECT finds nothing
+            [(0,)],      # COUNT(*)
+            [new_row],   # final SELECT by CCID (INSERT has no fetchall)
+        ]
+        entry = [4111111111111111, 123, "12/28", "Visa", "John", "Smith",
+                 "1 Main St", "", "NYC", "NY", "US", "10001", 1]
+        result = cci_dao.insert_cc(entry)
+        assert result == [new_row]
+        insert_calls = [
+            call for call in mock_cursor.execute.call_args_list
+            if "INSERT" in str(call)
+        ]
+        assert len(insert_calls) == 1
