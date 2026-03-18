@@ -55,10 +55,10 @@ class LoggerFactory:
     This class is a static singleton that produces a single logger of each type (security and general).
     Depending on the logger config SmartLogger will be turned on, which saves memory and optimizes speed
     '''
-    _initialized = False
-    _general_logger = None
-    _security_logger = None
-    _use_smart_logger = True #Default; change in config!
+    _initialized: bool = False
+    _general_logger: "logging.Logger | _SmartLogger | None" = None
+    _security_logger: "logging.Logger | _SmartLogger | None" = None
+    _use_smart_logger: bool = True  # Default; change in config!
 
     @staticmethod
     def _is_safe_log_path(path: str) -> bool:
@@ -143,7 +143,7 @@ class LoggerFactory:
                 LoggerFactory._general_logger = _SmartLogger("generalLogger")
             else:
                 LoggerFactory._general_logger = logging.getLogger("generalLogger")
-        return LoggerFactory._general_logger
+        return LoggerFactory._general_logger  # type: ignore[return-value]
 
     @staticmethod
     def get_security_logger() -> "_SmartLogger | logging.Logger":
@@ -159,4 +159,4 @@ class LoggerFactory:
                 LoggerFactory._security_logger = _SmartLogger("securityLogger")
             else:
                 LoggerFactory._security_logger = logging.getLogger("securityLogger")
-        return LoggerFactory._security_logger
+        return LoggerFactory._security_logger  # type: ignore[return-value]
