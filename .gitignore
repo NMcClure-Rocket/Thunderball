@@ -71,6 +71,7 @@ backend/cobol/build/*
 
 # Test Coverage
 .coverage
+.coverage.*
 htmlcov/
 .pytest_cache/
 
