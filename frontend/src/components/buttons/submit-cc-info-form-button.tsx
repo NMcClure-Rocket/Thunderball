@@ -4,9 +4,9 @@ interface SubmitCCInfoFormButtonProps {
   cardholderFName: string;
   cardholderLName: string;
   processor: string;
-  cardNumber: string;
+  cardNumber: number;
   expiration: string;
-  cvc: string;
+  cvc: number;
   address: string;
   address2: string;
   city: string;
@@ -37,11 +37,11 @@ export default function SubmitCCInfoFormButton({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
+    console.log("=== SUBMIT START ===");
 
     const requestBody = {
-      number: parseInt(cardNumber),
-      security_code: parseInt(cvc),
+      number: cardNumber,
+      security_code: cvc,
       expiration: expiration,
       processor: processor,
       first_name: cardholderFName,
@@ -55,9 +55,25 @@ export default function SubmitCCInfoFormButton({
       customerid: customerId
     };
 
-    console.log("Submitting:", requestBody);
+    console.log("Request Body:", requestBody);
+    console.log("All fields present:", {
+      number: !!cardNumber,
+      security_code: !!cvc,
+      expiration: !!expiration,
+      processor: !!processor,
+      first_name: !!cardholderFName,
+      last_name: !!cardholderLName,
+      address: !!address,
+      addr_2: !!address2,
+      city: !!city,
+      state: !!state,
+      country: !!country,
+      zip: !!zip,
+      customerid: !!customerId
+    });
 
     try {
+      
       const response = await fetch(`${baseURL}/newcc`, {
         method: "POST",
         headers: {
@@ -66,23 +82,38 @@ export default function SubmitCCInfoFormButton({
         body: JSON.stringify(requestBody),
       });
 
+      console.log("Response Status:", response.status);
+      
       const data = await response.json();
-      console.log("Response:", data);
-      // Save ccid from response data in local Storage
-      if (data.ccid) {
-        if (data.ccid) {
-          localStorage.setItem('ccid', data.ccid.toString());
-          console.log("Saved ccid:", data.ccid);
-        }
+      console.log("Response Data:", data);
+      console.log("Response Detail:", data.detail);
+      
+      if (data.detail && Array.isArray(data.detail)) {
+        console.log("Missing/Invalid Field:");
+        data.detail.forEach((err: any) => {
+          console.log("  - Type:", err.type);
+          console.log("  - Location:", err.loc);
+          console.log("  - Message:", err.msg);
+        });
       }
+
+      if (data.ccid) {
+        localStorage.setItem('ccid', data.ccid.toString());
+        console.log("Saved ccid:", data.ccid);
+      }
+
       if (response.ok) {
         alert("Credit card information successfully saved!");
-      } 
+      } else {
+        console.log("=== FAILED ===");
+        alert("Error submitting credit card information");
+      }
     } catch (err) {
       console.error('Error:', err);
       alert("Error submitting credit card information");
     } finally {
       setLoading(false);
+      console.log("=== SUBMIT END ===");
     }
   };
 

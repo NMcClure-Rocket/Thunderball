@@ -68,9 +68,9 @@ export default function CCInfoForm() {
           cardholderFName={cardholderFName}
           cardholderLName={cardholderLName}
           processor={processor}
-          cardNumber={cardNumber}
+          cardNumber={parseInt(cardNumber)}
           expiration={expiration}
-          cvc={cvc}
+          cvc={parseInt(cvc)}
           address={address}
           address2={address2}
           city={city}

@@ -3,6 +3,7 @@ from pydantic import BaseModel
 
 
 class NewCCRequest(BaseModel):
+    model_config = {"populate_by_name": True}
     number: int
     security_code: int
     expiration: str
@@ -15,3 +16,4 @@ class NewCCRequest(BaseModel):
     state: str
     country: str
     zip: str
+    customerid: int

@@ -95,7 +95,9 @@ class CCIDao(DatabaseAccessObject):
             f"AND   COUNTRY = ? AND ZIP = ? AND CUSTOMERID = ?"
         )
         # print(tuple(entry))
-        cursor = self._execute_query(select_stmt, tuple(entry))
+        # entry_tuple = [entry.number, entry.security_code, entry.expiration, entry.processor, entry.first_name, entry.last_name, entry.address, entry.addr_2, entry.city, entry.state, entry.country, entry.zip, entry.customerid]
+        # print(en
+        cursor = self._execute_query(select_stmt, (entry.number, entry.security_code, entry.expiration, entry.processor, entry.first_name, entry.last_name, entry.address, entry.addr_2, entry.city, entry.state, entry.country, entry.zip, entry.customerid,))
         rows = cursor.fetchall()
 
         if len(rows) == 0:
@@ -105,7 +107,7 @@ class CCIDao(DatabaseAccessObject):
             count+=1 # Increment to get new CCID
             
             ins_stmt = f"INSERT INTO {self._table_name} (CCID, NUMBER, SECURITY_CODE, EXPIRATION, PROCESSOR, FIRST_NAME, LAST_NAME, ADDRESS, ADDR_2, CITY, STATE, COUNTRY, ZIP, CUSTOMERID) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
-            ins_paras = [count] + entry
+            ins_paras = [count, entry.number, entry.security_code, entry.expiration, entry.processor, entry.first_name, entry.last_name, entry.address, entry.addr_2, entry.city, entry.state, entry.country, entry.zip, entry.customerid]
             cursor = self._execute_query(ins_stmt, tuple(ins_paras))
 
             select_new_stmt = (f"SELECT * FROM {self._table_name} WHERE CCID = ?")
