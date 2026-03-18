@@ -1,0 +1,152 @@
+/* Shipping Address Form */
+.shipping-form-wrapper {
+  max-width: 500px;
+  margin: 20px auto;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+.shipping-form-wrapper h1 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.shipping-form-wrapper form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.shipping-form-wrapper label {
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 5px;
+  display: block;
+}
+
+.shipping-form-wrapper input,
+.shipping-form-wrapper select {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  font-family: Arial, sans-serif;
+}
+
+.shipping-form-wrapper input:focus,
+.shipping-form-wrapper select:focus {
+  outline: none;
+  border-color: #4CAF50;
+  box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
+}
+
+/* CC Info Form */
+.cc-info-form-div {
+  margin-top: 30px;
+}
+
+/* CC Row Layout */
+.cc-row {
+  display: flex;
+  gap: 15px;
+}
+
+.cc-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.cc-col label {
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 5px;
+}
+
+.cc-col input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  font-family: Arial, sans-serif;
+}
+
+.cc-col input:focus {
+  outline: none;
+  border-color: #4CAF50;
+  box-shadow: 0 0 5px rgba(76, 175, 80, 0.3);
+}
+
+.placeholder-grey::placeholder {
+  color: #aaa;
+  font-style: italic;
+}
+
+/* Submit Button */
+.shipping-form-wrapper button {
+  padding: 12px 20px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.shipping-form-wrapper button:hover {
+  background-color: #45a049;
+}
+
+.shipping-form-wrapper button:active {
+  background-color: #3d8b40;
+}
+
+/* Shopping Cart Page */
+.shopping-cart-container {
+  max-width: 1000px;
+  margin: 20px auto;
+  padding: 20px;
+}
+
+.shopping-cart-container h1 {
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.shopping-cart-container table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.shopping-cart-container table th {
+  background-color: #4CAF50;
+  color: white;
+  padding: 12px;
+  text-align: left;
+  font-weight: 600;
+}
+
+.shopping-cart-container table td {
+  padding: 12px;
+  border-bottom: 1px solid #ddd;
+}
+
+.shopping-cart-container table tr:hover {
+  background-color: #f5f5f5;
+}
+
+.shopping-cart-container pre {
+  background-color: #f0f0f0;
+  padding: 15px;
+  border-radius: 4px;
+  overflow-x: auto;
+  font-size: 12px;
+}
