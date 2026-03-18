@@ -1,5 +1,5 @@
 """Address routes."""
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 from api.models.address import NewAddressRequest
 from api.services.address_service import get_addresses_by_customer, create_address
 

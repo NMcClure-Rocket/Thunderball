@@ -6,11 +6,11 @@ from abc import ABC
 from typing import Any, Callable, List, Dict
 from functools import wraps
 
-import ibm_db_dbi
+import ibm_db_dbi  # type: ignore[import-untyped]
 
 from utilities.logger import LoggerFactory
 from utilities.error_handler import ResponseCode
-from entities.credentials_entity import Credentials
+
 
 def rbac_action(action: str) -> Callable:  # pylint: disable=unused-argument
     '''
@@ -56,6 +56,7 @@ def rbac_action(action: str) -> Callable:  # pylint: disable=unused-argument
 #             data = f"DatabaseError: {error_tag} - {error_msg}"
 #             return ResponseCode(error_tag=error_tag, data=data)
 #     return wrapper
+
 
 class DatabaseAccessObject(ABC):
     '''
@@ -107,7 +108,7 @@ class DatabaseAccessObject(ABC):
         '''
         raise NotImplementedError("Subclasses must implement _dict_from_row()")
 
-    def _execute_query(self, query: str, params: tuple = None) -> Any:
+    def _execute_query(self, query: str, params: tuple | None = None) -> Any:
         '''
         Helper method to execute a DB2 query and handle errors.
 
@@ -129,8 +130,7 @@ class DatabaseAccessObject(ABC):
             self.__logger.error(f"Database error executing query: {str(e)}")
             raise
 
-
-    #Hook method; this should set any default field values; just override it
+    # Hook method; this should set any default field values; just override it
     def _prepare_entry(self, entry: dict[str, Any]) -> dict[str, Any]:
         '''
         Hooks to a function and overrides to give default values for MongoDB documents
@@ -141,7 +141,7 @@ class DatabaseAccessObject(ABC):
         Returns:
             entry (dict[str, Any]): the entry after processing (usually defining a default field)
         '''
-        return entry  #Default: no changes
+        return entry  # Default: no changes
 
     def set_credentials(self, credentials: Any) -> None:
         '''
@@ -158,10 +158,9 @@ class DatabaseAccessObject(ABC):
         '''
         self.__credentials = None
 
-
     @rbac_action("read")
     # @db2_safe
-    def get_by_key(self, ID: str) -> ResponseCode:
+    def get_by_key(self, ID: str) -> Any:
         '''
         Return DB2 record by primary key
 
@@ -187,7 +186,7 @@ class DatabaseAccessObject(ABC):
 
     @rbac_action("read")
     # @db2_safe
-    def get_by_fields(self, filter: dict[str, Any]) -> ResponseCode:
+    def get_by_fields(self, filter: dict[str, Any]) -> Any:
         '''
         Return DB2 records by given fields
 
@@ -219,7 +218,7 @@ class DatabaseAccessObject(ABC):
 
     @rbac_action("read")
     # @db2_safe
-    def get_all_records(self, limit: int = None) -> List[Any]:
+    def get_all_records(self, limit: int | None = None) -> List[Any]:
         '''
         Return all (or the first x) DB2 records from a table
 
@@ -247,7 +246,7 @@ class DatabaseAccessObject(ABC):
 
     @rbac_action("read")
     # @db2_safe
-    def get_random(self, numReturned: int = 1, filter: dict[str, Any] = None) -> ResponseCode:
+    def get_random(self, numReturned: int = 1, filter: dict[str, Any] | None = None) -> Any:
         '''
         Return a set number of random records given an optional filter
 
@@ -277,7 +276,7 @@ class DatabaseAccessObject(ABC):
 
         if not rows:
             self.__logger.warning(f"Requested {numReturned}, but no records found.")
-            return ResponseCode(error_tag="ResourceNotFound")
+            return ResponseCode(error_tag="ResourceNotFound")  # type: ignore[return-value]
 
         if len(rows) < numReturned:
             self.__logger.warning(f"Requested {numReturned}, but only returned {len(rows)} records.")
@@ -287,8 +286,8 @@ class DatabaseAccessObject(ABC):
 
     @rbac_action("read")
     # @db2_safe
-    def get_short_record(self, numReturned: int, filter: dict[str, Any] = None,
-                         max_length: int = 80, content_column: str = "CONTENT") -> ResponseCode:
+    def get_short_record(self, numReturned: int, filter: dict[str, Any] | None = None,
+                         max_length: int = 80, content_column: str = "CONTENT") -> Any:
         '''
         Return a set number of random records given an optional filter that also have a content
         field less than the given max_length
@@ -338,7 +337,7 @@ class DatabaseAccessObject(ABC):
 
     @rbac_action("update")
     # @db2_safe
-    def update_record(self, ID: str, updates: dict[str, Any]) -> ResponseCode:
+    def update_record(self, ID: str, updates: dict[str, Any]) -> Any:
         '''
         Updates a record with the given ID and updates
 
@@ -408,7 +407,7 @@ class DatabaseAccessObject(ABC):
 
     @rbac_action("delete")
     # @db2_safe
-    def delete_record(self, ID: str) -> ResponseCode:
+    def delete_record(self, ID: str) -> Any:
         '''
         Deletes a record with the given primary key
 
@@ -433,7 +432,7 @@ class DatabaseAccessObject(ABC):
 
     @rbac_action("delete")
     # @db2_safe
-    def delete_record_by_field(self, filter: dict[str, Any]) -> ResponseCode:
+    def delete_record_by_field(self, filter: dict[str, Any]) -> Any:
         '''
         Deletes records matching the given filter
 

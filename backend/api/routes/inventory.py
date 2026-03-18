@@ -1,6 +1,6 @@
 """Inventory routes."""
-from fastapi import APIRouter, HTTPException
-from api.services.inventory_service import get_all_items, get_item_by_id
+from fastapi import APIRouter
+# from api.services.inventory_service import get_all_items, get_item_by_id, get_all_items_by_id
 from api.utils.json_utils import baseprice_json, inventory_json
 from db.connector import conn
 from db.dao.base_price_dao import BasePriceDAO
@@ -25,4 +25,3 @@ async def get_inventory_item(item_id: int):
     items = inventory_json(rows)
     print(items)
     return items
-
