@@ -1,0 +1,50 @@
+1|Healing Elixir|24.99|https://example.com/images/healing_elixir.jpg
+2|Mana Potion|19.99|https://example.com/images/mana_potion.jpg
+3|Strength Brew|34.99|https://example.com/images/strength_brew.jpg
+4|Invisibility Draught|49.99|https://example.com/images/invisibility_draught.jpg
+5|Fire Resistance Tonic|29.99|https://example.com/images/fire_resistance.jpg
+6|Speed Serum|39.99|https://example.com/images/speed_serum.jpg
+7|Wisdom Extract|44.99|https://example.com/images/wisdom_extract.jpg
+8|Night Vision Drops|22.99|https://example.com/images/night_vision.jpg
+9|Antidote Solution|14.99|https://example.com/images/antidote.jpg
+10|Luck Charm Liquid|54.99|https://example.com/images/luck_charm.jpg
+11|Teleportation Essence|89.99|https://example.com/images/teleportation.jpg
+12|Shield Barrier Brew|32.99|https://example.com/images/shield_barrier.jpg
+13|Mind Reading Mixture|64.99|https://example.com/images/mind_reading.jpg
+14|Breath Underwater Flask|27.99|https://example.com/images/underwater.jpg
+15|Flying Feather Fluid|74.99|https://example.com/images/flying_feather.jpg
+16|Stone Skin Solution|42.99|https://example.com/images/stone_skin.jpg
+17|Electric Shock Elixir|36.99|https://example.com/images/electric_shock.jpg
+18|Ice Frost Tincture|31.99|https://example.com/images/ice_frost.jpg
+19|Shadow Cloak Concentrate|58.99|https://example.com/images/shadow_cloak.jpg
+20|Giant Growth Goo|47.99|https://example.com/images/giant_growth.jpg
+21|Shrinking Syrup|45.99|https://example.com/images/shrinking_syrup.jpg
+22|Animal Speak Serum|38.99|https://example.com/images/animal_speak.jpg
+23|Plant Control Potion|33.99|https://example.com/images/plant_control.jpg
+24|Weather Warp Wash|69.99|https://example.com/images/weather_warp.jpg
+25|Time Slow Tonic|99.99|https://example.com/images/time_slow.jpg
+26|Regeneration Remedy|52.99|https://example.com/images/regeneration.jpg
+27|Poison Immunity Potion|28.99|https://example.com/images/poison_immunity.jpg
+28|Enhanced Hearing Drops|21.99|https://example.com/images/enhanced_hearing.jpg
+29|Super Smell Solution|18.99|https://example.com/images/super_smell.jpg
+30|X-Ray Vision Vial|84.99|https://example.com/images/xray_vision.jpg
+31|Memory Enhancement Mix|56.99|https://example.com/images/memory_enhance.jpg
+32|Sleep Inducer Syrup|16.99|https://example.com/images/sleep_inducer.jpg
+33|Energy Burst Brew|26.99|https://example.com/images/energy_burst.jpg
+34|Calm Mind Concoction|23.99|https://example.com/images/calm_mind.jpg
+35|Truth Serum|62.99|https://example.com/images/truth_serum.jpg
+36|Love Potion|72.99|https://example.com/images/love_potion.jpg
+37|Courage Catalyst|41.99|https://example.com/images/courage.jpg
+38|Fear Inducer Flask|35.99|https://example.com/images/fear_inducer.jpg
+39|Charisma Charm|48.99|https://example.com/images/charisma.jpg
+40|Endurance Elixir|37.99|https://example.com/images/endurance.jpg
+41|Flexibility Fluid|29.99|https://example.com/images/flexibility.jpg
+42|Agility Accelerator|43.99|https://example.com/images/agility.jpg
+43|Precision Potion|39.99|https://example.com/images/precision.jpg
+44|Resistance Remedy|34.99|https://example.com/images/resistance.jpg
+45|Absorption Ale|46.99|https://example.com/images/absorption.jpg
+46|Reflection Refresher|51.99|https://example.com/images/reflection.jpg
+47|Duplication Draught|94.99|https://example.com/images/duplication.jpg
+48|Transformation Tonic|88.99|https://example.com/images/transformation.jpg
+49|Elemental Essence|76.99|https://example.com/images/elemental.jpg
+50|Ultimate Power Potion|149.99|https://example.com/images/ultimate_power.jpg
