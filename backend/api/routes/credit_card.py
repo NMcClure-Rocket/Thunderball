@@ -1,7 +1,7 @@
 """Credit card routes."""
 from fastapi import APIRouter
 # from api.models.credit_card import NewCCRequest
-from api.services.credit_card_service import get_cards_by_customer, create_card
+# from api.services.credit_card_service import get_cards_by_customer, create_card
 from db.connector import conn
 from db.dao.cci_dao import CCIDao
 

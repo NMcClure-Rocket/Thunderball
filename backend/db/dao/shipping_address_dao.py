@@ -47,3 +47,30 @@ class ShippingAddressDAO(DatabaseAccessObject):
     # def get_address_by_customer(self, customer_id: str):
     #     '''Gets all billing addresses for a specific customer.'''
     #     return self.get_by_fields({"CUSTOMERID": customer_id})
+
+    def insert_address(self, entry:List[Any]) -> List[Any]:
+        select_stmt = (
+            f"SELECT * FROM {self._table_name} "
+            f"WHERE FIRST_NAME = ? AND LAST_NAME = ? "
+            f"AND   ADDRESS = ? AND ADDR_2 = ? AND CITY = ? AND STATE = ? "
+            f"AND   COUNTRY = ? AND ZIP = ? AND CUSTOMERID = ?"
+        )
+        # print(tuple(entry))
+        cursor = self._execute_query(select_stmt, tuple(entry))
+        rows = cursor.fetchall()
+
+        if len(rows) == 0:
+            count_stmt = f"SELECT COUNT(*) FROM {self._table_name}"
+            cursor = self._execute_query(count_stmt)
+            count = cursor.fetchall()[0][0]
+            count+=1 # Increment to get new addressID
+            
+            ins_stmt = f"INSERT INTO {self._table_name} (ADDRESSID, FIRST_NAME, LAST_NAME, ADDRESS, ADDR_2, CITY, STATE, COUNTRY, ZIP, CUSTOMERID) VALUES (?,?,?,?,?,?,?,?,?,?)"
+            ins_paras = [count] + entry
+            cursor = self._execute_query(ins_stmt, tuple(ins_paras))
+
+            select_new_stmt = (f"SELECT * FROM {self._table_name} WHERE ADDRESSID = ?")
+            cursor = self._execute_query(select_new_stmt, (count,))
+            rows = cursor.fetchall()
+
+        return rows
