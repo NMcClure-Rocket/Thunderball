@@ -1,7 +1,7 @@
 """Data Access Object for the USER18.CCI (Credit Card Information) DB2 table."""
 
 from typing import Any, Dict, List
-import ibm_db_dbi
+import ibm_db_dbi  # type: ignore[import-untyped]
 from db.dao.abstract_record import DatabaseAccessObject
 
 
@@ -14,7 +14,7 @@ class CCIDao(DatabaseAccessObject):
     def __init__(self, connection: ibm_db_dbi.Connection):
         '''
         Initialize the CCIDao with the CCI table.
-        
+
         Args:
             connection (ibm_db_dbi.Connection): The DB2 connection object
         '''
@@ -23,7 +23,7 @@ class CCIDao(DatabaseAccessObject):
     def _get_primary_key(self) -> str:
         '''
         Returns the primary key column name for the CCI table.
-        
+
         Returns:
             str: The name of the primary key column
         '''
@@ -32,11 +32,11 @@ class CCIDao(DatabaseAccessObject):
     def _dict_from_row(self, row: tuple, columns: List[str]) -> Dict[str, Any]:
         '''
         Converts a database row tuple into a dictionary.
-        
+
         Args:
             row (tuple): The database row as a tuple
             columns (List[str]): List of column names corresponding to the row values
-            
+
         Returns:
             Dict[str, Any]: Dictionary representation of the database row
         '''
