@@ -1,4 +1,4 @@
-import SubmitFormButton from "../buttons/submit-form-button";
+import SubmitFormButton from "../buttons/submit-cc-info-form-button";
 import USStatesDropdown from "../dropdowns/US-states-dropdown";
 
 export default function ShippingAddressForm() {
