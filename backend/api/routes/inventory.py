@@ -23,5 +23,4 @@ async def get_inventory_item(item_id: int):
     dao = InventoryDAO(conn)
     rows = dao.get_item_by_baseinfo(item_id)
     items = inventory_json(rows)
-    print(items)
     return items

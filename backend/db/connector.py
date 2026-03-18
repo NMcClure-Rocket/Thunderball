@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-from backend.config.db_credentials_manager import DB_credentials
+from config.db_credentials_manager import DB_credentials
 
 project_root = Path(__file__).parent.parent.parent
 venv_path = project_root / ".venv" / "Lib" / "site-packages" / "clidriver"

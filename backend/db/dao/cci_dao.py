@@ -94,7 +94,6 @@ class CCIDao(DatabaseAccessObject):
             f"AND   ADDRESS = ? AND ADDR_2 = ? AND CITY = ? AND STATE = ? "
             f"AND   COUNTRY = ? AND ZIP = ? AND CUSTOMERID = ?"
         )
-        # print(tuple(entry))
         cursor = self._execute_query(select_stmt, tuple(entry))
         rows = cursor.fetchall()
 
