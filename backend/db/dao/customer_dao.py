@@ -21,7 +21,7 @@ class CustomerDAO(DatabaseAccessObject):
         Args:
             connection (ibm_db_dbi.Connection): The DB2 connection object
         '''
-        super().__init__("USER18.CUSTOMER", connection)
+        super().__init__("USER12.CUSTOMER", connection)
 
     def _get_primary_key(self) -> str:
         '''
