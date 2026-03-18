@@ -19,7 +19,7 @@ class CCIDao(DatabaseAccessObject):
         Args:
             connection (ibm_db_dbi.Connection): The DB2 connection object
         '''
-        super().__init__("USER18.CCI", connection)
+        super().__init__("USER12.CCI", connection)
 
     def _get_primary_key(self) -> str:
         '''
@@ -82,3 +82,34 @@ class CCIDao(DatabaseAccessObject):
     # def get_cci_by_customer(self, customer_id: str):
     #     '''Gets credit card information for a specific customer.'''
     #     return self.get_by_fields({"CUSTOMERID": customer_id})
+
+    # def compare_records(self, entry1:List[Any], entry2:List[Any]) -> bool:
+    #     if entry1 = entry2:
+
+    def insert_cc(self, entry:List[Any]) -> List[Any]:
+        select_stmt = (
+            f"SELECT * FROM {self._table_name} "
+            f"WHERE NUMBER = ? AND SECURITY_CODE = ? AND EXPIRATION = ? "
+            f"AND   PROCESSOR = ? AND FIRST_NAME = ? AND LAST_NAME = ? "
+            f"AND   ADDRESS = ? AND ADDR_2 = ? AND CITY = ? AND STATE = ? "
+            f"AND   COUNTRY = ? AND ZIP = ? AND CUSTOMERID = ?"
+        )
+        # print(tuple(entry))
+        cursor = self._execute_query(select_stmt, tuple(entry))
+        rows = cursor.fetchall()
+
+        if len(rows) == 0:
+            count_stmt = f"SELECT COUNT(*) FROM {self._table_name}"
+            cursor = self._execute_query(count_stmt)
+            count = cursor.fetchall()[0][0]
+            count+=1 # Increment to get new CCID
+            
+            ins_stmt = f"INSERT INTO {self._table_name} (CCID, NUMBER, SECURITY_CODE, EXPIRATION, PROCESSOR, FIRST_NAME, LAST_NAME, ADDRESS, ADDR_2, CITY, STATE, COUNTRY, ZIP, CUSTOMERID) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
+            ins_paras = [count] + entry
+            cursor = self._execute_query(ins_stmt, tuple(ins_paras))
+
+            select_new_stmt = (f"SELECT * FROM {self._table_name} WHERE CCID = ?")
+            cursor = self._execute_query(select_new_stmt, (count,))
+            rows = cursor.fetchall()
+
+        return rows
