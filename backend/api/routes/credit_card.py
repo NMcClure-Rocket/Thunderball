@@ -14,7 +14,8 @@ async def new_credit_card(body: Dict[str, Any]):
     # return {"status": "ok"}
     dao = CCIDao(conn)
     rows = dao.insert_cc(body)
-    print(rows)
+    new_ccid = rows[0][0]
+    return {"status": "ok", "ccid": new_ccid}
 
 
 @router.get("/getcc/{customer_id}")
