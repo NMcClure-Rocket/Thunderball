@@ -22,6 +22,6 @@ async def new_address(body: NewAddressRequest):
 
 @router.get("/getaddress/{customer_id}")
 async def get_addresses(customer_id: int):
-    # addresses = get_addresses_by_customer(customer_id)
-    # return {"rows": addresses}
-    return
+    dao = ShippingAddressDAO(conn)
+    rows = dao.get_records_by_customerid(customer_id)
+    return {"rows": rows}

@@ -615,11 +615,16 @@ class TestCCIDaoCustomMethods:
         assert params == (42,)
 
     def test_insert_cc_returns_existing_when_record_found(self, cci_dao, mock_cursor):
+        from backend.api.models.credit_card import NewCCRequest
         existing_row = (4111111111111111, 123, "12/28", "Visa", "John", "Smith",
                         "1 Main St", "", "NYC", "NY", "US", "10001", 1)
         mock_cursor.fetchall.return_value = [existing_row]
-        entry = [4111111111111111, 123, "12/28", "Visa", "John", "Smith",
-                 "1 Main St", "", "NYC", "NY", "US", "10001", 1]
+        entry = NewCCRequest(number=4111111111111111, security_code=123,
+                             expiration="12/28", processor="Visa",
+                             first_name="John", last_name="Smith",
+                             address="1 Main St", addr_2="",
+                             city="NYC", state="NY", country="US",
+                             zip="10001", customerid=1)
         result = cci_dao.insert_cc(entry)
         assert result == [existing_row]
         # INSERT should not have been called since record already exists
@@ -630,6 +635,7 @@ class TestCCIDaoCustomMethods:
         assert len(insert_calls) == 0
 
     def test_insert_cc_inserts_when_no_existing_record(self, cci_dao, mock_cursor):
+        from backend.api.models.credit_card import NewCCRequest
         new_row = (1, 4111111111111111, 123, "12/28", "Visa", "John", "Smith",
                    "1 Main St", "", "NYC", "NY", "US", "10001", 1)
         # First SELECT (dedup check) → no rows; COUNT → 0; final SELECT → returns row
@@ -638,8 +644,12 @@ class TestCCIDaoCustomMethods:
             [(0,)],      # COUNT(*)
             [new_row],   # final SELECT by CCID (INSERT has no fetchall)
         ]
-        entry = [4111111111111111, 123, "12/28", "Visa", "John", "Smith",
-                 "1 Main St", "", "NYC", "NY", "US", "10001", 1]
+        entry = NewCCRequest(number=4111111111111111, security_code=123,
+                             expiration="12/28", processor="Visa",
+                             first_name="John", last_name="Smith",
+                             address="1 Main St", addr_2="",
+                             city="NYC", state="NY", country="US",
+                             zip="10001", customerid=1)
         result = cci_dao.insert_cc(entry)
         assert result == [new_row]
         insert_calls = [

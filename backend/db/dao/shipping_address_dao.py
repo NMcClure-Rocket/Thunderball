@@ -49,6 +49,11 @@ class ShippingAddressDAO(DatabaseAccessObject):
     #     '''Gets all billing addresses for a specific customer.'''
     #     return self.get_by_fields({"CUSTOMERID": customer_id})
 
+    def get_records_by_customerid(self, customer_id: int) -> List[Any]:
+        select_stmt = f"SELECT * FROM {self._table_name} WHERE CUSTOMERID = ?"
+        cursor = self._execute_query(select_stmt, (customer_id,))
+        return cursor.fetchall()
+
     def insert_address(self, entry: NewAddressRequest) -> List[Any]:
         select_stmt = (
             f"SELECT * FROM {self._table_name} "
