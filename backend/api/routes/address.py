@@ -1,4 +1,6 @@
 """Address routes."""
+from typing import Any, Dict
+
 from fastapi import APIRouter
 from api.models.address import NewAddressRequest
 # from api.services.address_service import get_addresses_by_customer, create_address
