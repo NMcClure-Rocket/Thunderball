@@ -1,4 +1,5 @@
 import os
+import logging
 from pathlib import Path
 from config.db_credentials_manager import DB_credentials
 
@@ -11,19 +12,25 @@ if hasattr(os, 'add_dll_directory'):
     os.add_dll_directory(str(clidriver_bin))
     os.environ["PATH"] = str(clidriver_crt) + ";" + os.environ.get("PATH", "")
 
-import ibm_db  # type: ignore[import-untyped]  # noqa: E402
-import ibm_db_dbi  # type: ignore[import-untyped]  # noqa: E402
-
-conn_str = DB_credentials().as_connection_string()
-
-
 try:
-    db_conn = ibm_db.connect(conn_str, "", "")
-except Exception:
-    print("SQLSTATE:", ibm_db.conn_error())
-    print("Message:", ibm_db.conn_errormsg())
-    db_conn = None
+    import ibm_db  # type: ignore[import-untyped]  # noqa: E402
+    import ibm_db_dbi  # type: ignore[import-untyped]  # noqa: E402
 
-conn = None
-if db_conn:
-    conn = ibm_db_dbi.Connection(db_conn)
+    conn_str = DB_credentials().as_connection_string()
+
+    try:
+        db_conn = ibm_db.connect(conn_str, "", "")
+    except Exception:
+        print("SQLSTATE:", ibm_db.conn_error())
+        print("Message:", ibm_db.conn_errormsg())
+        db_conn = None
+
+    conn = None
+    if db_conn:
+        conn = ibm_db_dbi.Connection(db_conn)
+
+except Exception as _e:
+    logging.getLogger(__name__).warning(
+        "Database connection unavailable: %s. conn will be None.", _e
+    )
+    conn = None
