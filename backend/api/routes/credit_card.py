@@ -2,6 +2,8 @@
 from fastapi import APIRouter, HTTPException
 from api.models.credit_card import NewCCRequest
 from api.services.credit_card_service import get_cards_by_customer, create_card
+from db.connector import conn
+from db.dao.cci_dao import CCIDao
 
 router = APIRouter()
 
@@ -14,5 +16,7 @@ async def new_credit_card(body: NewCCRequest):
 
 @router.get("/getcc/{customer_id}")
 async def get_credit_cards(customer_id: int):
-    cards = get_cards_by_customer(customer_id)
-    return {"rows": cards}
+    # cards = get_cards_by_customer(customer_id)
+    # return {"rows": cards}
+    dao = CCIDao(conn)
+    rows = dao.get_

@@ -1,15 +1,9 @@
 """
 Auth service – user lookup and credential validation.
-
-Placeholder user list until Db2 adapter is ready.
 """
 
-# ── Placeholder user data ──────────────────────────────────────
-_users = [
-    {"first_name": "John", "last_name": "Doe", "user": "jdoe@a.com", "pass": "mypassword"},
-    {"first_name": "Admin", "last_name": "User", "user": "admin", "pass": "admin123"},
-]
-
+from db.connector import conn
+from db.dao.customer_dao import CustomerDAO
 
 def authenticate(user: str, password: str) -> bool:
     """Return True if credentials match a known user."""

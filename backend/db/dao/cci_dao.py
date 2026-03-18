@@ -1,6 +1,7 @@
 """Data Access Object for the USER18.CCI (Credit Card Information) DB2 table."""
 
 from typing import Any, Dict, List
+from backend.utilities.error_handler import ResponseCode
 import ibm_db_dbi
 from db.dao.abstract_record import DatabaseAccessObject
 
@@ -41,6 +42,40 @@ class CCIDao(DatabaseAccessObject):
             Dict[str, Any]: Dictionary representation of the database row
         '''
         return dict(zip(columns, row))
+    
+    def get_records_by_customerid(self, customer_id: int) -> List[Any]:
+        '''
+        Retrieves inventory item details by BASEINFO identifier.
+
+        Fetches NAME, DESCRIPTION, FORMAT, POTENCY, REUSABLE, CATEGORY, PRICE,
+        and AMOUNT for the matching record.
+
+        Args:
+            item_id (str): The BASEINFO value to look up.
+
+        Returns:
+            ResponseCode: A ResponseCode wrapping a dict of the matching row,
+                          or a ResourceNotFound ResponseCode if no record exists.
+        '''
+        select_stmt = (
+            f"SELECT NUMBER, SECURITY_CODE, EXPIRATION, PROCESSOR, FIRST_NAME, LAST_NAME, ADDRESS, ADDR_2, CITY, STATE, COUNTRY, ZIP"
+            f" FROM {self._table_name} WHERE CUSTOMERID = ?"
+        )
+        cursor = self._execute_query(select_stmt, (customer_id,))
+        rows = cursor.fetchall()
+
+        # if row is None:
+        #     return ResponseCode(error_tag="ResourceNotFound")
+
+        # columns = [desc[0] for desc in cursor.description]
+        # return self._dict_from_row(row, columns)
+        return rows
+
+    # def create_record(self, entry: Dict[str, Any]) -> Dict[str, Any]:
+    #     columns = list(entry.keys())
+    #     placeholders = ", ".join(["?" for _ in columns])
+    #     column_names = ", ".join(columns)
+    #     query = f"INSERT INTO {self._table_name} ()"
 
     # Custom methods specific to CCI operations can be added here
     # For example:
