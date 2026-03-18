@@ -8,7 +8,7 @@ from datetime import datetime
 
 import ibm_db
 
-from backend.utilities.logger import LoggerFactory
+from utilities.logger import LoggerFactory
 
 
 # Logger Factory Integration

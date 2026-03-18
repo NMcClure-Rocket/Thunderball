@@ -10,34 +10,33 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Create single FastAPI app instance
 app = FastAPI(
     title="Thunderball API",
     description="Python wrapper API for COBOL modules and Db2 integration",
     version="1.0.0"
 )
 
-# Configure CORS
+# ✅ Add CORS middleware FIRST (before routes)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Frontend dev server
+    allow_origins=["*"],  # Allow all origins for development
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+# ✅ Include routes AFTER middleware
+app.include_router(router)
 
+# Root endpoints
 @app.get("/")
 async def root():
     return {"message": "Thunderball API is running"}
 
-
 @app.get("/health")
 async def health():
     return {"status": "healthy"}
-
-
-# Register all routes from server.py
-app.include_router(router)
 
 if __name__ == "__main__":
     import uvicorn

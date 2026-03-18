@@ -1,11 +1,8 @@
-# Copyright (C) 2025 Team White
-# Licensed under the MIT License
-# See LICENSE for more details
 """Data Access Object for the USER18.ORDER DB2 table."""
 
 from typing import Any, Dict, List
 import ibm_db_dbi
-from backend.db.dao.abstract_record import DatabaseAccessObject
+from db.dao.abstract_record import DatabaseAccessObject
 
 
 class OrderDAO(DatabaseAccessObject):

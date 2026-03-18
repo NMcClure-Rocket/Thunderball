@@ -1,11 +1,8 @@
-# Copyright (C) 2025 Team White
-# Licensed under the MIT License
-# See LICENSE for more details
 """Data Access Object for the USER18.BASE_PRICE DB2 table."""
 
 from typing import Any, Dict, List
 import ibm_db_dbi
-from backend.db.dao.abstract_record import DatabaseAccessObject
+from db.dao.abstract_record import DatabaseAccessObject
 
 
 class BasePriceDAO(DatabaseAccessObject):
@@ -21,7 +18,7 @@ class BasePriceDAO(DatabaseAccessObject):
         Args:
             connection (ibm_db_dbi.Connection): The DB2 connection object
         '''
-        super().__init__("USER18.BASEPRICE", connection)
+        super().__init__("USER12.BASEPRICE", connection)
 
     def _get_primary_key(self) -> str:
         '''

@@ -1,7 +1,3 @@
-# Copyright (C) 2025 Team White
-# Licensed under the MIT License
-# See LICENSE for more details
-
 """
 Utilities module for Thunderball project.
 
@@ -9,7 +5,7 @@ This package contains utility classes and functions for error handling,
 logging, and common operations.
 """
 
-from backend.utilities.error_handler import (
+from utilities.error_handler import (
     ResponseCode,
     ErrorSeverity,
     DB2ErrorCode,
