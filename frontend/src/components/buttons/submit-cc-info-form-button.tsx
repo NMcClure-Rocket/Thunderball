@@ -40,7 +40,7 @@ export default function SubmitCCInfoFormButton({
 
 
     const requestBody = {
-      number: cardNumber,
+      number: parseInt(cardNumber),
       security_code: parseInt(cvc),
       expiration: expiration,
       processor: processor,
@@ -69,7 +69,12 @@ export default function SubmitCCInfoFormButton({
       const data = await response.json();
       console.log("Response:", data);
       // Save ccid from response data in local Storage
-
+      if (data.ccid) {
+        if (data.ccid) {
+          localStorage.setItem('ccid', data.ccid.toString());
+          console.log("Saved ccid:", data.ccid);
+        }
+      }
       if (response.ok) {
         alert("Credit card information successfully saved!");
       } 

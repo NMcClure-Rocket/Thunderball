@@ -1,7 +1,7 @@
 """Data Access Object for the USER18.BILLING_ADDRESS DB2 table."""
 
 from typing import Any, Dict, List
-import ibm_db_dbi
+import ibm_db_dbi  # type: ignore[import-untyped]
 from db.dao.abstract_record import DatabaseAccessObject
 
 
@@ -18,7 +18,7 @@ class ShippingAddressDAO(DatabaseAccessObject):
         Args:
             connection (ibm_db_dbi.Connection): The DB2 connection object
         '''
-        super().__init__("USER18.SHIPPINGADDRESS", connection)
+        super().__init__("USER12.SHIPPINGADDRESS", connection)
 
     def _get_primary_key(self) -> str:
         '''

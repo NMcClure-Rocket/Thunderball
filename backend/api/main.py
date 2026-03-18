@@ -29,10 +29,12 @@ app.add_middleware(
 # ✅ Include routes AFTER middleware
 app.include_router(router)
 
+
 # Root endpoints
 @app.get("/")
 async def root():
     return {"message": "Thunderball API is running"}
+
 
 @app.get("/health")
 async def health():

@@ -21,7 +21,7 @@ class CustomerDAO(DatabaseAccessObject):
         Args:
             connection (ibm_db_dbi.Connection): The DB2 connection object
         '''
-        super().__init__("USER18.CUSTOMER", connection)
+        super().__init__("USER12.CUSTOMER", connection)
 
     def _get_primary_key(self) -> str:
         '''
@@ -50,3 +50,10 @@ class CustomerDAO(DatabaseAccessObject):
     # def get_customer_by_email(self, email: str):
     #     '''Gets a customer by their email address.'''
     #     return self.get_by_fields({"EMAIL": email})
+
+    def get_user_by_name(self, username: str) -> List[Any]:
+
+        select_stmt = (
+            f"SELECT USERID, PASSWORD"
+            f" FROM {self._table_name} WHERE EMAIL = ?"
+        )
