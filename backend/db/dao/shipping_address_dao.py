@@ -56,7 +56,8 @@ class ShippingAddressDAO(DatabaseAccessObject):
             f"AND   COUNTRY = ? AND ZIP = ? AND CUSTOMERID = ?"
         )
         # print(tuple(entry))
-        cursor = self._execute_query(select_stmt, tuple(entry))
+        cursor = self._execute_query(select_stmt, (entry.first_name, entry.last_name, entry.address, entry.addr_2, entry.city, entry.state, entry.country, entry.zip, entry.customerid,))
+        # cursor = self._execute_query(select_stmt, tuple(entry))
         rows = cursor.fetchall()
 
         if len(rows) == 0:
@@ -66,7 +67,7 @@ class ShippingAddressDAO(DatabaseAccessObject):
             count+=1 # Increment to get new addressID
             
             ins_stmt = f"INSERT INTO {self._table_name} (ADDRESSID, FIRST_NAME, LAST_NAME, ADDRESS, ADDR_2, CITY, STATE, COUNTRY, ZIP, CUSTOMERID) VALUES (?,?,?,?,?,?,?,?,?,?)"
-            ins_paras = [count] + entry
+            ins_paras = [count, entry.first_name, entry.last_name, entry.address, entry.addr_2, entry.city, entry.state, entry.country, entry.zip, entry.customerid]
             cursor = self._execute_query(ins_stmt, tuple(ins_paras))
 
             select_new_stmt = (f"SELECT * FROM {self._table_name} WHERE ADDRESSID = ?")
