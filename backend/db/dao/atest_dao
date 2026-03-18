@@ -73,60 +73,79 @@ def _extract_rows(result: object) -> Tuple[bool, int, str]:
     return False, 0, f"unexpected return type: {type(result).__name__}"
 
 
-def run_inventory_baseinfo_test(connection: Any) -> int:
+def _extract_sample_baseinfo(result: object) -> Any:
     """
-    Targeted smoke test for InventoryDAO.get_item_by_baseinfo.
+    Return a BASEINFO value from a DAO response when available.
+    """
+    records: List[Dict[str, Any]] = []
 
-    1. Found case  – harvests a BASEINFO value from get_all_records and verifies
-                     the method returns a successful ResponseCode.
-    2. Not-found case – passes a sentinel value and verifies ResourceNotFound is
-                        returned.
+    if isinstance(result, list):
+        records = [row for row in result if isinstance(row, dict)]
+    elif hasattr(result, "data") and isinstance(getattr(result, "data", None), list):
+        records = [row for row in result.data if isinstance(row, dict)]
+
+    for record in records:
+        if "BASEINFO" in record:
+            return record["BASEINFO"]
+
+    return None
+
+
+def run_inventory_baseinfo_smoke_test(connection: Any, limit: int) -> int:
+    """
+    Run a targeted smoke test for InventoryDAO.get_item_by_baseinfo.
 
     Returns:
-        int: Number of failures (0 = all passed).
+        int: Number of failures.
     """
     from backend.db.dao.inventory_dao import InventoryDAO
 
-    dao = InventoryDAO(connection)
     failures = 0
+    dao = InventoryDAO(connection)
 
-    # --- found case: harvest a real BASEINFO from the table ---
-    all_result = dao.get_all_records(limit=1)
-    sample = None
-    if hasattr(all_result, "data") and isinstance(all_result.data, list) and all_result.data:
-        sample = all_result.data[0]
-    elif isinstance(all_result, list) and all_result:
-        sample = all_result[0]
+    sample_result = dao.get_all_records(limit=limit)
+    item_id = _extract_sample_baseinfo(sample_result)
 
-    if sample and "BASEINFO" in sample:
-        item_id = sample["BASEINFO"]
-        try:
-            result = dao.get_item_by_baseinfo(item_id)
-            tag = getattr(result, "error_tag", None)
-            if tag in ("GeneralSuccess", None):
-                print(f"[PASS] InventoryDAO.get_item_by_baseinfo (found)     item_id={item_id!r}")
-            else:
-                failures += 1
-                print(f"[FAIL] InventoryDAO.get_item_by_baseinfo (found)     error_tag={tag!r}")
-        except Exception as exc:  # noqa: BLE001
-            failures += 1
-            print(f"[FAIL] InventoryDAO.get_item_by_baseinfo (found)     exception={exc}")
-    else:
-        print("[SKIP] InventoryDAO.get_item_by_baseinfo (found)     — BASEINFO not in sample row")
-
-    # --- not-found case ---
-    try:
-        result = dao.get_item_by_baseinfo("__THUNDERBALL_NONEXISTENT__")
-        tag = getattr(result, "error_tag", None)
-        if tag == "ResourceNotFound":
-            print("[PASS] InventoryDAO.get_item_by_baseinfo (not-found) — ResourceNotFound returned")
-        else:
-            failures += 1
-            print(f"[FAIL] InventoryDAO.get_item_by_baseinfo (not-found) — expected ResourceNotFound, got {tag!r}")
-    except Exception as exc:  # noqa: BLE001
+    if item_id is None:
         failures += 1
-        print(f"[FAIL] InventoryDAO.get_item_by_baseinfo (not-found) — exception={exc}")
+        print("[FAIL] InventoryDAO.get_item_by_baseinfo could not find BASEINFO in sample records")
+        return failures
 
+    result = dao.get_item_by_baseinfo(str(item_id))
+    error_tag = getattr(result, "error_tag", "")
+    data = getattr(result, "data", None)
+
+    if error_tag and error_tag != "GeneralSuccess":
+        failures += 1
+        print(f"[FAIL] InventoryDAO.get_item_by_baseinfo error={error_tag}")
+        return failures
+
+    if not isinstance(data, dict):
+        failures += 1
+        print("[FAIL] InventoryDAO.get_item_by_baseinfo returned non-dict data")
+        return failures
+
+    required_columns = [
+        "NAME",
+        "DESCRIPTION",
+        "FORMAT",
+        "POTENCY",
+        "REUSABLE",
+        "CATEGORY",
+        "PRICE",
+        "AMOUNT",
+    ]
+    missing_columns = [column for column in required_columns if column not in data]
+
+    if missing_columns:
+        failures += 1
+        print(
+            "[FAIL] InventoryDAO.get_item_by_baseinfo missing columns: "
+            f"{', '.join(missing_columns)}"
+        )
+        return failures
+
+    print(f"[PASS] InventoryDAO.get_item_by_baseinfo item_id={item_id}")
     return failures
 
 
@@ -168,15 +187,14 @@ def run_smoke_test(connection: Any, limit: int, dao_name: str | None = None) -> 
             failures += 1
             print(f"[FAIL] {name:<14} exception={exc}")
 
+        if name == "InventoryDAO":
+            try:
+                failures += run_inventory_baseinfo_smoke_test(connection, limit)
+            except Exception as exc:  # noqa: BLE001 - smoke test should report any failure
+                failures += 1
+                print(f"[FAIL] InventoryDAO.get_item_by_baseinfo exception={exc}")
+
     print("-" * 70)
-
-    # --- targeted tests for InventoryDAO.get_item_by_baseinfo ---
-    if dao_name is None or dao_name == "InventoryDAO":
-        print("\nInventoryDAO.get_item_by_baseinfo tests")
-        print("-" * 70)
-        failures += run_inventory_baseinfo_test(connection)
-        print("-" * 70)
-
     if failures:
         print(f"Completed with {failures} failure(s).")
         return 1

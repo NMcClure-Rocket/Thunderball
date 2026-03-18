@@ -1,0 +1,9 @@
+﻿{
+  "DATABASE": "HL02HL2D",
+  "HOSTNAME": "192.168.54.250",
+  "PORT": "3600",
+  "PROTOCOL": "TCPIP",
+  "AUTHENTICATION": "SERVER",
+  "UID": "USER12",
+  "PWD": "35LLBAE_"
+}
