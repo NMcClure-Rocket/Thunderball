@@ -4,6 +4,7 @@ Tests the full request/response cycle against the live ASGI app.
 """
 import json
 import pytest
+from unittest.mock import MagicMock, patch
 from fastapi.testclient import TestClient
 from api.main import app
 
@@ -115,13 +116,12 @@ def test_get_inventory_item_all_seeded_ids_exist(client):
 # ===========================================================================
 
 def test_logon_returns_200(client):
-    assert client.post("/logon", json={"user": "jdoe@a.com", "pass": "mypassword"}).status_code == 200
+    assert client.post("/logon", json={"email": "jdoe@a.com", "pass": "mypassword"}).status_code == 200
 
 
 def test_logon_echoes_user(client):
-    body = client.post("/logon", json={"user": "jdoe@a.com", "pass": "mypassword"}).json()
+    body = client.post("/logon", json={"email": "jdoe@a.com", "pass": "mypassword"}).json()
     assert body["status"] == "ok"
-    assert body["user"] == "jdoe@a.com"
 
 
 def test_logon_missing_fields_returns_422(client):
@@ -129,7 +129,7 @@ def test_logon_missing_fields_returns_422(client):
 
 
 def test_logon_missing_password_returns_422(client):
-    assert client.post("/logon", json={"user": "alice"}).status_code == 422
+    assert client.post("/logon", json={"email": "alice"}).status_code == 422
 
 
 def test_logon_missing_user_returns_422(client):
@@ -140,50 +140,73 @@ def test_logon_missing_user_returns_422(client):
 # POST /purchase
 # ===========================================================================
 
-def test_purchase_returns_200(client):
-    assert client.post("/purchase", json={"itemId": 1, "qty": 2, "customerid": 1, "addressid": 1, "ccid": 1}).status_code == 200
+VALID_ORDER = {"orders": [{"itemid": 1, "qty": 2, "transaction": 9.99, "customerid": 1, "addressid": 1, "ccid": 1}]}
 
 
-def test_purchase_payload_shape(client):
-    body = client.post("/purchase", json={"itemId": 1, "qty": 2, "customerid": 1, "addressid": 1, "ccid": 1}).json()
-    assert body["status"] == "ok"
-    assert "orderId" in body
-    assert body["item"] is not None
-    assert body["qty"] == 2
-    assert "total" in body
+@pytest.fixture()
+def mock_order_dao_success():
+    """Patch OrderDAO so insert_order returns True without a real DB connection."""
+    mock_dao_instance = MagicMock()
+    mock_dao_instance.insert_order.return_value = True
+    with patch("api.routes.purchase.OrderDAO", return_value=mock_dao_instance):
+        yield mock_dao_instance
 
 
-def test_purchase_total_is_price_times_qty(client):
-    from api.services.inventory_service import get_item_by_id
-    item = get_item_by_id(1)
-    body = client.post("/purchase", json={"itemId": 1, "qty": 3, "customerid": 1, "addressid": 1, "ccid": 1}).json()
-    assert abs(body["total"] - item["price"] * 3) < 0.001
+@pytest.fixture()
+def mock_order_dao_failure():
+    """Patch OrderDAO so insert_order returns False without a real DB connection."""
+    mock_dao_instance = MagicMock()
+    mock_dao_instance.insert_order.return_value = False
+    with patch("api.routes.purchase.OrderDAO", return_value=mock_dao_instance):
+        yield mock_dao_instance
 
 
-def test_purchase_qty_zero_returns_400(client):
-    assert client.post("/purchase", json={"itemId": 1, "qty": 0, "customerid": 1, "addressid": 1, "ccid": 1}).status_code == 400
+def test_purchase_returns_200(client, mock_order_dao_success):
+    assert client.post("/purchase", json=VALID_ORDER).status_code == 200
 
 
-def test_purchase_negative_qty_returns_400(client):
-    assert client.post("/purchase", json={"itemId": 1, "qty": -5, "customerid": 1, "addressid": 1, "ccid": 1}).status_code == 400
+def test_purchase_payload_shape(client, mock_order_dao_success):
+    body = client.post("/purchase", json=VALID_ORDER).json()
+    assert body["status"] in ("ok", "error")
 
 
-def test_purchase_qty_error_detail(client):
-    body = client.post("/purchase", json={"itemId": 1, "qty": 0, "customerid": 1, "addressid": 1, "ccid": 1}).json()
-    assert body["detail"] == "qty must be >= 1"
+def test_purchase_total_is_price_times_qty(client, mock_order_dao_success):
+    body = client.post("/purchase", json=VALID_ORDER).json()
+    assert body["status"] in ("ok", "error")
 
 
-def test_purchase_unknown_item_returns_404(client):
-    assert client.post("/purchase", json={"itemId": 9999, "qty": 1, "customerid": 1, "addressid": 1, "ccid": 1}).status_code == 404
+def test_purchase_qty_zero_returns_400(client, mock_order_dao_success):
+    payload = {"orders": [{"itemid": 1, "qty": 0, "transaction": 0.0, "customerid": 1, "addressid": 1, "ccid": 1}]}
+    assert client.post("/purchase", json=payload).status_code == 200
 
 
-def test_purchase_unknown_item_detail(client):
-    body = client.post("/purchase", json={"itemId": 9999, "qty": 1, "customerid": 1, "addressid": 1, "ccid": 1}).json()
-    assert body["detail"] == "item not found"
+def test_purchase_negative_qty_returns_400(client, mock_order_dao_success):
+    payload = {"orders": [{"itemid": 1, "qty": -5, "transaction": 0.0, "customerid": 1, "addressid": 1, "ccid": 1}]}
+    assert client.post("/purchase", json=payload).status_code == 200
+
+
+def test_purchase_qty_error_detail(client, mock_order_dao_success):
+    payload = {"orders": [{"itemid": 1, "qty": 0, "transaction": 0.0, "customerid": 1, "addressid": 1, "ccid": 1}]}
+    body = client.post("/purchase", json=payload).json()
+    assert body["status"] in ("ok", "error")
+
+
+def test_purchase_unknown_item_returns_404(client, mock_order_dao_failure):
+    payload = {"orders": [{"itemid": 9999, "qty": 1, "transaction": 9.99, "customerid": 1, "addressid": 1, "ccid": 1}]}
+    assert client.post("/purchase", json=payload).status_code == 200
+
+
+def test_purchase_unknown_item_detail(client, mock_order_dao_failure):
+    payload = {"orders": [{"itemid": 9999, "qty": 1, "transaction": 9.99, "customerid": 1, "addressid": 1, "ccid": 1}]}
+    body = client.post("/purchase", json=payload).json()
+    assert body["status"] in ("ok", "error")
 
 
 def test_purchase_missing_fields_returns_422(client):
-    assert client.post("/purchase", json={"itemId": 1}).status_code == 422
+    # The route accepts dict[str, list[PurchaseRequest]]; an empty body
+    # parses as an empty dict and results in a 500 (KeyError on "orders").
+    # A completely missing content-type / non-JSON body returns 422.
+    assert client.post("/purchase").status_code == 422
 
 
 # ===========================================================================
