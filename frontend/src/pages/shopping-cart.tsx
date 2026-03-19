@@ -123,8 +123,6 @@ export default function ShoppingCart() {
     );
   }
 
-  const total = cartItems.reduce((sum, item) => sum + (parseFloat(item.price) * item.quantity), 0);
-
   return (
     <main className="shopping-cart-shell">
       <section className="shopping-cart-panel">
@@ -148,7 +146,7 @@ export default function ShoppingCart() {
 
         <div className="shopping-cart-grid">
           <div className="shopping-cart-items">
-            {displayItems.map((item) => (
+            {displayItems.map((item, index) => (
               <article key={`${item.itemId}-${item.priceId}`} className="shopping-cart-card">
                 <div className="shopping-cart-card-media">
                   <span>{item.category}</span>
@@ -181,7 +179,7 @@ export default function ShoppingCart() {
                     <button type="button" className="shopping-cart-text-button" disabled>
                       Save for later
                     </button>
-                    <button type="button" className="shopping-cart-text-button" disabled>
+                    <button type="button" className="shopping-cart-text-button" onClick={() => handleRemoveItem(index)} disabled={isPreviewMode}>
                       Remove
                     </button>
                   </div>
@@ -230,7 +228,7 @@ export default function ShoppingCart() {
             </div>
           </aside>
         </div>
-      </div>
+      </section>
 
       <div style={{ marginTop: '20px', marginBottom: '20px', padding: '15px', backgroundColor: '#f9f9f9', borderRadius: '8px' }}>
         <h3>Total Items: {cartItems.length}</h3>
@@ -251,6 +249,6 @@ export default function ShoppingCart() {
         </button>
         {showCCForm && <CCInfoForm />}
       </div>
-    </div>
+    </main>
   );
 }
