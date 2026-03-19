@@ -86,3 +86,22 @@ class OrderDAO(DatabaseAccessObject):
             return True
         else:
             return False
+        
+    def get_history(self, customerid: int) -> List[Any]:
+        select_stmt = (
+            f"SELECT INVENTORY.ITEMID, INVENTORY.NAME, INVENTORY.DESCRIPTION, "
+            f"    INVENTORY.FORMAT, INVENTORY.POTENCY, "
+            f"    INVENTORY.REUSABLE, INVENTORY.CATEGORY, "
+            f"    INVORDER.AMOUNT, INVORDER.TRANSACTION, "
+            f"    INVORDER.PURCHASE_TIME, INVORDER.DELIVERY_EST, "
+            f"    BASEPRICE.IMAGELINK "
+            f"FROM USER12.INVORDER "
+            f"INNER JOIN USER12.INVENTORY "
+            f"ON INVORDER.ITEMID = INVENTORY.ITEMID "
+            f"INNER JOIN USER12.BASEPRICE "
+            f"ON INVENTORY.BASEINFO = BASEPRICE.PRICEID "
+            f"WHERE INVORDER.CUSTOMERID = ? "
+        )
+        cursor = self._execute_query(select_stmt, (customerid,))
+        rows = cursor.fetchall()
+        return rows

@@ -17,7 +17,7 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# ✅ Add CORS middleware FIRST (before routes)
+# Add CORS middleware FIRST (before routes)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # Allow all origins for development
@@ -26,7 +26,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ✅ Include routes AFTER middleware
+# Include routes AFTER middleware
 app.include_router(router)
 
 
