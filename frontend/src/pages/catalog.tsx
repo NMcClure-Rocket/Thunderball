@@ -110,7 +110,7 @@ export default function Catalog() {
         <AddToCart
           priceId={selectedProductId}
           onClose={() => setSelectedProductId(null)}
-          onAddToCart={handleAddToCart}
+          onAddToCart={handleAddToCart as unknown as (cartItem: CartItem) => void}
         />
       )}
     </div>

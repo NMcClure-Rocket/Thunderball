@@ -21,47 +21,6 @@ interface CartItem {
   quantity: number;
 }
 
-const placeholderCartItems: CartItem[] = [
-  {
-    itemId: 'placeholder-1',
-    priceId: 'temp-1',
-    name: 'Arc Lantern Serum',
-    description: 'A bright, reusable tonic placeholder for the hero slot in your cart.',
-    format: 'Glass Vial',
-    potency: 3,
-    reusable: true,
-    category: 'Restoratives',
-    price: '24.00',
-    imageLink: '',
-    quantity: 1,
-  },
-  {
-    itemId: 'placeholder-2',
-    priceId: 'temp-2',
-    name: 'Field Kit Refill',
-    description: 'A secondary line item to show stacking content and quantity controls.',
-    format: 'Packet',
-    potency: 2,
-    reusable: false,
-    category: 'Supplies',
-    price: '12.50',
-    imageLink: '',
-    quantity: 2,
-  },
-  {
-    itemId: 'placeholder-3',
-    priceId: 'temp-3',
-    name: 'Nightwatch Balm',
-    description: 'A final placeholder product for summary and spacing behavior.',
-    format: 'Tin',
-    potency: 1,
-    reusable: true,
-    category: 'Recovery',
-    price: '8.75',
-    imageLink: '',
-    quantity: 1,
-  },
-];
 
 export default function ShoppingCart() {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
@@ -86,7 +45,7 @@ export default function ShoppingCart() {
     };
   }, []);
 
-  const displayItems = cartItems.length > 0 ? cartItems : placeholderCartItems;
+  const displayItems = cartItems.length > 0 ? cartItems : [];
   const isPreviewMode = cartItems.length === 0;
   const subtotal = displayItems.reduce((total, item) => {
     const price = Number.parseFloat(item.price) || 0;

@@ -6,8 +6,8 @@ The hardcoded data here is a placeholder until the Db2 adapter is ready.
 
 # ── Placeholder BasePrice table data ─────────────────────────────────
 _baseprice = [
-    {"id": 1, "name": "Duck Spell", "price": 9.99, "image": "duck-a.png"},
-    {"id": 2, "name": "Other Spell", "price": 12.50, "image": "duck-b.png"},
+    # {"id": 1, "name": "Duck Spell", "price": 9.99, "image": "duck-a.png"},
+    # {"id": 2, "name": "Other Spell", "price": 12.50, "image": "duck-b.png"},
     # {"id": 3, "name": "Fire Spell",   "price": 5.00,  "image": "fire.png"},
 ]
 
