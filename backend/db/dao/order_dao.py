@@ -3,6 +3,7 @@
 from typing import Any, Dict, List
 import ibm_db_dbi  # type: ignore[import-untyped]
 from db.dao.abstract_record import DatabaseAccessObject
+from api.models.purchase import PurchaseRequest
 
 
 class OrderDAO(DatabaseAccessObject):
@@ -18,7 +19,7 @@ class OrderDAO(DatabaseAccessObject):
         Args:
             connection (ibm_db_dbi.Connection): The DB2 connection object
         '''
-        super().__init__("USER12.ORDER", connection)
+        super().__init__("USER12.INVORDER", connection)
 
     def _get_primary_key(self) -> str:
         '''
@@ -51,3 +52,24 @@ class OrderDAO(DatabaseAccessObject):
     # def get_orders_by_status(self, status: str):
     #     '''Gets all orders with a specific status.'''
     #     return self.get_by_fields({"ORDER_STATUS": status})
+
+    def insert_order(self, entry: Dict[str, Any]) -> bool:
+        # Check that user isn't ordering more of the item than exists
+
+        count_stmt = f"SELECT COUNT(*) FROM {self._table_name}"
+        cursor = self._execute_query(count_stmt)
+        count = cursor.fetchall()[0][0]
+        count+=1 # Increment to get new CCID
+        
+        ins_stmt = f"INSERT INTO {self._table_name} (ORDERID, PURCHASE_TIME, DELIVERY_EST, ITEMID, AMOUNT, TRANSACTION, CCID, CUSTOMERID, ADDRESSID) VALUES (?,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,?,?,?,?,?,?)"
+        ins_paras = [count, entry["itemid"], entry["qty"], entry["transaction"], entry["customerid"], entry["addressid"], entry["ccid"]]
+        cursor = self._execute_query(ins_stmt, tuple(ins_paras))
+
+        # Check that the insert was successful
+        select_new_stmt = (f"SELECT * FROM {self._table_name} WHERE ORDERID = ?")
+        cursor = self._execute_query(select_new_stmt, (count,))
+        rows = cursor.fetchall()
+        if len(rows) == 0:
+            return False
+        else:
+            return True

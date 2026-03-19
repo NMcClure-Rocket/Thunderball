@@ -1,8 +1,11 @@
 """
 FastAPI main application entrypoint
 """
+from pathlib import Path
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from api.server import router
 import logging
 
@@ -25,6 +28,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# ✅ Serve spell images from backend/assets/
+app.mount("/assets", StaticFiles(directory=Path(__file__).resolve().parent.parent / "assets"), name="assets")
 
 # ✅ Include routes AFTER middleware
 app.include_router(router)
