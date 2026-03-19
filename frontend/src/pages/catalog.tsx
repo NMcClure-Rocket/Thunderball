@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import CatalogEntry from '../components/widgets/catalog-entry';
 import AddToCart from '../components/widgets/add-to-cart';
+import rockyBackgroundImage from '../assets/RockyBG.png';
 import '../css/catalog.css';
 
 interface Product {
@@ -18,6 +19,9 @@ export default function Catalog() {
   const baseURL = "http://localhost:8000";
 
   useEffect(() => {
+    document.body.classList.add('catalog-page');
+    document.body.style.setProperty('--catalog-bg-image', `url('${rockyBackgroundImage}')`);
+
     const fetchProducts = async () => {
       setError('');
       setLoading(true);
@@ -52,6 +56,11 @@ export default function Catalog() {
     };
 
     fetchProducts();
+
+    return () => {
+      document.body.classList.remove('catalog-page');
+      document.body.style.removeProperty('--catalog-bg-image');
+    };
   }, []);
 
   if (loading) {

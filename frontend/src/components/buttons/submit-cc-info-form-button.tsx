@@ -103,6 +103,10 @@ export default function SubmitCCInfoFormButton({
       }
 
       if (response.ok) {
+        if (data.customerid) {
+          localStorage.setItem('addressid', data.customerid.toString());
+          console.log("Saved addressid:", data.customerid);
+        }
         alert("Credit card information successfully saved!");
       } else {
         console.log("=== FAILED ===");
