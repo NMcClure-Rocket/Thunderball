@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import CCInfoForm from '../components/forms/cc-info-form';
 import ShippingAddressForm from '../components/forms/shipping-address-form';
+import SubmitPurchaseInfoButton from '../components/buttons/submit-purchase-info-button';
+
 import '../css/forms.css';
 
 interface CartItem {
@@ -35,6 +37,18 @@ export default function ShoppingCart() {
     const updatedCart = cartItems.filter((_, i) => i !== index);
     setCartItems(updatedCart);
     localStorage.setItem('cart', JSON.stringify(updatedCart));
+  };
+
+  const handleSubmitOrder = () => {
+    const cart = localStorage.getItem('cart');
+    const addressid = localStorage.getItem('addressid');
+    const ccid = localStorage.getItem('ccid');
+    
+    console.log("=== LOCAL STORAGE ===");
+    console.log("Cart:", cart);
+    console.log("Address ID:", addressid);
+    console.log("CC ID:", ccid);
+    console.log("=== END ===");
   };
 
   if (loading) {
@@ -85,7 +99,7 @@ export default function ShoppingCart() {
       <div style={{ marginTop: '20px', marginBottom: '20px', padding: '15px', backgroundColor: '#f9f9f9', borderRadius: '8px' }}>
         <h3>Total Items: {cartItems.length}</h3>
         <h3>Total Price: ${total.toFixed(2)}</h3>
-        <button type="submit">Submit order</button>
+        <SubmitPurchaseInfoButton />
       </div>
 
       <div className="shipping-address-form-div">
