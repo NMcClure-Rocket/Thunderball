@@ -4,6 +4,8 @@ import ShippingAddressForm from '../components/forms/shipping-address-form';
 import SubmitPurchaseInfoButton from '../components/buttons/submit-purchase-info-button';
 
 import '../css/forms.css';
+import shoppingCartTavern from '../assets/Shopping Cart Tavern.png';
+import '../css/shopping-cart.css';
 
 interface CartItem {
   itemId: string;
@@ -19,6 +21,48 @@ interface CartItem {
   quantity: number;
 }
 
+const placeholderCartItems: CartItem[] = [
+  {
+    itemId: 'placeholder-1',
+    priceId: 'temp-1',
+    name: 'Arc Lantern Serum',
+    description: 'A bright, reusable tonic placeholder for the hero slot in your cart.',
+    format: 'Glass Vial',
+    potency: 3,
+    reusable: true,
+    category: 'Restoratives',
+    price: '24.00',
+    imageLink: '',
+    quantity: 1,
+  },
+  {
+    itemId: 'placeholder-2',
+    priceId: 'temp-2',
+    name: 'Field Kit Refill',
+    description: 'A secondary line item to show stacking content and quantity controls.',
+    format: 'Packet',
+    potency: 2,
+    reusable: false,
+    category: 'Supplies',
+    price: '12.50',
+    imageLink: '',
+    quantity: 2,
+  },
+  {
+    itemId: 'placeholder-3',
+    priceId: 'temp-3',
+    name: 'Nightwatch Balm',
+    description: 'A final placeholder product for summary and spacing behavior.',
+    format: 'Tin',
+    potency: 1,
+    reusable: true,
+    category: 'Recovery',
+    price: '8.75',
+    imageLink: '',
+    quantity: 1,
+  },
+];
+
 export default function ShoppingCart() {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -26,12 +70,29 @@ export default function ShoppingCart() {
   const [showCCForm, setShowCCForm] = useState(false);
 
   useEffect(() => {
+    document.body.classList.add('shopping-cart-page');
+    document.body.style.setProperty('--shopping-cart-bg-image', `url(${shoppingCartTavern})`);
+
     // Fetch cart from local storage
     const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-    console.log('Cart items:', cart);
     setCartItems(cart);
     setLoading(false);
+
+    return () => {
+      document.body.classList.remove('shopping-cart-page');
+      document.body.style.removeProperty('--shopping-cart-bg-image');
+    };
   }, []);
+
+  const displayItems = cartItems.length > 0 ? cartItems : placeholderCartItems;
+  const isPreviewMode = cartItems.length === 0;
+  const subtotal = displayItems.reduce((total, item) => {
+    const price = Number.parseFloat(item.price) || 0;
+    return total + price * item.quantity;
+  }, 0);
+  const shipping = subtotal > 40 ? 0 : 6.5;
+  const tax = subtotal * 0.07;
+  const total = subtotal + shipping + tax;
 
   const handleRemoveItem = (index: number) => {
     const updatedCart = cartItems.filter((_, i) => i !== index);
@@ -52,49 +113,122 @@ export default function ShoppingCart() {
   };
 
   if (loading) {
-    return <div><h1>Loading...</h1></div>;
-  }
-
-  if (cartItems.length === 0) {
     return (
-      <div>
-        <h1>Shopping Cart</h1>
-        <p>Your cart is empty</p>
+      <div className="shopping-cart-shell">
+        <div className="shopping-cart-panel shopping-cart-loading">
+          <h1>Loading cart...</h1>
+          <p>Pulling together your current selections.</p>
+        </div>
       </div>
     );
   }
 
-  const total = cartItems.reduce((sum, item) => sum + (parseFloat(item.price) * item.quantity), 0);
-
   return (
-    <div>
-      <h1>Shopping Cart</h1>
+    <main className="shopping-cart-shell">
+      <section className="shopping-cart-panel">
+        <header className="shopping-cart-header">
+          <div>
+            <span className="shopping-cart-kicker">Checkout staging area</span>
+            <h1>Shopping Cart</h1>
+            <p>
+              A temporary cart layout with the content weighted to the right and
+              enough structure to swap in real actions later.
+            </p>
+          </div>
+          {isPreviewMode ? (
+            <span className="shopping-cart-preview-badge">Preview placeholders</span>
+          ) : (
+            <span className="shopping-cart-preview-badge shopping-cart-preview-live">
+              Live cart data
+            </span>
+          )}
+        </header>
 
-      <div style={{ marginTop: '20px', marginBottom: '20px' }}>
-        <h3>Items in Cart:</h3>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          {cartItems.map((item, index) => (
-            <div key={index} style={{ border: '1px solid #ddd', padding: '15px', borderRadius: '8px', display: 'flex', gap: '15px', alignItems: 'flex-start' }}>
-              <img src={item.imageLink} alt={item.name} style={{ width: '100px', height: '100px', objectFit: 'cover', borderRadius: '4px' }} />
-              
-              <div style={{ flex: 1 }}>
-                <h3>{item.name}</h3>
-                <p>{item.description}</p>
-                <p><strong>Format:</strong> {item.format}</p>
-                <p><strong>Potency:</strong> {item.potency}</p>
-                <p><strong>Reusable:</strong> {item.reusable ? 'Yes' : 'No'}</p>
-                <p><strong>Price per unit:</strong> ${parseFloat(item.price).toFixed(2)}</p>
-                <p><strong>Quantity:</strong> {item.quantity}</p>
-                <p><strong>Subtotal:</strong> ${(parseFloat(item.price) * item.quantity).toFixed(2)}</p>
+        <div className="shopping-cart-grid">
+          <div className="shopping-cart-items">
+            {displayItems.map((item, index) => (
+              <article key={`${item.itemId}-${item.priceId}`} className="shopping-cart-card">
+                <div className="shopping-cart-card-media">
+                  <span>{item.category}</span>
+                </div>
+                <div className="shopping-cart-card-body">
+                  <div className="shopping-cart-card-topline">
+                    <div>
+                      <h2>{item.name}</h2>
+                      <p>{item.description}</p>
+                    </div>
+                    <strong>${(Number.parseFloat(item.price) || 0).toFixed(2)}</strong>
+                  </div>
+
+                  <div className="shopping-cart-meta-row">
+                    <span>{item.format}</span>
+                    <span>Potency {item.potency}</span>
+                    <span>{item.reusable ? 'Reusable' : 'Single use'}</span>
+                  </div>
+
+                  <div className="shopping-cart-actions-row">
+                    <div className="shopping-cart-quantity-pill">
+                      <button type="button" disabled>
+                        -
+                      </button>
+                      <span>{item.quantity}</span>
+                      <button type="button" disabled>
+                        +
+                      </button>
+                    </div>
+                    <button type="button" className="shopping-cart-text-button" disabled>
+                      Save for later
+                    </button>
+                    <button type="button" className="shopping-cart-text-button" onClick={() => handleRemoveItem(index)} disabled={isPreviewMode}>
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+
+          <aside className="shopping-cart-summary">
+            <div className="shopping-cart-summary-card">
+              <h2>Order Summary</h2>
+              <div className="shopping-cart-summary-row">
+                <span>Items</span>
+                <strong>{displayItems.length}</strong>
               </div>
-
-              <button onClick={() => handleRemoveItem(index)} style={{ padding: '8px 12px', backgroundColor: '#ff4444', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
-                🗑️ Remove
+              <div className="shopping-cart-summary-row">
+                <span>Subtotal</span>
+                <strong>${subtotal.toFixed(2)}</strong>
+              </div>
+              <div className="shopping-cart-summary-row">
+                <span>Shipping</span>
+                <strong>{shipping === 0 ? 'Free' : `$${shipping.toFixed(2)}`}</strong>
+              </div>
+              <div className="shopping-cart-summary-row">
+                <span>Estimated tax</span>
+                <strong>${tax.toFixed(2)}</strong>
+              </div>
+              <div className="shopping-cart-summary-total">
+                <span>Total</span>
+                <strong>${total.toFixed(2)}</strong>
+              </div>
+              <button type="button" className="shopping-cart-primary-button" disabled>
+                Continue to checkout
+              </button>
+              <button type="button" className="shopping-cart-secondary-button" disabled>
+                Apply promo code
               </button>
             </div>
-          ))}
+
+            <div className="shopping-cart-note-card">
+              <span className="shopping-cart-note-label">Temporary notes</span>
+              <p>
+                Use this block for shipping copy, loyalty messaging, or trust badges
+                once the real checkout flow is ready.
+              </p>
+            </div>
+          </aside>
         </div>
-      </div>
+      </section>
 
       <div style={{ marginTop: '20px', marginBottom: '20px', padding: '15px', backgroundColor: '#f9f9f9', borderRadius: '8px' }}>
         <h3>Total Items: {cartItems.length}</h3>
@@ -115,6 +249,6 @@ export default function ShoppingCart() {
         </button>
         {showCCForm && <CCInfoForm />}
       </div>
-    </div>
+    </main>
   );
 }
