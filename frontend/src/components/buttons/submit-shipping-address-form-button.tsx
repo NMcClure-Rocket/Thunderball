@@ -57,7 +57,12 @@ export default function SubmitShippingAddressFormButton({
 
       const data = await response.json();
       console.log("Response:", data);
+
     if (response.ok) {
+        if (data.addressid) {
+          localStorage.setItem('addressid', data.addressid.toString());
+          console.log("Saved addressid:", data.addressid);
+        }
         alert("Shipping address information successfully saved!");
       } 
     } catch (err) {
