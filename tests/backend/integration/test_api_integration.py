@@ -115,11 +115,29 @@ def test_get_inventory_item_all_seeded_ids_exist(client):
 # POST /logon
 # ===========================================================================
 
-def test_logon_returns_200(client):
+@pytest.fixture()
+def mock_customer_dao_found():
+    """Patch CustomerDAO so get_customer_by_email_and_password returns a row without a real DB."""
+    mock_dao_instance = MagicMock()
+    mock_dao_instance.get_customer_by_email_and_password.return_value = (1,)
+    with patch("api.routes.auth.CustomerDAO", return_value=mock_dao_instance):
+        yield mock_dao_instance
+
+
+@pytest.fixture()
+def mock_customer_dao_not_found():
+    """Patch CustomerDAO so get_customer_by_email_and_password returns None."""
+    mock_dao_instance = MagicMock()
+    mock_dao_instance.get_customer_by_email_and_password.return_value = None
+    with patch("api.routes.auth.CustomerDAO", return_value=mock_dao_instance):
+        yield mock_dao_instance
+
+
+def test_logon_returns_200(client, mock_customer_dao_found):
     assert client.post("/logon", json={"email": "jdoe@a.com", "pass": "mypassword"}).status_code == 200
 
 
-def test_logon_echoes_user(client):
+def test_logon_echoes_user(client, mock_customer_dao_found):
     body = client.post("/logon", json={"email": "jdoe@a.com", "pass": "mypassword"}).json()
     assert body["status"] == "ok"
 
