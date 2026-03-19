@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import Main from '../pages/main';
@@ -9,16 +9,22 @@ import OrderHistory from '../pages/order-hist';
 import ShoppingCart from '../pages/shopping-cart';
 
 export default function MainApp({ onLogout }: { onLogout: () => void }) {
+  const location = useLocation();
+  const isCatalogPage = location.pathname === '/catalog';
+  const isHomePage = location.pathname === '/';
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', backgroundColor: 'var(--color-bg)' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', backgroundColor: (isCatalogPage || isHomePage) ? 'transparent' : 'var(--color-bg)' }}>
       <Navbar onLogout={onLogout} />
-      <Routes>
-        <Route path="/" element={<Main />} />
-        <Route path="/catalog" element={<Catalog />} />
-        <Route path="/checkout" element={<Checkout />} />
-        <Route path="/shopping-cart" element={<ShoppingCart />} />
-        <Route path="/order-history" element={<OrderHistory />} />
-      </Routes>
+      <div style={{ paddingTop: '28px' }}>
+        <Routes>
+          <Route path="/" element={<Main />} />
+          <Route path="/catalog" element={<Catalog />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/shopping-cart" element={<ShoppingCart />} />
+          <Route path="/order-history" element={<OrderHistory />} />
+        </Routes>
+      </div>
     </div>
   );
 }
