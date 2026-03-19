@@ -4,7 +4,7 @@
 """Data Access Object for the USER18.CUSTOMER DB2 table."""
 
 from typing import Any, Dict, List
-import ibm_db_dbi
+import ibm_db_dbi  # type: ignore[import-untyped]
 from db.dao.abstract_record import DatabaseAccessObject
 
 
@@ -57,7 +57,8 @@ class CustomerDAO(DatabaseAccessObject):
             f"SELECT USERID, PASSWORD"
             f" FROM {self._table_name} WHERE EMAIL = ?"
         )
-        
+        return []
+
     #### SPENCERS CODE ##### vvvvvvvvvvv    
     def get_customer_by_email_and_password(self, email: str, password: str) -> tuple:
         '''

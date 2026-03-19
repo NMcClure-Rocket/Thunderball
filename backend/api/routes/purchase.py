@@ -1,4 +1,5 @@
 """Purchase routes."""
+from typing import Any
 from fastapi import APIRouter, HTTPException
 from api.models.purchase import PurchaseRequest
 # from api.services.purchase_service import process_purchase

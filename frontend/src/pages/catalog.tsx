@@ -81,7 +81,7 @@ export default function Catalog() {
     rows.push(products.slice(i, i + 4));
   }
 
-  const handleAddToCart = (cartItem: any) => {
+  const handleAddToCart = (cartItem: Product) => {
     alert(`Added ${cartItem.name} to cart!`);
   };
 
@@ -110,7 +110,7 @@ export default function Catalog() {
         <AddToCart
           priceId={selectedProductId}
           onClose={() => setSelectedProductId(null)}
-          onAddToCart={handleAddToCart}
+          onAddToCart={handleAddToCart as unknown as (cartItem: CartItem) => void}
         />
       )}
     </div>
