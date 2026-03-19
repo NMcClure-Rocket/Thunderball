@@ -11,6 +11,7 @@ export default function ShippingAddressForm() {
   const [state, setState] = useState('');
   const [country, setCountry] = useState('');
   const [zip, setZip] = useState('');
+  const [customerId] = useState(() => localStorage.getItem('customerid') ?? '');
 
   return (
     <div className="shipping-form-wrapper">
@@ -49,7 +50,7 @@ export default function ShippingAddressForm() {
           state={state}
           country={country}
           zip={zip}
-          customerId={12}
+          customerId={parseInt(customerId)}
           />
       </form>
     </div>

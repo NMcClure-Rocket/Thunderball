@@ -25,7 +25,7 @@ function AppRoutes({ isLoggedIn, onLogin, onLogout }: AppRoutesProps) {
     if (!shouldPlaySiteMusic && siteAudioRef.current) {
       siteAudioRef.current.pause();
       siteAudioRef.current.currentTime = 0;
-      setIsSiteMusicOn(false);
+      setTimeout(() => setIsSiteMusicOn(false), 0);
     }
   }, [shouldPlaySiteMusic]);
 

@@ -70,3 +70,28 @@ class InventoryDAO(DatabaseAccessObject):
         # columns = [desc[0] for desc in cursor.description]
         # return self._dict_from_row(row, columns)
         return rows
+
+    def get_amount_by_itemid(self, item_id: int) -> int:
+
+        select_stmt = f"SELECT AMOUNT FROM {self._table_name} WHERE ITEMID = ?"
+        cursor = self._execute_query(select_stmt, (item_id,))
+        rows = cursor.fetchall()
+
+        return rows[0][0]
+    
+    def decrement_amount(self, item_id: int, new_amount: int) -> int:
+
+        update_stmt = (
+            f"UPDATE {self._table_name} "
+            f"SET AMOUNT = ? "
+            f"WHERE ITEMID = ?"
+        )
+        update_paras = [new_amount, item_id]
+        cursor = self._execute_query(update_stmt, tuple(update_paras))
+
+        # Check the update was successful
+        select_stmt = f"SELECT AMOUNT FROM {self._table_name} WHERE ITEMID = ?"
+        cursor = self._execute_query(select_stmt, (item_id,))
+        rows = cursor.fetchall()
+
+        return rows[0][0]

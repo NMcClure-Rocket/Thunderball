@@ -1,15 +1,17 @@
 """Purchase routes."""
+from typing import Any
 from fastapi import APIRouter, HTTPException
 from api.models.purchase import PurchaseRequest
 # from api.services.purchase_service import process_purchase
 from db.connector import conn
 from db.dao.order_dao import OrderDAO
+from api.utils.json_utils import order_history_json
 
 router = APIRouter()
 
 
 @router.post("/purchase")
-async def purchase(body: dict[str, list[PurchaseRequest]]):
+async def purchase(body: dict[str, list[dict[str, Any]]]):
     # if body.qty < 1:
     #     raise HTTPException(status_code=400, detail="qty must be >= 1")
 
@@ -19,6 +21,7 @@ async def purchase(body: dict[str, list[PurchaseRequest]]):
 
     # return result
     orders = body["orders"]
+    print(orders)
     success = False
     for o in orders:
         dao = OrderDAO(conn)
@@ -30,3 +33,10 @@ async def purchase(body: dict[str, list[PurchaseRequest]]):
         return {"status": "ok"}
     else:
         return {"status": "error"}
+
+@router.get("/orders/{customerid}")
+async def get_order_history(customerid: int):
+    dao = OrderDAO(conn)
+    rows = dao.get_history(customerid)
+    items = order_history_json(rows)
+    return items

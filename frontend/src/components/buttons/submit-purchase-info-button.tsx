@@ -25,13 +25,15 @@ export default function SubmitPurchaseInfoButton() {
     // Get data from localStorage
     const cartJSON = localStorage.getItem('cart');
     const addressid = localStorage.getItem('addressid');
+    const customerid = localStorage.getItem('customerid');
     const ccid = localStorage.getItem('ccid');
 
     console.log("Cart:", cartJSON);
     console.log("Address ID:", addressid);
+    console.log("Customer ID:", customerid);
     console.log("CC ID:", ccid);
 
-    if (!cartJSON || !addressid || !ccid) {
+    if (!cartJSON || !addressid || !ccid || !customerid) {
       alert("Missing required information. Please complete shipping and payment forms.");
       setLoading(false);
       return;
@@ -45,7 +47,7 @@ export default function SubmitPurchaseInfoButton() {
         itemid: parseInt(item.itemId),
         qty: item.quantity,
         transaction: parseFloat(item.price) * item.quantity,
-        customerid: 12,
+        customerid: parseInt(customerid),
         addressid: parseInt(addressid),
         ccid: parseInt(ccid)
       }));

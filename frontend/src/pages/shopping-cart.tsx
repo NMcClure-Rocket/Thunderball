@@ -21,6 +21,7 @@ interface CartItem {
   quantity: number;
 }
 
+
 export default function ShoppingCart() {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -32,8 +33,10 @@ export default function ShoppingCart() {
 
     // Fetch cart from local storage
     const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-    setCartItems(cart);
-    setLoading(false);
+    setTimeout(() => {
+      setCartItems(cart);
+      setLoading(false);
+    }, 0);
 
     return () => {
       document.body.classList.remove('shopping-cart-page');
@@ -41,7 +44,9 @@ export default function ShoppingCart() {
     };
   }, []);
 
-  const subtotal = cartItems.reduce((total, item) => {
+  const displayItems = cartItems.length > 0 ? cartItems : [];
+  const isPreviewMode = cartItems.length === 0;
+  const subtotal = displayItems.reduce((total, item) => {
     const price = Number.parseFloat(item.price) || 0;
     return total + price * item.quantity;
   }, 0);

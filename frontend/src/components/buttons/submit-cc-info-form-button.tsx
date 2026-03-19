@@ -90,7 +90,7 @@ export default function SubmitCCInfoFormButton({
       
       if (data.detail && Array.isArray(data.detail)) {
         console.log("Missing/Invalid Field:");
-        data.detail.forEach((err: any) => {
+        data.detail.forEach((err: { type: string; loc: string[]; msg: string }) => {
           console.log("  - Type:", err.type);
           console.log("  - Location:", err.loc);
           console.log("  - Message:", err.msg);

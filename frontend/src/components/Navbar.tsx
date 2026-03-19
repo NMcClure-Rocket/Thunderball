@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import cartIcon from '../assets/cart.png';
 
 interface NavbarProps {
@@ -82,6 +82,18 @@ function NavButton({ onClick, children, gold }: { onClick: () => void; children:
 }
 
 export default function Navbar({ onLogout }: NavbarProps) {
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    // Clear all localStorage
+    localStorage.clear();
+    console.log("Local storage cleared");
+    console.log(localStorage)
+    
+    // Call the onLogout callback
+    onLogout();
+    navigate('/');
+  };
+
   return (
     <nav style={{
       position: 'fixed',
@@ -106,7 +118,7 @@ export default function Navbar({ onLogout }: NavbarProps) {
         <NavIconLink to="/shopping-cart">
           <img src={cartIcon} alt="Shopping Cart" style={{ height: '58px', width: '58px', objectFit: 'contain', display: 'block' }} />
         </NavIconLink>
-        <NavButton onClick={onLogout} gold>Logout</NavButton>
+        <NavButton onClick={handleLogout} gold>Logout</NavButton>
       </div>
     </nav>
   );

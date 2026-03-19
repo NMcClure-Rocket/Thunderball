@@ -20,7 +20,7 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# ✅ Add CORS middleware FIRST (before routes)
+# Add CORS middleware FIRST (before routes)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # Allow all origins for development
@@ -29,18 +29,19 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ✅ Serve spell images from backend/assets/
+# Serve spell images from backend/assets/
 app.mount("/assets", StaticFiles(directory=Path(__file__).resolve().parent.parent / "assets"), name="assets")
 
-# ✅ Include routes AFTER middleware
-app.include_router(router)
+# Serve spell images from backend/assets/
+app.mount("/assets", StaticFiles(directory=Path(__file__).resolve().parent.parent / "assets"), name="assets")
 
+# Include routes AFTER middleware
+app.include_router(router)
 
 # Root endpoints
 @app.get("/")
 async def root():
     return {"message": "Thunderball API is running"}
-
 
 @app.get("/health")
 async def health():

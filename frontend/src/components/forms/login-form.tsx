@@ -45,13 +45,20 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
       if (response.status === 200) {
         const data = await response.json();
         console.log('Login successful:', data);
+        localStorage.clear();
+        console.log("Local storage cleared");
+        // Save customerid to localStorage
+      if (data.customerid) {
+        localStorage.setItem('customerid', data.customerid.toString());
+        console.log("Saved customerid:", data.customerid);
+      }
         localStorage.removeItem('cart');
         onLogin();
       } else if (response.status === 401) {
         const data = await response.json();
         setError(data.status || 'Invalid credentials');
       } else {
-        setError('An error occurred. Please try again.');
+        setError('Invalid login credentials. Please enter a valid email and password.');
       }
     } catch (err) {
       console.error('Error during login:', err);

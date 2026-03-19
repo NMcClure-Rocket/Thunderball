@@ -55,3 +55,38 @@ def inventory_json(rows: List[Any]) -> str:
         inner_json.append(json_row)
 
     return json.dumps({"rows": inner_json})
+
+def order_history_json(rows: List[Any]) -> str:
+    """Convert a list of Db2 row tuples from multiple tables into a JSON string.
+
+    Each row is expected to have columns in this order:
+        0: itemid, 1: name, 2: description, 3: format, 4: potency,
+        5: reusable, 6: category, 7: amount, 8: transaction,
+        9: purchase_time, 10: delivery_est, 11: imagelink
+
+    Args:
+        rows: List of row tuples returned from a Db2 cursor.
+
+    Returns:
+        A JSON string with a top-level "rows" key.
+    """
+    inner_json = []
+    for row in rows:
+        r = list(row)
+        json_row = {
+            "itemid": r[0],
+            "name": r[1],
+            "description": r[2],
+            "format": r[3],
+            "potency": r[4],
+            "reusable": r[5],
+            "category": r[6],
+            "amount": r[7],
+            "transaction": float(r[8]),
+            "purchase_time": f'{r[9]}',
+            "delivery_est": f'{r[10]}',
+            "imagelink": r[11],
+        }
+        inner_json.append(json_row)
+
+    return json.dumps({"rows": inner_json})
