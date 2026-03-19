@@ -51,7 +51,7 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
         const data = await response.json();
         setError(data.status || 'Invalid credentials');
       } else {
-        setError('An error occurred. Please try again.');
+        setError('Invalid login credentials. Please enter a valid email and password.');
       }
     } catch (err) {
       console.error('Error during login:', err);
