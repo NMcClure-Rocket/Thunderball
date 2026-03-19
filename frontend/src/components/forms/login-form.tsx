@@ -33,7 +33,7 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          user: email,
+          email: email,
           pass: password
         })
       });

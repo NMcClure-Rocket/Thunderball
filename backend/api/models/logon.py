@@ -11,4 +11,4 @@ class LogonRequest(BaseModel):
 
 class LogonResponse(BaseModel):
     status: str
-    customerid: Optional[int]
+    customerid: Optional[int] = None
