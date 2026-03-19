@@ -115,11 +115,6 @@ export default function AddToCart({ priceId, onClose, onAddToCart }: AddToCartPr
     fetchData();
   }, [priceId]);
 
-  // Get unique reusable options
-  const reusableOptions = Array.from(new Set(
-    inventoryItems.map(item => item.reusable === '1' || item.reusable === 'true')
-  ));
-
   // Get formats based on selected reusable status
   const availableFormats = selectedReusable !== null
     ? Array.from(new Set(

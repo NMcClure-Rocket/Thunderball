@@ -75,8 +75,10 @@ export default function ShoppingCart() {
 
     // Fetch cart from local storage
     const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-    setCartItems(cart);
-    setLoading(false);
+    setTimeout(() => {
+      setCartItems(cart);
+      setLoading(false);
+    }, 0);
 
     return () => {
       document.body.classList.remove('shopping-cart-page');
@@ -98,18 +100,6 @@ export default function ShoppingCart() {
     const updatedCart = cartItems.filter((_, i) => i !== index);
     setCartItems(updatedCart);
     localStorage.setItem('cart', JSON.stringify(updatedCart));
-  };
-
-  const handleSubmitOrder = () => {
-    const cart = localStorage.getItem('cart');
-    const addressid = localStorage.getItem('addressid');
-    const ccid = localStorage.getItem('ccid');
-    
-    console.log("=== LOCAL STORAGE ===");
-    console.log("Cart:", cart);
-    console.log("Address ID:", addressid);
-    console.log("CC ID:", ccid);
-    console.log("=== END ===");
   };
 
   if (loading) {

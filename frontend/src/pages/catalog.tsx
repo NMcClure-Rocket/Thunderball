@@ -81,7 +81,7 @@ export default function Catalog() {
     rows.push(products.slice(i, i + 4));
   }
 
-  const handleAddToCart = (cartItem: any) => {
+  const handleAddToCart = (cartItem: Product) => {
     alert(`Added ${cartItem.name} to cart!`);
   };
 
