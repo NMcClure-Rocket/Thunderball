@@ -45,6 +45,11 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
       if (response.status === 200) {
         const data = await response.json();
         console.log('Login successful:', data);
+        // Save customerid to localStorage
+      if (data.customerid) {
+        localStorage.setItem('customerid', data.customerid.toString());
+        console.log("Saved customerid:", data.customerid);
+      }
         localStorage.removeItem('cart');
         onLogin();
       } else if (response.status === 401) {
