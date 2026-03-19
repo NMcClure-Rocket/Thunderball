@@ -1,58 +1,48 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 interface OrderHistoryEntryProps {
   orderId: string;
 }
 
+const fnames = ["Sam", "Joe", "Tom", "Matthew", "Trevor", "Fred"];
+const lnames = ["Darnold", "Flacco", "Brady", "Stafford", "Lawrence", "Tagovailoa"];
+const streets = ["Main St", "Oak Ave", "Elm Street", "Pine Road", "Maple Drive", "Cedar Lane"];
+const cities = ["Springfield", "Shelbyville", "Capital City", "Gotham", "Metropolis", "Smallville"];
+const states = ["AZ", "CA", "TX", "FL", "NY", "IL", "PA", "OH", "GA", "NC"];
+
+function generateRandomAddress(): string {
+  const randomStreetNum = Math.floor(Math.random() * 9000) + 1000;
+  const randomStreet = streets[Math.floor(Math.random() * streets.length)];
+  const randomCity = cities[Math.floor(Math.random() * cities.length)];
+  const randomState = states[Math.floor(Math.random() * states.length)];
+  const randomZip = Math.floor(Math.random() * 90000) + 10000;
+  return `${randomStreetNum} ${randomStreet}, ${randomCity}, ${randomState} ${randomZip}, USA`;
+}
+
+function computeCustName(): string {
+  const i = Math.floor(Math.random() * fnames.length);
+  const j = Math.floor(Math.random() * lnames.length);
+  return fnames[i] + " " + lnames[j];
+}
+
+function computeAmount(): string {
+  return (10 + Math.floor(Math.random() * 90)).toString();
+}
+
+function computeQuantity(): string {
+  return (Math.floor(Math.random() * 10) + 1).toString();
+}
+
+function computeDeliveryDate(): string {
+  return new Date().toLocaleDateString();
+}
+
 export default function OrderHistoryEntry({ orderId }: OrderHistoryEntryProps) {
-  const [deliveryDate, setDeliveryDate] = useState<string>('');
-  const [amount, setAmount] = useState<string>('');
-  const [custName, setCustName] = useState<string>('');
-  const [address, setAddress] = useState<string>('');
-  const [quantity, setQuantity] = useState<string>('');
-
-  const fnames = ["Sam", "Joe", "Tom", "Matthew", "Trevor", "Fred"];
-  const lnames = ["Darnold", "Flacco", "Brady", "Stafford", "Lawrence", "Tagovailoa"];
-
-  const streets = ["Main St", "Oak Ave", "Elm Street", "Pine Road", "Maple Drive", "Cedar Lane"];
-  const cities = ["Springfield", "Shelbyville", "Capital City", "Gotham", "Metropolis", "Smallville"];
-  const states = ["AZ", "CA", "TX", "FL", "NY", "IL", "PA", "OH", "GA", "NC"];
-
-  // Function to generate random address
-  const generateRandomAddress = (): string => {
-    const randomStreetNum = Math.floor(Math.random() * 9000) + 1000;
-    const randomStreet = streets[Math.floor(Math.random() * streets.length)];
-    const randomCity = cities[Math.floor(Math.random() * cities.length)];
-    const randomState = states[Math.floor(Math.random() * states.length)];
-    const randomZip = Math.floor(Math.random() * 90000) + 10000;
-
-    return `${randomStreetNum} ${randomStreet}, ${randomCity}, ${randomState} ${randomZip}, USA`;
-  };
-
-  useEffect(() => {
-    // Generate random customer name
-    const randomFnameIndex = Math.floor(Math.random() * fnames.length);
-    const randomLnameIndex = Math.floor(Math.random() * lnames.length);
-    const fullName = fnames[randomFnameIndex] + " " + lnames[randomLnameIndex];
-    setCustName(fullName);
-
-    // Generate random amount
-    const baseAmount = 10.00;
-    const randomExtra = Math.floor(Math.random() * 90);
-    const totalAmount = baseAmount + randomExtra;
-    setAmount(totalAmount.toString());
-
-    // Generate delivery date
-    const today = new Date();
-    setDeliveryDate(today.toLocaleDateString());
-
-    // Generate random address
-    setAddress(generateRandomAddress());
-
-    // Generate random quantity (1-10 items)
-    const randomQuantity = Math.floor(Math.random() * 10) + 1;
-    setQuantity(randomQuantity.toString());
-  }, []);
+  const [deliveryDate] = useState(computeDeliveryDate);
+  const [custName] = useState(computeCustName);
+  const [amount] = useState(computeAmount);
+  const [address] = useState(generateRandomAddress);
+  const [quantity] = useState(computeQuantity);
 
   return (
     <div className="order-hist-entry">
