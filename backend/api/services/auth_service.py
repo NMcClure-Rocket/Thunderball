@@ -6,8 +6,8 @@ Placeholder user list until Db2 adapter is ready.
 
 # ── Placeholder user data ──────────────────────────────────────
 _users = [
-    # {"first_name": "John", "last_name": "Doe", "email": "jdoe@a.com", "pass": "mypassword"},
-    # {"first_name": "Admin", "last_name": "User", "email": "admin", "pass": "admin123"},
+    {"first_name": "John", "last_name": "Doe", "email": "jdoe@a.com", "pass": "mypassword"},
+    {"first_name": "Admin", "last_name": "User", "email": "admin", "pass": "admin123"},
 ]
 
 
