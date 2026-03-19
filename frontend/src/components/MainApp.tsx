@@ -1,5 +1,6 @@
 import { Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './Navbar';
+import { HomePage } from '../pages/home-page';
 import Main from '../pages/main';
 import Catalog from '../pages/catalog';
 import Checkout from '../pages/checkout';
@@ -17,7 +18,7 @@ export default function MainApp({ onLogout }: { onLogout: () => void }) {
       <Navbar onLogout={onLogout} />
       <div style={{ paddingTop: '28px' }}>
         <Routes>
-          <Route path="/" element={<Main />} />
+          <Route path="/" element={<HomePage />} />
           <Route path="/catalog" element={<Catalog />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/shopping-cart" element={<ShoppingCart />} />

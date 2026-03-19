@@ -21,53 +21,10 @@ interface CartItem {
   quantity: number;
 }
 
-const placeholderCartItems: CartItem[] = [
-  {
-    itemId: 'placeholder-1',
-    priceId: 'temp-1',
-    name: 'Arc Lantern Serum',
-    description: 'A bright, reusable tonic placeholder for the hero slot in your cart.',
-    format: 'Glass Vial',
-    potency: 3,
-    reusable: true,
-    category: 'Restoratives',
-    price: '24.00',
-    imageLink: '',
-    quantity: 1,
-  },
-  {
-    itemId: 'placeholder-2',
-    priceId: 'temp-2',
-    name: 'Field Kit Refill',
-    description: 'A secondary line item to show stacking content and quantity controls.',
-    format: 'Packet',
-    potency: 2,
-    reusable: false,
-    category: 'Supplies',
-    price: '12.50',
-    imageLink: '',
-    quantity: 2,
-  },
-  {
-    itemId: 'placeholder-3',
-    priceId: 'temp-3',
-    name: 'Nightwatch Balm',
-    description: 'A final placeholder product for summary and spacing behavior.',
-    format: 'Tin',
-    potency: 1,
-    reusable: true,
-    category: 'Recovery',
-    price: '8.75',
-    imageLink: '',
-    quantity: 1,
-  },
-];
-
 export default function ShoppingCart() {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showShippingForm, setShowShippingForm] = useState(false);
-  const [showCCForm, setShowCCForm] = useState(false);
+  const [showCheckout, setShowCheckout] = useState(false);
 
   useEffect(() => {
     document.body.classList.add('shopping-cart-page');
@@ -84,9 +41,7 @@ export default function ShoppingCart() {
     };
   }, []);
 
-  const displayItems = cartItems.length > 0 ? cartItems : placeholderCartItems;
-  const isPreviewMode = cartItems.length === 0;
-  const subtotal = displayItems.reduce((total, item) => {
+  const subtotal = cartItems.reduce((total, item) => {
     const price = Number.parseFloat(item.price) || 0;
     return total + price * item.quantity;
   }, 0);
@@ -98,18 +53,6 @@ export default function ShoppingCart() {
     const updatedCart = cartItems.filter((_, i) => i !== index);
     setCartItems(updatedCart);
     localStorage.setItem('cart', JSON.stringify(updatedCart));
-  };
-
-  const handleSubmitOrder = () => {
-    const cart = localStorage.getItem('cart');
-    const addressid = localStorage.getItem('addressid');
-    const ccid = localStorage.getItem('ccid');
-    
-    console.log("=== LOCAL STORAGE ===");
-    console.log("Cart:", cart);
-    console.log("Address ID:", addressid);
-    console.log("CC ID:", ccid);
-    console.log("=== END ===");
   };
 
   if (loading) {
@@ -128,64 +71,52 @@ export default function ShoppingCart() {
       <section className="shopping-cart-panel">
         <header className="shopping-cart-header">
           <div>
-            <span className="shopping-cart-kicker">Checkout staging area</span>
+            <span className="shopping-cart-kicker">Order review</span>
             <h1>Shopping Cart</h1>
             <p>
-              A temporary cart layout with the content weighted to the right and
-              enough structure to swap in real actions later.
+              Review the items in your cart before entering shipping and payment details.
             </p>
           </div>
-          {isPreviewMode ? (
-            <span className="shopping-cart-preview-badge">Preview placeholders</span>
-          ) : (
-            <span className="shopping-cart-preview-badge shopping-cart-preview-live">
-              Live cart data
-            </span>
-          )}
         </header>
 
         <div className="shopping-cart-grid">
           <div className="shopping-cart-items">
-            {displayItems.map((item, index) => (
-              <article key={`${item.itemId}-${item.priceId}`} className="shopping-cart-card">
-                <div className="shopping-cart-card-media">
-                  <span>{item.category}</span>
-                </div>
-                <div className="shopping-cart-card-body">
-                  <div className="shopping-cart-card-topline">
-                    <div>
-                      <h2>{item.name}</h2>
-                      <p>{item.description}</p>
+            {cartItems.length === 0 ? (
+              <div className="shopping-cart-empty-state">
+                <h2>Your cart is empty</h2>
+                <p>Add items from the catalog to see them here.</p>
+              </div>
+            ) : (
+              cartItems.map((item, index) => (
+                <article key={`${item.itemId}-${item.priceId}`} className="shopping-cart-card">
+                  <div className="shopping-cart-card-media">
+                    <span>{item.category}</span>
+                  </div>
+                  <div className="shopping-cart-card-body">
+                    <div className="shopping-cart-card-topline">
+                      <div>
+                        <h2>{item.name}</h2>
+                        <p>{item.description}</p>
+                      </div>
+                      <strong>${(Number.parseFloat(item.price) || 0).toFixed(2)}</strong>
                     </div>
-                    <strong>${(Number.parseFloat(item.price) || 0).toFixed(2)}</strong>
-                  </div>
 
-                  <div className="shopping-cart-meta-row">
-                    <span>{item.format}</span>
-                    <span>Potency {item.potency}</span>
-                    <span>{item.reusable ? 'Reusable' : 'Single use'}</span>
-                  </div>
+                    <div className="shopping-cart-meta-row">
+                      <span>{item.format}</span>
+                      <span>Potency {item.potency}</span>
+                      <span>{item.reusable ? 'Reusable' : 'Single use'}</span>
+                    </div>
 
-                  <div className="shopping-cart-actions-row">
-                    <div className="shopping-cart-quantity-pill">
-                      <button type="button" disabled>
-                        -
-                      </button>
-                      <span>{item.quantity}</span>
-                      <button type="button" disabled>
-                        +
+                    <div className="shopping-cart-actions-row">
+                      <span className="shopping-cart-quantity-label">Quantity: {item.quantity}</span>
+                      <button type="button" className="shopping-cart-text-button" onClick={() => handleRemoveItem(index)}>
+                        Remove
                       </button>
                     </div>
-                    <button type="button" className="shopping-cart-text-button" disabled>
-                      Save for later
-                    </button>
-                    <button type="button" className="shopping-cart-text-button" onClick={() => handleRemoveItem(index)} disabled={isPreviewMode}>
-                      Remove
-                    </button>
                   </div>
-                </div>
-              </article>
-            ))}
+                </article>
+              ))
+            )}
           </div>
 
           <aside className="shopping-cart-summary">
@@ -193,7 +124,7 @@ export default function ShoppingCart() {
               <h2>Order Summary</h2>
               <div className="shopping-cart-summary-row">
                 <span>Items</span>
-                <strong>{displayItems.length}</strong>
+                <strong>{cartItems.reduce((count, item) => count + item.quantity, 0)}</strong>
               </div>
               <div className="shopping-cart-summary-row">
                 <span>Subtotal</span>
@@ -211,44 +142,27 @@ export default function ShoppingCart() {
                 <span>Total</span>
                 <strong>${total.toFixed(2)}</strong>
               </div>
-              <button type="button" className="shopping-cart-primary-button" disabled>
-                Continue to checkout
-              </button>
-              <button type="button" className="shopping-cart-secondary-button" disabled>
-                Apply promo code
-              </button>
-            </div>
-
-            <div className="shopping-cart-note-card">
-              <span className="shopping-cart-note-label">Temporary notes</span>
-              <p>
-                Use this block for shipping copy, loyalty messaging, or trust badges
-                once the real checkout flow is ready.
-              </p>
+              {cartItems.length > 0 && (
+                <button
+                  type="button"
+                  className="shopping-cart-checkout-button"
+                  onClick={() => setShowCheckout(!showCheckout)}
+                >
+                  {showCheckout ? 'Hide Checkout' : 'Check Out'}
+                </button>
+              )}
             </div>
           </aside>
         </div>
+
+        {showCheckout && cartItems.length > 0 && (
+          <div className="shopping-cart-checkout-section">
+            <ShippingAddressForm />
+            <CCInfoForm />
+            <SubmitPurchaseInfoButton />
+          </div>
+        )}
       </section>
-
-      <div style={{ marginTop: '20px', marginBottom: '20px', padding: '15px', backgroundColor: '#f9f9f9', borderRadius: '8px' }}>
-        <h3>Total Items: {cartItems.length}</h3>
-        <h3>Total Price: ${total.toFixed(2)}</h3>
-        <SubmitPurchaseInfoButton />
-      </div>
-
-      <div className="shipping-address-form-div">
-        <button onClick={() => setShowShippingForm(!showShippingForm)}>
-          {showShippingForm ? 'Hide Shipping Form' : 'Show Shipping Form'}
-        </button>
-        {showShippingForm && <ShippingAddressForm />}
-      </div>
-
-      <div className="cc-info-form-div">
-        <button onClick={() => setShowCCForm(!showCCForm)}>
-          {showCCForm ? 'Hide Payment Form' : 'Show Payment Form'}
-        </button>
-        {showCCForm && <CCInfoForm />}
-      </div>
     </main>
   );
 }
