@@ -4,6 +4,7 @@ from typing import Any, Dict, List
 from utilities.error_handler import ResponseCode
 import ibm_db_dbi  # type: ignore[import-untyped]
 from db.dao.abstract_record import DatabaseAccessObject
+from api.models.credit_card import NewCCRequest
 
 
 class CCIDao(DatabaseAccessObject):
@@ -86,7 +87,7 @@ class CCIDao(DatabaseAccessObject):
     # def compare_records(self, entry1:List[Any], entry2:List[Any]) -> bool:
     #     if entry1 = entry2:
 
-    def insert_cc(self, entry:List[Any]) -> List[Any]:
+    def insert_cc(self, entry: NewCCRequest) -> List[Any]:
         select_stmt = (
             f"SELECT * FROM {self._table_name} "
             f"WHERE NUMBER = ? AND SECURITY_CODE = ? AND EXPIRATION = ? "

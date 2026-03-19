@@ -271,6 +271,7 @@ _SAMPLE_ADDRESS = {
     "first_name": "Jane", "last_name": "Doe",
     "address": "1 Main St", "addr_2": "",
     "city": "Miami", "state": "FL", "country": "US", "zip": "33101",
+    "customerid": 1,
 }
 
 
