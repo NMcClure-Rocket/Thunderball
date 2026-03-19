@@ -189,7 +189,7 @@ class TestInventoryDAO:
 class TestOrderDAO:
     def test_table_name(self, mock_connection):
         dao = OrderDAO(mock_connection)
-        assert dao._table_name == "USER12.ORDER"
+        assert dao._table_name == "USER12.INVORDER"
 
     def test_primary_key(self, mock_connection):
         dao = OrderDAO(mock_connection)
