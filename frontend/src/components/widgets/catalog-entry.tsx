@@ -1,4 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+
+function computeDeliveryDate(): string {
+  const today = new Date();
+  const randomDays = Math.floor(Math.random() * 15); // Random 0-14 days
+  const date = new Date(today.getTime() + randomDays * 24 * 60 * 60 * 1000);
+  return date.toLocaleDateString();
+}
 
 interface CatalogEntryProps {
   id: string;
@@ -9,15 +16,7 @@ interface CatalogEntryProps {
 
 export default function CatalogEntry({ id, name, price, img }: CatalogEntryProps) {
   const baseURL = "http://localhost:8000";
-  const [deliveryDate, setDeliveryDate] = useState<string>('');
-
-  // Generate random delivery date once when component mounts
-  useEffect(() => {
-    const today = new Date();
-    const randomDays = Math.floor(Math.random() * 15); // Random 0-14 days
-    const deliveryDate = new Date(today.getTime() + randomDays * 24 * 60 * 60 * 1000);
-    setDeliveryDate(deliveryDate.toLocaleDateString());
-  }, []);
+  const [deliveryDate] = useState(computeDeliveryDate);
 
   return (
     <div className="catalog-entry">
