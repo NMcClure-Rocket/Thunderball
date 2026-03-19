@@ -1,6 +1,6 @@
 import SubmitShippingAddressFormButton from "../buttons/submit-shipping-address-form-button";
 import USStatesDropdown from "../dropdowns/US-states-dropdown";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function ShippingAddressForm() {
   const [fName, setfName] = useState('');
@@ -11,6 +11,16 @@ export default function ShippingAddressForm() {
   const [state, setState] = useState('');
   const [country, setCountry] = useState('');
   const [zip, setZip] = useState('');
+  const [customerId, setCustomerId] = useState('');
+  
+     useEffect(() => {
+        // Get customerId from localStorage on component mount
+        const storedCustomerId = localStorage.getItem('customerid');
+        if (storedCustomerId) {
+          setCustomerId(storedCustomerId);
+          console.log("Loaded customerid from localStorage:", storedCustomerId);
+        }
+      }, []);
 
   return (
     <div className="shipping-form-wrapper">
@@ -49,7 +59,7 @@ export default function ShippingAddressForm() {
           state={state}
           country={country}
           zip={zip}
-          customerId={12}
+          customerId={parseInt(customerId)}
           />
       </form>
     </div>

@@ -40,3 +40,42 @@
 .read-the-docs {
   color: #888;
 }
+
+.site-sound-toggle {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 1200;
+  min-width: 132px;
+  padding: 8px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  border-radius: 8px;
+  background: rgba(18, 18, 22, 0.72);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  cursor: pointer;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.site-sound-toggle:hover {
+  transform: scale(1.05);
+  background: rgba(36, 36, 45, 0.88);
+}
+
+.site-sound-toggle:disabled {
+  opacity: 0.55;
+  cursor: wait;
+  transform: none;
+}
+
+@media (max-width: 640px) {
+  .site-sound-toggle {
+    right: 12px;
+    bottom: 12px;
+    min-width: 116px;
+    padding: 7px 10px;
+    font-size: 12px;
+  }
+}

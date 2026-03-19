@@ -3,8 +3,10 @@ from pydantic import BaseModel
 
 
 class PurchaseRequest(BaseModel):
-    itemId: int
+    model_config = {"populate_by_name": True}
+    itemid: int
     qty: int
+    transaction: float
     customerid: int
     addressid: int
     ccid: int

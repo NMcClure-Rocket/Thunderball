@@ -57,3 +57,27 @@ class CustomerDAO(DatabaseAccessObject):
             f"SELECT USERID, PASSWORD"
             f" FROM {self._table_name} WHERE EMAIL = ?"
         )
+        
+    #### SPENCERS CODE ##### vvvvvvvvvvv    
+    def get_customer_by_email_and_password(self, email: str, password: str) -> tuple:
+        '''
+        Gets a customer by their email and password.
+        
+        Args:
+            email (str): The customer's email address
+            password (str): The customer's password
+            
+        Returns:
+            tuple: Customer record if found, None if not found
+        '''
+        select_stmt = (
+            f"SELECT CUSTOMERID FROM {self._table_name} "
+            f"WHERE EMAIL = ? AND PASSWORD = ?"
+        )
+        
+        cursor = self._connection.cursor()
+        cursor.execute(select_stmt, (email, password))
+        result = cursor.fetchone()
+        cursor.close()
+        
+        return result
