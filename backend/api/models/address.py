@@ -3,6 +3,7 @@ from pydantic import BaseModel
 
 
 class NewAddressRequest(BaseModel):
+    model_config = {"populate_by_name": True}
     first_name: str
     last_name: str
     address: str
@@ -11,3 +12,4 @@ class NewAddressRequest(BaseModel):
     state: str
     country: str
     zip: str
+    customerid: int

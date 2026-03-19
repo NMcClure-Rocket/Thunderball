@@ -7,6 +7,7 @@ same in-memory data used by the inventory service.
 """
 from unittest.mock import MagicMock, patch
 import pytest
+import api.routes.address  # noqa: F401 – ensure module is imported before patching
 
 # 4-column rows for BasePriceDAO.get_all_records() → used by GET /inventory
 _BASE_PRICE_ROWS = [
@@ -48,4 +49,42 @@ def mock_inventory_db():
     mock_conn.cursor.side_effect = make_cursor
 
     with patch("api.routes.inventory.conn", mock_conn):
+        yield
+
+
+_SAMPLE_ADDRESS_ROW = (1, "Jane", "Doe", "1 Main St", "", "Miami", "FL", "US", "33101", 1)
+
+
+@pytest.fixture(autouse=True, scope="module")
+def mock_address_db():
+    """Patch api.routes.address.conn so address route tests need no live DB."""
+    mock_conn = MagicMock()
+
+    def make_cursor():
+        cursor = MagicMock()
+
+        def do_execute(sql, params=None):
+            sql_upper = sql.upper()
+            if "COUNT(*)" in sql_upper:
+                cursor.fetchall.return_value = [(0,)]
+            elif sql_upper.strip().startswith("INSERT"):
+                cursor.fetchall.return_value = []
+            elif params and len(params) == 1 and "ADDRESSID" in sql_upper:
+                # Final SELECT after INSERT: SELECT * WHERE ADDRESSID = ?
+                cursor.fetchall.return_value = [_SAMPLE_ADDRESS_ROW]
+            elif params and len(params) == 1:
+                # get_records_by_customerid: SELECT * WHERE CUSTOMERID = ?
+                cursor.fetchall.return_value = (
+                    [] if params[0] == 9999 else [_SAMPLE_ADDRESS_ROW]
+                )
+            else:
+                # Dedup SELECT (many params) – no existing record
+                cursor.fetchall.return_value = []
+
+        cursor.execute.side_effect = do_execute
+        return cursor
+
+    mock_conn.cursor.side_effect = make_cursor
+
+    with patch("api.routes.address.conn", mock_conn):
         yield

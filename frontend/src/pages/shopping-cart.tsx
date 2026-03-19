@@ -1,4 +1,7 @@
 import { useState, useEffect } from 'react';
+import CCInfoForm from '../components/forms/cc-info-form';
+import ShippingAddressForm from '../components/forms/shipping-address-form';
+import '../css/forms.css';
 import shoppingCartTavern from '../assets/Shopping Cart Tavern.png';
 import '../css/shopping-cart.css';
 
@@ -61,6 +64,8 @@ const placeholderCartItems: CartItem[] = [
 export default function ShoppingCart() {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showShippingForm, setShowShippingForm] = useState(false);
+  const [showCCForm, setShowCCForm] = useState(false);
 
   useEffect(() => {
     document.body.classList.add('shopping-cart-page');
@@ -87,6 +92,12 @@ export default function ShoppingCart() {
   const tax = subtotal * 0.07;
   const total = subtotal + shipping + tax;
 
+  const handleRemoveItem = (index: number) => {
+    const updatedCart = cartItems.filter((_, i) => i !== index);
+    setCartItems(updatedCart);
+    localStorage.setItem('cart', JSON.stringify(updatedCart));
+  };
+
   if (loading) {
     return (
       <div className="shopping-cart-shell">
@@ -97,6 +108,8 @@ export default function ShoppingCart() {
       </div>
     );
   }
+
+  const total = cartItems.reduce((sum, item) => sum + (parseFloat(item.price) * item.quantity), 0);
 
   return (
     <main className="shopping-cart-shell">
