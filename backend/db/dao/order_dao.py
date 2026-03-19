@@ -55,6 +55,13 @@ class OrderDAO(DatabaseAccessObject):
 
     def insert_order(self, entry: Dict[str, Any]) -> bool:
         # Check that user isn't ordering more of the item than exists
+        from db.dao.inventory_dao import InventoryDAO
+        from db.connector import conn
+        invdao = InventoryDAO(conn)
+        amt = invdao.get_amount_by_itemid(entry["itemid"])
+        if amt < entry["qty"] or entry["qty"] < 1:
+            print(f"FAILED: qty={entry['qty']}")
+            return False
 
         count_stmt = f"SELECT COUNT(*) FROM {self._table_name}"
         cursor = self._execute_query(count_stmt)
@@ -62,14 +69,42 @@ class OrderDAO(DatabaseAccessObject):
         count+=1 # Increment to get new CCID
         
         ins_stmt = f"INSERT INTO {self._table_name} (ORDERID, PURCHASE_TIME, DELIVERY_EST, ITEMID, AMOUNT, TRANSACTION, CCID, CUSTOMERID, ADDRESSID) VALUES (?,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,?,?,?,?,?,?)"
-        ins_paras = [count, entry["itemid"], entry["qty"], entry["transaction"], entry["customerid"], entry["addressid"], entry["ccid"]]
+        ins_paras = [count, entry["itemid"], entry["qty"], entry["transaction"], entry["ccid"], entry["customerid"], entry["addressid"]]
+        print(ins_stmt)
+        print(ins_paras)
         cursor = self._execute_query(ins_stmt, tuple(ins_paras))
 
         # Check that the insert was successful
         select_new_stmt = (f"SELECT * FROM {self._table_name} WHERE ORDERID = ?")
+        print(select_new_stmt)
         cursor = self._execute_query(select_new_stmt, (count,))
         rows = cursor.fetchall()
         if len(rows) == 0:
             return False
-        else:
+        
+        # Decrement inventory amount
+        new_amt = amt - entry["qty"]
+        return_amt = invdao.decrement_amount(entry["itemid"], new_amt)
+        if return_amt == new_amt:
             return True
+        else:
+            return False
+        
+    def get_history(self, customerid: int) -> List[Any]:
+        select_stmt = (
+            f"SELECT INVENTORY.ITEMID, INVENTORY.NAME, INVENTORY.DESCRIPTION, "
+            f"    INVENTORY.FORMAT, INVENTORY.POTENCY, "
+            f"    INVENTORY.REUSABLE, INVENTORY.CATEGORY, "
+            f"    INVORDER.AMOUNT, INVORDER.TRANSACTION, "
+            f"    INVORDER.PURCHASE_TIME, INVORDER.DELIVERY_EST, "
+            f"    BASEPRICE.IMAGELINK "
+            f"FROM USER12.INVORDER "
+            f"INNER JOIN USER12.INVENTORY "
+            f"ON INVORDER.ITEMID = INVENTORY.ITEMID "
+            f"INNER JOIN USER12.BASEPRICE "
+            f"ON INVENTORY.BASEINFO = BASEPRICE.PRICEID "
+            f"WHERE INVORDER.CUSTOMERID = ? "
+        )
+        cursor = self._execute_query(select_stmt, (customerid,))
+        rows = cursor.fetchall()
+        return rows
