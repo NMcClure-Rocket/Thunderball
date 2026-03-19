@@ -55,6 +55,13 @@ class OrderDAO(DatabaseAccessObject):
 
     def insert_order(self, entry: Dict[str, Any]) -> bool:
         # Check that user isn't ordering more of the item than exists
+        from db.dao.inventory_dao import InventoryDAO
+        from db.connector import conn
+        invdao = InventoryDAO(conn)
+        amt = invdao.get_amount_by_itemid(entry["itemid"])
+        if amt < entry["qty"] or entry["qty"] < 1:
+            print(f"FAILED: qty={entry['qty']}")
+            return False
 
         count_stmt = f"SELECT COUNT(*) FROM {self._table_name}"
         cursor = self._execute_query(count_stmt)
@@ -71,5 +78,11 @@ class OrderDAO(DatabaseAccessObject):
         rows = cursor.fetchall()
         if len(rows) == 0:
             return False
-        else:
+        
+        # Decrement inventory amount
+        new_amt = amt - entry["qty"]
+        return_amt = invdao.decrement_amount(entry["itemid"], new_amt)
+        if return_amt == new_amt:
             return True
+        else:
+            return False
