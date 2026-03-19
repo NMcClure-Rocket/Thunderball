@@ -81,18 +81,18 @@ class TestCreateUser:
     def test_created_user_appears_in_list(self):
         import api.services.auth_service as svc
         svc.create_user("Bob", "Jones", "bob@test.com", "pw")
-        assert any(u["user"] == "bob@test.com" for u in svc._users)
+        assert any(u["email"] == "bob@test.com" for u in svc._users)
 
     def test_first_name_stored(self):
         import api.services.auth_service as svc
         svc.create_user("Carl", "Young", "carl@test.com", "pw")
-        user = next(u for u in svc._users if u["user"] == "carl@test.com")
+        user = next(u for u in svc._users if u["email"] == "carl@test.com")
         assert user["first_name"] == "Carl"
 
     def test_last_name_stored(self):
         import api.services.auth_service as svc
         svc.create_user("Dana", "White", "dana@test.com", "pw")
-        user = next(u for u in svc._users if u["user"] == "dana@test.com")
+        user = next(u for u in svc._users if u["email"] == "dana@test.com")
         assert user["last_name"] == "White"
 
     def test_second_create_for_same_user_still_false(self):
