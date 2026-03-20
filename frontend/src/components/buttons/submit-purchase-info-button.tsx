@@ -71,14 +71,15 @@ export default function SubmitPurchaseInfoButton() {
       const data = await response.json();
       console.log("Response:", data);
 
-      if (response.ok) {
+      if (response.ok && data.status === 'ok') {
         console.log("=== SUCCESS ===");
         alert("Order submitted successfully!");
         // Clear cart from localStorage
         localStorage.removeItem('cart');
       } else {
         console.log("=== FAILED ===");
-        alert("Error submitting order");
+        console.log("Backend error:", data);
+        alert(`Error submitting order: ${data.detail || data.message || 'Unknown error'}`);
       }
     } catch (err) {
       console.error('Error:', err);

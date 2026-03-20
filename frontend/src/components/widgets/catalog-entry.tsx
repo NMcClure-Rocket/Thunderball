@@ -21,7 +21,6 @@ export default function CatalogEntry({ name, price, img }: CatalogEntryProps) {
   return (
     <div className="catalog-entry">
       <img src={`${baseURL}${img}`} alt={name} />
-      <h2>{id}</h2>
       <h2>{name}</h2>
       <h2>${price}</h2>
       <p>Estimated delivery: {deliveryDate}</p>
