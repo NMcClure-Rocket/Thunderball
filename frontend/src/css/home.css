@@ -1,11 +1,40 @@
 body.home-page {
+  background-color: transparent;
   background-image: linear-gradient(rgba(16, 12, 9, 0.35), rgba(16, 12, 9, 0.35)), var(--home-bg-image);
-  background-size: 80%;
-  background-position: center 30px;
-  background-attachment: fixed;
+  background-size: cover;
+  background-position: center top;
   background-repeat: no-repeat;
+  background-attachment: scroll;
 }
 
 body.home-page #root > div {
   background: transparent !important;
+}
+
+.home-page-shell {
+  min-height: calc(100vh - 108px);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 80px 48px 32px;
+}
+
+.home-page-feature-image {
+  width: min(38vw, 520px);
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+  transform: translate(70px, -246px);
+}
+
+@media (max-width: 900px) {
+  .home-page-shell {
+    justify-content: center;
+    padding: 96px 50px 50px;
+  }
+
+  .home-page-feature-image {
+    width: min(72vw, 420px);
+    transform: translate(16px, -206px);
+  }
 }

@@ -41,11 +41,16 @@ export default function CCInfoForm() {
         <label>Card Number</label>
         <input type="text" value={cardNumber} onChange={(e) => setCardNumber(e.target.value)} />
         
-        <label>Expiration</label>
-        <input type="text" placeholder="MM/YY" value={expiration} onChange={(e) => setExpiration(e.target.value)} />
-        
-        <label>CVC</label>
-        <input type="text" value={cvc} onChange={(e) => setCvc(e.target.value)} />
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+          <div>
+            <label>Expiration</label>
+            <input type="text" placeholder="MM/YY" value={expiration} onChange={(e) => setExpiration(e.target.value)} style={{ width: '100%' }} />
+          </div>
+          <div>
+            <label>CVC</label>
+            <input type="text" value={cvc} onChange={(e) => setCvc(e.target.value)} style={{ width: '100%' }} />
+          </div>
+        </div>
         
         <label>Billing Address</label>
         <input type="text" value={address} onChange={(e) => setAddress(e.target.value)} />

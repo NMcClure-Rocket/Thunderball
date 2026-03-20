@@ -100,7 +100,7 @@ export default function AddToCart({ priceId, onClose, onAddToCart }: AddToCartPr
           id: items[0].base_info,
           name: items[0].name,
           price: items[0].price,
-          image: "placeholder.png"
+          image: `/assets/base/${items[0].name.toLowerCase().replace(/\s+/g, '-')}.png`
         });
 
         setInventoryItems(items);
@@ -218,7 +218,7 @@ export default function AddToCart({ priceId, onClose, onAddToCart }: AddToCartPr
 
         <div className="modal-body">
           <div className="modal-image">
-            <img src={baseItem.image} alt={baseItem.name} />
+            <img src={`${baseURL}${baseItem.image}`} alt={baseItem.name} />
           </div>
 
           <div className="modal-details">
