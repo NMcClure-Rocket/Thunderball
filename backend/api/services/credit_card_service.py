@@ -1,6 +1,6 @@
 """
 Credit card service – in-memory placeholder storage until Db2 is ready.
-"""
+"""  # pylint: disable=duplicate-code
 
 _credit_cards: list[dict] = [
     {
@@ -35,6 +35,7 @@ def get_cards_by_customer(customer_id: int) -> list[dict]:
 
 def create_card(customer_id: int, card_data: dict) -> None:
     """Add a new credit card record."""
-    global _next_id
+    global _next_id  # pylint: disable=global-statement
     _credit_cards.append({"id": _next_id, "customer_id": customer_id, **card_data})
     _next_id += 1
+

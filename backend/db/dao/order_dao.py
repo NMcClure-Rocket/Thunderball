@@ -70,13 +70,10 @@ class OrderDAO(DatabaseAccessObject):
         
         ins_stmt = f"INSERT INTO {self._table_name} (ORDERID, PURCHASE_TIME, DELIVERY_EST, ITEMID, AMOUNT, TRANSACTION, CCID, CUSTOMERID, ADDRESSID) VALUES (?,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP,?,?,?,?,?,?)"
         ins_paras = [count, entry["itemid"], entry["qty"], entry["transaction"], entry["ccid"], entry["customerid"], entry["addressid"]]
-        print(ins_stmt)
-        print(ins_paras)
         cursor = self._execute_query(ins_stmt, tuple(ins_paras))
 
         # Check that the insert was successful
         select_new_stmt = (f"SELECT * FROM {self._table_name} WHERE ORDERID = ?")
-        print(select_new_stmt)
         cursor = self._execute_query(select_new_stmt, (count,))
         rows = cursor.fetchall()
         if len(rows) == 0:

@@ -167,9 +167,9 @@ class TestGetItemById:
         assert item is not None
         assert item["base_info"] == 2
 
-    def test_returns_none_for_id_3(self):
+    def test_returns_none_for_id_13(self):
         from api.services.inventory_service import get_item_by_id
-        assert get_item_by_id(3) is None
+        assert get_item_by_id(13) is None
 
     def test_returns_none_for_unknown_id(self):
         from api.services.inventory_service import get_item_by_id

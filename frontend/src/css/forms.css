@@ -87,23 +87,21 @@
 
 /* Submit Button */
 .shipping-form-wrapper button {
-  padding: 12px 20px;
-  background-color: #4CAF50;
-  color: white;
-  border: none;
-  border-radius: 4px;
+  padding: 14px 16px;
+  background: linear-gradient(135deg, #241912, #4d392d 58%, #5d7190);
+  color: #f6eee5;
+  border: 0;
+  border-radius: 14px;
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   margin-top: 10px;
+  transition: opacity 0.18s ease, transform 0.18s ease;
 }
 
 .shipping-form-wrapper button:hover {
-  background-color: #45a049;
-}
-
-.shipping-form-wrapper button:active {
-  background-color: #3d8b40;
+  opacity: 0.88;
+  transform: scale(1.02);
 }
 
 /* Shopping Cart Page */

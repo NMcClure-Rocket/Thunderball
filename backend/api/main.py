@@ -1,10 +1,13 @@
 """
 FastAPI main application entrypoint
 """
+import logging
+from pathlib import Path
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from api.server import router
-import logging
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -26,18 +29,22 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Serve spell images from backend/assets/
+_assets_dir = Path(__file__).resolve().parent.parent / "assets"
+app.mount("/assets", StaticFiles(directory=_assets_dir), name="assets")
+
 # Include routes AFTER middleware
 app.include_router(router)
-
 
 # Root endpoints
 @app.get("/")
 async def root():
+    """Return API status message."""
     return {"message": "Thunderball API is running"}
-
 
 @app.get("/health")
 async def health():
+    """Return health check status."""
     return {"status": "healthy"}
 
 if __name__ == "__main__":

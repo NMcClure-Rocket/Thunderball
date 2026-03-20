@@ -1,6 +1,6 @@
 """
 Address service – in-memory placeholder storage until Db2 is ready.
-"""
+"""  # pylint: disable=duplicate-code
 
 _addresses: list[dict] = [
     {
@@ -31,6 +31,7 @@ def get_addresses_by_customer(customer_id: int) -> list[dict]:
 
 def create_address(customer_id: int, address_data: dict) -> None:
     """Add a new shipping address record."""
-    global _next_id
+    global _next_id  # pylint: disable=global-statement
     _addresses.append({"id": _next_id, "customer_id": customer_id, **address_data})
     _next_id += 1
+

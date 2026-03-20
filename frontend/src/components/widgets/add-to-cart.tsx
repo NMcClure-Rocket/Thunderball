@@ -100,7 +100,7 @@ export default function AddToCart({ priceId, onClose, onAddToCart }: AddToCartPr
           id: items[0].base_info,
           name: items[0].name,
           price: items[0].price,
-          image: "placeholder.png"
+          image: `/assets/base/${items[0].name.toLowerCase().replace(/\s+/g, '-')}.png`
         });
 
         setInventoryItems(items);
@@ -155,6 +155,15 @@ export default function AddToCart({ priceId, onClose, onAddToCart }: AddToCartPr
       return;
     }
 
+    // Check if item already exists in cart
+    const existingCart = JSON.parse(localStorage.getItem('cart') || '[]');
+    const itemExists = existingCart.some((item: CartItem) => item.itemId === selectedItem.itemid.toString());
+
+    if (itemExists) {
+      alert('This item is already in your shopping cart');
+      return;
+    }
+
     const cartItem: CartItem = {
       itemId: selectedItem.itemid.toString(),
       //priceId: baseItem.id.toString(),
@@ -170,7 +179,6 @@ export default function AddToCart({ priceId, onClose, onAddToCart }: AddToCartPr
     };
 
     // Save to local storage
-    const existingCart = JSON.parse(localStorage.getItem('cart') || '[]');
     existingCart.push(cartItem);
     localStorage.setItem('cart', JSON.stringify(existingCart));
 
@@ -218,7 +226,7 @@ export default function AddToCart({ priceId, onClose, onAddToCart }: AddToCartPr
 
         <div className="modal-body">
           <div className="modal-image">
-            <img src={baseItem.image} alt={baseItem.name} />
+            <img src={`${baseURL}${baseItem.image}`} alt={baseItem.name} />
           </div>
 
           <div className="modal-details">
