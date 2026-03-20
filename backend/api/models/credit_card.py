@@ -2,7 +2,9 @@
 from pydantic import BaseModel
 
 
-class NewCCRequest(BaseModel):
+class NewCCRequest(BaseModel):  # pylint: disable=duplicate-code
+    """Request model for creating a new credit card entry."""
+
     model_config = {"populate_by_name": True}
     number: int
     security_code: int

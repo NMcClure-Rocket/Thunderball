@@ -155,6 +155,15 @@ export default function AddToCart({ priceId, onClose, onAddToCart }: AddToCartPr
       return;
     }
 
+    // Check if item already exists in cart
+    const existingCart = JSON.parse(localStorage.getItem('cart') || '[]');
+    const itemExists = existingCart.some((item: CartItem) => item.itemId === selectedItem.itemid.toString());
+
+    if (itemExists) {
+      alert('This item is already in your shopping cart');
+      return;
+    }
+
     const cartItem: CartItem = {
       itemId: selectedItem.itemid.toString(),
       //priceId: baseItem.id.toString(),
@@ -170,7 +179,6 @@ export default function AddToCart({ priceId, onClose, onAddToCart }: AddToCartPr
     };
 
     // Save to local storage
-    const existingCart = JSON.parse(localStorage.getItem('cart') || '[]');
     existingCart.push(cartItem);
     localStorage.setItem('cart', JSON.stringify(existingCart));
 
