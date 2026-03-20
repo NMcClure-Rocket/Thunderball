@@ -45,7 +45,7 @@ export default function ShoppingCart() {
   }, []);
 
   const displayItems = cartItems.length > 0 ? cartItems : [];
-  const isPreviewMode = cartItems.length === 0;
+  //const isPreviewMode = cartItems.length === 0;
   const subtotal = displayItems.reduce((total, item) => {
     const price = Number.parseFloat(item.price) || 0;
     return total + price * item.quantity;
