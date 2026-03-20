@@ -178,7 +178,7 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
         </button>
       </form>
 
-      <button
+      {/* <button
         onClick={handleCreateAccount}
         disabled={loading}
         onMouseEnter={() => setIsCreateHovered(true)}
@@ -205,7 +205,7 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
         }}
       >
         Create Account
-      </button>
+      </button> */}
       </div>
     </div>
   );
