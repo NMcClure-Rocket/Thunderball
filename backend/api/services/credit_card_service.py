@@ -21,6 +21,8 @@ _credit_cards: list[dict] = [
     },
 ]
 
+_next_id = 2
+
 
 def get_cards_by_customer(customer_id: int) -> list[dict]:
     """Return all credit cards for a given customer."""
@@ -33,6 +35,7 @@ def get_cards_by_customer(customer_id: int) -> list[dict]:
 
 def create_card(customer_id: int, card_data: dict) -> None:
     """Add a new credit card record."""
-    new_id = len(_credit_cards) + 1
-    _credit_cards.append({"id": new_id, "customer_id": customer_id, **card_data})
+    global _next_id  # pylint: disable=global-statement
+    _credit_cards.append({"id": _next_id, "customer_id": customer_id, **card_data})
+    _next_id += 1
 
