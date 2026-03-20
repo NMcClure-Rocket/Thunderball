@@ -1,0 +1,115 @@
+body.about-page {
+  background-color: #1b120d;
+  background-image: linear-gradient(rgba(16, 10, 6, 0.55), rgba(16, 10, 6, 0.55)), var(--about-bg-image);
+  background-size: cover;
+  background-position: center top;
+  background-repeat: no-repeat;
+  background-attachment: scroll;
+}
+
+body.about-page #root > div {
+  background: transparent !important;
+}
+
+.about-container {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 92px 64px 48px;
+  color: #eee5da;
+}
+
+.about-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background: rgba(248, 243, 237, 0.95);
+  border-radius: 14px;
+  padding: 24px 32px;
+  margin-bottom: 36px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  gap: 6px;
+}
+
+.about-kicker {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #3f2e23;
+}
+
+.about-header h1 {
+  margin: 4px 0 0;
+  font-size: clamp(36px, 5vw, 56px);
+  color: #1b120d;
+  line-height: 1;
+}
+
+.about-header p {
+  margin: 6px 0 0;
+  font-size: 15px;
+  color: #5a3e2b;
+}
+
+.about-section {
+  background: rgba(248, 243, 237, 0.93);
+  border-left: 5px solid #7f5330;
+  border-radius: 10px;
+  padding: 24px 28px;
+  margin-bottom: 24px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.28);
+  color: #1b120d;
+}
+
+.about-section h2 {
+  margin: 0 0 12px;
+  font-size: 22px;
+  font-weight: 700;
+  color: #4d392d;
+}
+
+.about-section p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.7;
+  color: #2f2722;
+}
+
+.about-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.about-card {
+  background: rgba(77, 57, 45, 0.1);
+  border: 1px solid rgba(90, 60, 38, 0.3);
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.about-card h3 {
+  margin: 0 0 8px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #4d392d;
+}
+
+.about-card p {
+  margin: 0;
+  font-size: 13px;
+  color: #3f2e23;
+}
+
+@media (max-width: 700px) {
+  .about-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .about-container {
+    padding: 92px 24px 32px;
+  }
+}

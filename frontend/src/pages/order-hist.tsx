@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import OrderHistoryEntry from '../components/widgets/order-hist-entry';
+import orderHistBGImage from '../assets/OrderHistBG.png';
 import '../css/order-hist.css';
 
 interface OrderItem {
@@ -24,6 +25,10 @@ export default function OrderHistory() {
   const baseURL = "http://localhost:8000";
 
   useEffect(() => {
+    document.body.classList.add('order-history-page');
+    document.body.style.setProperty('--order-history-bg-image', `url('${orderHistBGImage}')`);
+    console.log('Order history background set to:', `url('${orderHistBGImage}')`);
+
     const fetchOrders = async () => {
       setError('');
       setLoading(true);
@@ -75,6 +80,11 @@ export default function OrderHistory() {
     };
 
     fetchOrders();
+
+    return () => {
+      document.body.classList.remove('order-history-page');
+      document.body.style.removeProperty('--order-history-bg-image');
+    };
   }, []);
 
   if (loading) {
@@ -91,7 +101,11 @@ export default function OrderHistory() {
 
   return (
     <div className="order-history-container">
-      <h1>Order History</h1>
+      <header className="order-history-header">
+        <span className="order-history-kicker">Account history</span>
+        <h1>Order History</h1>
+        <p>Review your past spell purchases and delivery details below.</p>
+      </header>
       <div className="order-history-list">
         {orders.map((order) => (
           <OrderHistoryEntry 
