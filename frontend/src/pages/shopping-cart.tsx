@@ -9,7 +9,7 @@ import '../css/shopping-cart.css';
 
 interface CartItem {
   itemId: string;
-  priceId: string;
+  // priceId: string;
   name: string;
   description: string;
   format: string;
@@ -96,7 +96,7 @@ export default function ShoppingCart() {
         <div className="shopping-cart-grid">
           <div className="shopping-cart-items">
             {displayItems.map((item, index) => (
-              <article key={`${item.itemId}-${item.priceId}`} className="shopping-cart-card">
+              <article key={`${item.itemId}`} className="shopping-cart-card">
                 <div className="shopping-cart-card-media">
                   <span>{item.category}</span>
                 </div>

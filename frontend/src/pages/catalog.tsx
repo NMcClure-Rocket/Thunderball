@@ -11,6 +11,20 @@ interface Product {
   image: string;
 }
 
+interface CartItem {
+  itemId: string;
+  // priceId: string;
+  name: string;
+  description: string;
+  format: string;
+  potency: number;
+  reusable: boolean;
+  category: string;
+  price: string;
+  imageLink: string;
+  quantity: number;
+}
+
 export default function Catalog() {
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
