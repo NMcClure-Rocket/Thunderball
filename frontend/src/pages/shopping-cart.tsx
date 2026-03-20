@@ -95,7 +95,11 @@ export default function ShoppingCart() {
               cartItems.map((item, index) => (
                 <article key={`${item.itemId}`} className="shopping-cart-card">
                   <div className="shopping-cart-card-media">
-                    <span>{item.category}</span>
+                    <img
+                      src={`http://localhost:8000${item.imageLink}`}
+                      alt={item.name}
+                      className="shopping-cart-card-image"
+                    />
                   </div>
                   <div className="shopping-cart-card-body">
                     <div className="shopping-cart-card-topline">
