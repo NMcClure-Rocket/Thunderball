@@ -15,7 +15,6 @@ router = APIRouter()
 async def purchase(body: dict[str, list[dict[str, Any]]]):
     """Submit one or more purchase orders."""
     orders = body["orders"]
-    print(orders)
     success = False
     for o in orders:
         dao = OrderDAO(conn)
