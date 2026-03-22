@@ -1,16 +1,14 @@
 ---
-description: Spellstack API authentication, endpoint behavior, and first-call setup for developers.
+description: Spellstack API provides RESTful endpoints for product catalog access, inventory management, and purchase workflows.
 ---
 
 # Getting started with Spellstack API
 
 Spellstack API provides a RESTful interface for integration clients to interact with the Spellstack backend. Spellstack API is designed to be simple and intuitive for developers familiar with standard REST conventions. There are no special authentication requirements or custom headers needed to work with the API. All endpoints expect and return JSON-formatted data.
 
-**API behavior**  
-
 All requests and responses use `application/json` as the content type. CORS is enabled for the frontend development origin at `http://localhost:3000`, allowing the client application to communicate with the API without cross-origin restrictions during local development. The API does not require authentication and all documented endpoints are accessible without credentials or tokens.
 
-**Base URL**  
+**Base URL for the API**  
 
 `http://localhost:8000`
 

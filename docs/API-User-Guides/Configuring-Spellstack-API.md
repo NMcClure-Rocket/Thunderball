@@ -1,8 +1,8 @@
 ---
-description: Configuring Spellstack API for local development and testing, including prerequisites, setup instructions, and troubleshooting tips.
+description: Running Spellstack API for local development and testing, including prerequisites, setup instructions, and troubleshooting tips.
 ---
 
-# Configuring Spellstack API
+# Running Spellstack API
 
 Configure and run the Spellstack API locally for development and testing. Spellstack API is built with FastAPI and serves as the backend for the Spellstack commerce platform.
 
@@ -14,10 +14,12 @@ Before you begin, install the following tools:
 - FastAPI and Uvicorn which can be installed from `backend/requirements.txt`
 - IBM Db2 client and Db2 Connect license
 
+!!! info "info"
+    The API uses an IBM Db2 database for inventory and transaction data by using Db2 Connect. Ensure you have the Db2 client installed and configured with the appropriate connection details for your local environment.
+
 ## Local service overview
 
-- Backend API: `http://localhost:8000`
-- Frontend dev server: `http://localhost:3000`
+The Spellstack API runs on `http://localhost:8000` and provides RESTful endpoints for the frontend client to access the product catalog, inventory data, and purchase workflows. The frontend development server runs separately on `http://localhost:3000` and communicates with the API for all backend interactions.
 
 ## Project setup
 

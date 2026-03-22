@@ -6,7 +6,7 @@ description: Release notes for Spellstack v0.0.1, including new features, bug fi
 
 ## Overview
 
-Spellstack v 0.0.1 is the initial release of the Spellstack platform, introducing the foundational product catalog, inventory-backed spell variants, and core application functionality. This release establishes the baseline architecture for catalog management, purchasing workflows, and API-driven inventory access.
+Spellstack v 0.0.1 is the initial release of the Spellstack platform, introducing the product catalog, inventory-backed spell variants, and core application functionality. This release establishes the baseline architecture for catalog management, purchasing workflows, and API-driven inventory access.
 
 ## New Features
 
