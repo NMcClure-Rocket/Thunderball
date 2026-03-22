@@ -17,12 +17,6 @@ Before you begin, install the following tools:
 !!! info "info"
     Fast API and Uvicorn can be installed through the `requirements.txt` file in the backend folder.
 
-## Database configuration
-
-The API connects to an IBM Db2 database for inventory and transaction data. Connection settings are defined in `backend/config/settings.yaml`. You will need to update the `db2` section of the configuration with your local database connection details, including host, port, database name, username, and password.
-
-Database credentials are not stored in `settings.yaml` and must be provided through environment variables. Ensure your local Db2 instance is running and accessible before starting the backend.
-
 ## Local service overview
 
 The Spellstack API runs on `http://localhost:8000` and provides RESTful endpoints for the frontend client to access the product catalog, inventory data, and purchase workflows. The frontend development server runs separately on `http://localhost:3000` and communicates with the API for all backend interactions.
