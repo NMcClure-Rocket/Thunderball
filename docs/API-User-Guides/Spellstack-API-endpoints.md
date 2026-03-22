@@ -118,9 +118,6 @@ Submit a purchase order for an inventory item.
 | `addressid` | int | Address ID in the shipping address database |
 | `ccid` | int | Credit card ID in the CCI table |
 
-!!! note "note"
-    The status code 200 (OK) is displayed whenever this endpoint called.
-
 **Success response fields**  
 
 | Field | Type | Description |
