@@ -1,115 +1,49 @@
 ---
-description: Spell Stack Release Notes for v 0.0.1
+description: Release notes for Spellstack v0.0.1, including new features, bug fixes, and documentation updates.
 ---
 
-# Release Notes – Version X.Y.Z
-
-**Release Date:** YYYY‑MM‑DD  
-**Author:** Your Name / Team  
-**Status:** Draft | Final
-
----
+# Spellstack Release Notes v 0.0.1
 
 ## Overview
 
-Provide a high-level summary of what this release includes and its primary purpose.
-
----
-
-## Jira Tickets
-
-| Ticket ID | Title / Summary | Type (Bug/Feature/Improvement) | Status | Notes |
-| ----------- | ------------------ | ------------------------------- | -------- | ------- |
-| ABC-000 | Short description of the work done | Feature | Done | Optional notes |
-| ABC-000 | Short description | Bug | Done | Optional notes |
-| ABC-000 | Short description | Improvement | In Progress | Optional notes |
-
----
+Spellstack v 0.0.1 is the initial release of the Spellstack platform, introducing the product catalog, inventory-backed spell variants, and core application functionality. This release establishes the baseline architecture for catalog management, purchasing workflows, and API-driven inventory access.
 
 ## New Features
 
-Describe new functionality introduced in this release.
+The following features were implemented as part of the initial Spellstack release:
 
-- Feature name: brief explanation.
-- Feature name: brief explanation.
-- Feature name: brief explanation.
-
----
-
-## Improvements
-
-List enhancements, performance updates, UI refinements, or refactors.
-
-- Improvement description.
-- Improvement description.
-- Improvement description.
-
----
+| Jira ID | Feature | Description |
+| ------- | ------- | ----------- |
+| NAR-149 | Order History Page | Added an order history view allowing users to review previously purchased spell variants. |
+| NAR-153 | Reports | Implemented reporting capabilities for catalog and transaction data. |
+| NAR-189 | Reports | Enhanced reporting workflows and data presentation. |
+| NAR-108 | ER Diagram | Created an entity relationship diagram documenting the backend data model for spells, variants, and inventory. |
+| NAR-143 | API Implementation | Implemented backend APIs for retrieving catalog and inventory data. |
+| NAR-145 | Security Updates | Updated development environment security configurations. |
+| NAR-147 | Login Page | Implemented user authentication and login interface. |
+| NAR-148 | Catalog Page | Added a catalog page displaying the 12 core spells with base pricing and imagery. |
+| NAR-150 | Checkout Page | Implemented checkout flow for purchasing spell variants. |
+| NAR-151 | Database Creation | Created the initial database schema supporting spells, variants, and inventory. |
+| NAR-152 | DAO Layer | Implemented data access objects (DAO) for backend persistence. |
+| NAR-190 | CCI Form | Added credit card information (CCI) form for checkout. |
+| NAR-191 | Shipping Address Form | Implemented shipping address capture during checkout. |
+| NAR-41 | Figma Mockups | Created frontend design mockups to guide UI implementation. |
+| NAR-40 | CI/CD Structure | Established CI/CD structure and repository organization. |
+| NAR-42 | Kanban Board | Created and configured the project Kanban board. |
 
 ## Bug Fixes
 
-List all defects resolved in this release.
+The following issues were resolved in this release:
 
-- Bug description.
-- Bug description.
-- Bug description.
+| Jira ID | Fix | Description |
+| ------- | ----- | ------------- |
+| NAR-129 | Database Test Data | Corrected invalid and inconsistent database test data. |
+| NAR-140 | Frontend Mockups | Fixed layout and formatting issues in frontend Figma mockups. |
+| NAR-141 | Frontend Mockups | Addressed additional UI inconsistencies identified during review. |
 
----
+## Documentation
 
-## Breaking Changes
-
-Document any changes that require user action or may impact existing functionality.
-
-- Description of breaking change.
-- Required action, if applicable.
-
----
-
-## Documentation Updates
-
-List updates made to documentation.
-
-- New guides or updates to existing docs.
-- API reference changes.
-- Architecture or design documentation updates.
-
----
-
-## Known Issues
-
-List known bugs or limitations that remain unresolved.
-
-- Description of issue.
-- Workarounds, if available.
-
----
-
-## Testing & Validation
-
-Provide a summary of the testing performed.
-
-- Unit tests: Passed/Failed
-- Integration tests: Passed/Failed
-- Manual validation: Completed/Not Completed
-- Performance results: Describe metrics, if relevant
-
----
-
-## Deployment Notes
-
-Call out environment changes, migration requirements, or operational considerations.
-
-- Database migration required: Yes/No
-- Configuration changes required
-- Rollback steps
-- Impacted services
-
----
-
-## Contributors
-
-List contributors for this release.
-
-- Name / Username
-- Name / Username
-- Team Name
+| Jira ID | Item | Description |
+| ------- | ------ | ------------- |
+| NAR-325 | Release Notes | Created initial release notes for Spellstack v0.0.1. |
+| NAR-154 | API Documentation | Documented API endpoints and usage for Spellstack v0.0.1. |

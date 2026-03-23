@@ -17,7 +17,7 @@ theme:
       quote: octicons/quote-16
   name: material
   logo: assets/images/TBlogo.png
-  favicon: assets/images/TBlogo.png
+  favicon: assets/images/Spellstack_fav.png
   palette:
     primary: green
     accent: light blue
@@ -31,7 +31,8 @@ nav:
       - v 0.0.1: Release-Notes/Release-Notes-v-0.0.1.md
   - API User Guides: 
       - Getting Started with Spellstack API: API-User-Guides/Getting-Started-with-Spellstack-API.md
-      - Configuring Spellstack API: API-User-Guides/Configuring-Spellstack-API.md
+      - Spellstack API Endpoints: API-User-Guides/Spellstack-API-endpoints.md
+      - Running Spellstack API: API-User-Guides/Running-Spellstack-API.md
 
 
 
