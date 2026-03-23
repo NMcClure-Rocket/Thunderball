@@ -142,7 +142,7 @@ export default function Navbar({ onLogout }: NavbarProps) {
         <NavLink to="/">Home</NavLink>
         <NavLink to="/catalog">Catalog</NavLink>
         <NavLink to="/order-history">Order History</NavLink>
-        <NavExternalLink href="http://127.0.0.1:8001/Release-Notes/Release-Notes-v-0.0.1/">Documents</NavExternalLink>
+        <NavExternalLink href="http://127.0.0.1:8001">Documents</NavExternalLink>
       </div>
       <div style={{ display: 'flex', alignItems: 'center' }}>
         <NavIconLink to="/shopping-cart">

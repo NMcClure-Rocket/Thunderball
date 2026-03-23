@@ -406,3 +406,126 @@ def test_getcc_seeded_customer_has_rows(client):
 def test_getcc_unknown_customer_returns_empty(client):
     body = client.get("/getcc/9999").json()
     assert body["rows"] == []
+
+
+# ===========================================================================
+# POST /logon – 401 and 500 paths  (auth.py lines 18-23)
+# ===========================================================================
+
+@pytest.fixture()
+def mock_customer_dao_error():
+    """Patch CustomerDAO so get_customer_by_email_and_password raises an exception."""
+    mock_dao_instance = MagicMock()
+    mock_dao_instance.get_customer_by_email_and_password.side_effect = RuntimeError("DB down")
+    with patch("api.routes.auth.CustomerDAO", return_value=mock_dao_instance):
+        yield mock_dao_instance
+
+
+def test_logon_invalid_credentials_returns_401(client, mock_customer_dao_not_found):
+    resp = client.post("/logon", json={"email": "nobody@test.com", "pass": "wrong"})
+    assert resp.status_code == 401
+
+
+def test_logon_invalid_credentials_detail(client, mock_customer_dao_not_found):
+    body = client.post("/logon", json={"email": "nobody@test.com", "pass": "wrong"}).json()
+    assert "Invalid" in body["detail"] or body["detail"] != ""
+
+
+def test_logon_db_error_returns_500(client, mock_customer_dao_error):
+    resp = client.post("/logon", json={"email": "x@test.com", "pass": "pw"})
+    assert resp.status_code == 500
+
+
+def test_logon_db_error_detail(client, mock_customer_dao_error):
+    body = client.post("/logon", json={"email": "x@test.com", "pass": "pw"}).json()
+    assert body["detail"] == "Database error"
+
+
+# ===========================================================================
+# POST /newcc – with mocked CCIDao  (credit_card.py lines 15-18)
+# ===========================================================================
+
+_SAMPLE_CC_FULL = {
+    "number": 4111111111111111, "security_code": 123,
+    "expiration": "12/28", "processor": "Visa",
+    "first_name": "Test", "last_name": "User",
+    "address": "1 St", "addr_2": "",
+    "city": "NYC", "state": "NY", "country": "US", "zip": "10001",
+    "customerid": 1,
+}
+
+
+@pytest.fixture()
+def mock_cci_dao():
+    """Patch CCIDao so insert_cc returns a fake row without a real DB."""
+    mock_dao_instance = MagicMock()
+    mock_dao_instance.insert_cc.return_value = [(42,)]
+    with patch("api.routes.credit_card.CCIDao", return_value=mock_dao_instance):
+        yield mock_dao_instance
+
+
+def test_newcc_with_mock_returns_200(client, mock_cci_dao):
+    assert client.post("/newcc", json=_SAMPLE_CC_FULL).status_code == 200
+
+
+def test_newcc_with_mock_returns_ok_status(client, mock_cci_dao):
+    body = client.post("/newcc", json=_SAMPLE_CC_FULL).json()
+    assert body["status"] == "ok"
+
+
+def test_newcc_with_mock_returns_ccid(client, mock_cci_dao):
+    body = client.post("/newcc", json=_SAMPLE_CC_FULL).json()
+    assert body["ccid"] == 42
+
+
+# ===========================================================================
+# GET /orders/{customerid}  (purchase.py lines 33-36)
+# ===========================================================================
+
+@pytest.fixture()
+def mock_order_dao_history():
+    """Patch OrderDAO so get_history returns fake rows without a real DB."""
+    mock_dao_instance = MagicMock()
+    mock_dao_instance.get_history.return_value = [
+        (1, "Spell", "desc", "instant", 5, "1", "Protection",
+         2, 9.99, "2024-01-01", "2024-01-05", "/img/spell.png")
+    ]
+    with patch("api.routes.purchase.OrderDAO", return_value=mock_dao_instance):
+        yield mock_dao_instance
+
+
+@pytest.fixture()
+def mock_order_dao_history_empty():
+    mock_dao_instance = MagicMock()
+    mock_dao_instance.get_history.return_value = []
+    with patch("api.routes.purchase.OrderDAO", return_value=mock_dao_instance):
+        yield mock_dao_instance
+
+
+def test_get_orders_returns_200(client, mock_order_dao_history):
+    assert client.get("/orders/1").status_code == 200
+
+
+def test_get_orders_returns_rows_key(client, mock_order_dao_history):
+    import json as _json
+    body = _json.loads(client.get("/orders/1").json())
+    assert "rows" in body
+
+
+def test_get_orders_has_correct_fields(client, mock_order_dao_history):
+    import json as _json
+    rows = _json.loads(client.get("/orders/1").json())["rows"]
+    assert len(rows) > 0
+    r = rows[0]
+    for key in ("itemid", "name", "description", "format", "transaction"):
+        assert key in r
+
+
+def test_get_orders_empty_returns_200(client, mock_order_dao_history_empty):
+    assert client.get("/orders/9999").status_code == 200
+
+
+def test_get_orders_empty_returns_empty_rows(client, mock_order_dao_history_empty):
+    import json as _json
+    body = _json.loads(client.get("/orders/9999").json())
+    assert body == {"rows": []}

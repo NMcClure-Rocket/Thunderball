@@ -60,7 +60,7 @@ export const HomePage: React.FC = () => {
       </button>
       <button
         className="home-page-doc-symbol"
-        onClick={() => window.location.href = 'http://127.0.0.1:8001/Release-Notes/Release-Notes-v-0.0.1/'}
+        onClick={() => window.location.href = 'http://127.0.0.1:8001'}
         aria-label="Go to API documentation"
       >
         <img src={docSymImage} alt="Documentation symbol" className="home-page-doc-symbol-img" />

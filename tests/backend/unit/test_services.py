@@ -442,3 +442,37 @@ class TestCreateCard:
         create_card(66, {**self._sample(), "processor": "Visa"})
         create_card(66, {**self._sample(), "processor": "Amex"})
         assert len(get_cards_by_customer(66)) == 2
+
+
+# ===========================================================================
+# inventory_service – get_all_items_by_id
+# ===========================================================================
+
+class TestGetAllItemsById:
+    def test_returns_list(self):
+        from api.services.inventory_service import get_all_items_by_id
+        assert isinstance(get_all_items_by_id(1), list)
+
+    def test_known_base_info_returns_items(self):
+        from api.services.inventory_service import get_all_items_by_id
+        items = get_all_items_by_id(1)
+        assert len(items) > 0
+
+    def test_all_returned_items_have_matching_base_info(self):
+        from api.services.inventory_service import get_all_items_by_id
+        items = get_all_items_by_id(2)
+        assert all(i["base_info"] == 2 for i in items)
+
+    def test_unknown_id_returns_empty_list(self):
+        from api.services.inventory_service import get_all_items_by_id
+        assert get_all_items_by_id(9999) == []
+
+    def test_zero_id_returns_empty_list(self):
+        from api.services.inventory_service import get_all_items_by_id
+        assert get_all_items_by_id(0) == []
+
+    def test_all_base_info_ids_return_items(self):
+        from api.services.inventory_service import get_all_items_by_id
+        for base_info in range(1, 13):
+            items = get_all_items_by_id(base_info)
+            assert len(items) > 0, f"base_info={base_info} returned no items"
