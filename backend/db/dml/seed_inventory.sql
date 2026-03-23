@@ -1,0 +1,129 @@
+-- ============================================================
+-- INVENTORY seed data – 2-3 format variations per spell
+-- FORMAT values: Tome, PDF, Scroll
+-- REUSABLE: '1' = yes, '0' = no
+-- CATEGORIES: Protection, Conjuration, Debugging,
+--             Deployment, Optimization, Destruction
+-- ============================================================
+
+INSERT INTO INVENTORY (ITEMID, NAME, DESCRIPTION, FORMAT, POTENCY, REUSABLE, CATEGORY, PRICE, AMOUNT, BASEINFO) VALUES
+
+-- ── Firewall Spell (BASEINFO = 1) ───────────────────────────
+(1,  'Firewall Spell',
+     'Conjures an impenetrable network barrier that blocks unauthorized traffic and repels digital intruders.',
+     'Tome',   8, '1', 'Protection',   189.99, 10, 1),
+(2,  'Firewall Spell',
+     'A lightweight portable shield that filters packets and wards off brute-force attacks.',
+     'PDF',    5, '1', 'Protection',   124.50,  6, 1),
+(3,  'Firewall Spell',
+     'Single-use emergency firewall that instantly seals all open ports.',
+     'Scroll', 9, '0', 'Protection',   275.00,  3, 1),
+
+-- ── Encryption Hex (BASEINFO = 2) ───────────────────────────
+(4,  'Encryption Hex',
+     'Wraps data in layers of AES-256 arcane ciphers, rendering it unreadable to adversaries.',
+     'Tome',   9, '1', 'Protection',   249.99,  5, 2),
+(5,  'Encryption Hex',
+     'Quick-cast encryption that scrambles payloads in transit with rotating keys.',
+     'PDF',    6, '1', 'Protection',   159.75,  8, 2),
+(6,  'Encryption Hex',
+     'One-time pad hex that guarantees perfect secrecy for a single transmission.',
+     'Scroll', 10,'0', 'Protection',   350.00,  2, 2),
+
+-- ── Bug Banish (BASEINFO = 3) ───────────────────────────────
+(7,  'Bug Banish',
+     'Summons a swarm of linting sprites that hunt down and eliminate code defects.',
+     'Tome',   4, '1', 'Debugging',     99.99, 15, 3),
+(8,  'Bug Banish',
+     'Portable debugging guide that highlights stack traces and suggests fixes.',
+     'PDF',    3, '0', 'Debugging',     69.50, 12, 3),
+
+-- ── Deploy Surge (BASEINFO = 4) ─────────────────────────────
+(9,  'Deploy Surge',
+     'Triggers a CI/CD pipeline blast that pushes code to production at lightning speed.',
+     'Tome',   7, '1', 'Deployment',   299.99,  4, 4),
+(10, 'Deploy Surge',
+     'Compact deployment manual for zero-downtime rolling updates.',
+     'PDF',    5, '1', 'Deployment',   199.00,  7, 4),
+(11, 'Deploy Surge',
+     'Emergency hotfix scroll that force-deploys a critical patch instantly.',
+     'Scroll', 8, '0', 'Deployment',   375.00,  2, 4),
+
+-- ── Cache Conjure (BASEINFO = 5) ────────────────────────────
+(12, 'Cache Conjure',
+     'Materializes a Redis-infused memory cache that accelerates data retrieval tenfold.',
+     'Tome',   6, '1', 'Optimization', 149.99,  9, 5),
+(13, 'Cache Conjure',
+     'Pocket reference for configuring distributed caches and TTL strategies.',
+     'PDF',    4, '1', 'Optimization', 109.25,  6, 5),
+
+-- ── Recursive Loop (BASEINFO = 6) ───────────────────────────
+(14, 'Recursive Loop',
+     'Traps enemies in an infinite callback spiral until their stack overflows.',
+     'Tome',   7, '0', 'Destruction',  199.99,  5, 6),
+(15, 'Recursive Loop',
+     'Compact incantation that spawns nested function calls to overwhelm targets.',
+     'PDF',    5, '0', 'Destruction',  139.50,  8, 6),
+(16, 'Recursive Loop',
+     'Single-use vortex that recursively dismantles an opponent''s logic layer.',
+     'Scroll', 9, '0', 'Destruction',  310.00,  2, 6),
+
+-- ── Patch Ward (BASEINFO = 7) ───────────────────────────────
+(17, 'Patch Ward',
+     'Continuously monitors dependencies and auto-applies security patches before exploits emerge.',
+     'Tome',   5, '1', 'Protection',   159.99,  7, 7),
+(18, 'Patch Ward',
+     'Field guide for CVE detection and rapid vulnerability remediation.',
+     'PDF',    3, '1', 'Protection',    99.00, 11, 7),
+
+-- ── Quantum Compile (BASEINFO = 8) ──────────────────────────
+(19, 'Quantum Compile',
+     'Harnesses qubit parallelism to compile massive codebases in milliseconds.',
+     'Tome',  10, '1', 'Optimization', 399.99,  3, 8),
+(20, 'Quantum Compile',
+     'Theoretical framework for superposition-based build optimization.',
+     'PDF',    7, '1', 'Optimization', 249.50,  5, 8),
+(21, 'Quantum Compile',
+     'Experimental one-shot compiler burst that resolves all build errors simultaneously.',
+     'Scroll', 10,'0', 'Optimization', 499.00,  1, 8),
+
+-- ── Cloud Summon (BASEINFO = 9) ─────────────────────────────
+(22, 'Cloud Summon',
+     'Spins up auto-scaling infrastructure across multiple availability zones on command.',
+     'Tome',   8, '1', 'Deployment',   279.99,  4, 9),
+(23, 'Cloud Summon',
+     'Quick-start guide for provisioning serverless functions and managed services.',
+     'PDF',    5, '1', 'Deployment',   179.00,  9, 9),
+(24, 'Cloud Summon',
+     'One-time terraform incantation that deploys an entire cloud environment.',
+     'Scroll', 9, '0', 'Deployment',   399.00,  2, 9),
+
+-- ── Binary Barrier (BASEINFO = 10) ──────────────────────────
+(25, 'Binary Barrier',
+     'Erects a low-level bitwise shield that corrupts malicious machine code on contact.',
+     'Tome',   6, '1', 'Protection',   169.99,  6, 10),
+(26, 'Binary Barrier',
+     'Portable binary analysis toolkit for detecting buffer overflows and injection attacks.',
+     'PDF',    4, '0', 'Protection',   119.50, 10, 10),
+
+-- ── Null Pointer Curse (BASEINFO = 11) ──────────────────────
+(27, 'Null Pointer Curse',
+     'Corrupts an enemy''s object references, causing catastrophic NullPointerExceptions at runtime.',
+     'Tome',   7, '0', 'Destruction',  129.99,  8, 11),
+(28, 'Null Pointer Curse',
+     'Subtle hex that silently dereferences critical pointers in the target''s codebase.',
+     'PDF',    5, '0', 'Destruction',   89.50, 11, 11),
+(29, 'Null Pointer Curse',
+     'Devastating one-shot curse that nullifies every reference in memory.',
+     'Scroll', 9, '0', 'Destruction',  225.00,  3, 11),
+
+-- ── Merge Conflict Doom (BASEINFO = 12) ─────────────────────
+(30, 'Merge Conflict Doom',
+     'Injects irreconcilable diffs across every branch, paralyzing the target''s repository.',
+     'Tome',   8, '0', 'Destruction',  219.99,  4, 12),
+(31, 'Merge Conflict Doom',
+     'Pocket chaos manual for seeding divergent commits into upstream branches.',
+     'PDF',    6, '0', 'Destruction',  149.00,  7, 12),
+(32, 'Merge Conflict Doom',
+     'Single-use rebase bomb that rewrites history across all open pull requests.',
+     'Scroll', 10,'0', 'Destruction',  350.00,  2, 12);

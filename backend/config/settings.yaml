@@ -1,0 +1,29 @@
+# Application configuration settings
+
+app:
+  name: Thunderball
+  version: 1.0.0
+  environment: development
+
+database:
+  host: localhost
+  port: 50000
+  database: THUNDERDB
+  schema: MAIN
+  # Connection credentials should be loaded from environment variables
+  
+cobol:
+  programs_path: ./cobol/build
+  copybooks_path: ./cobol/copybooks
+  jcl_path: ./cobol/jcl
+
+api:
+  host: 0.0.0.0
+  port: 8000
+  cors_origins:
+    - http://localhost:3000
+  
+logging:
+  level: INFO
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: ./logs/app.log

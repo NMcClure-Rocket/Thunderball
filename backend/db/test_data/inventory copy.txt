@@ -1,0 +1,50 @@
+1|Healing Elixir Standard|Restores health gradually over time|Tome|45|1|Health|24.99|150|1
+2|Healing Elixir Premium|Enhanced healing with faster recovery|PDF|72|1|Health|29.99|85|1
+3|Healing Elixir Ultimate|Maximum healing power for critical situations|Scroll|95|0|Health|39.99|42|1
+4|Mana Potion Basic|Replenishes magical energy slowly|Tome|30|1|Magic|19.99|200|2
+5|Mana Potion Enhanced|Faster mana regeneration for spellcasters|PDF|58|1|Magic|24.99|120|2
+6|Mana Potion Supreme|Instant full mana restoration|Scroll|88|0|Magic|34.99|55|2
+7|Strength Brew Light|Mild strength enhancement for beginners|Tome|25|1|Combat|34.99|175|3
+8|Strength Brew Medium|Moderate strength boost for warriors|PDF|55|1|Combat|44.99|95|3
+9|Strength Brew Maximum|Extreme strength for the mightiest battles|Scroll|92|0|Combat|59.99|30|3
+10|Invisibility Draught Short|Brief invisibility for quick escapes|Tome|40|1|Stealth|49.99|110|4
+11|Invisibility Draught Extended|Longer lasting invisibility effect|PDF|68|1|Stealth|64.99|65|4
+12|Invisibility Draught Permanent|Near permanent invisibility solution|Scroll|98|0|Stealth|89.99|15|4
+13|Fire Resistance Basic|Minimal protection against flames|Tome|35|1|Defense|29.99|140|5
+14|Fire Resistance Advanced|Strong fire damage reduction|PDF|62|1|Defense|39.99|80|5
+15|Fire Resistance Complete|Total immunity to fire damage|Scroll|90|0|Defense|54.99|35|5
+16|Speed Serum Quick|Slight movement speed increase|Tome|28|1|Movement|39.99|160|6
+17|Speed Serum Fast|Significant speed enhancement|PDF|56|1|Movement|49.99|90|6
+18|Speed Serum Lightning|Blazing fast movement speed|Scroll|85|0|Movement|64.99|40|6
+19|Wisdom Extract Novice|Minor intelligence boost|Tome|33|1|Mental|44.99|130|7
+20|Wisdom Extract Scholar|Moderate wisdom enhancement|PDF|60|1|Mental|54.99|75|7
+21|Wisdom Extract Sage|Maximum intellectual capacity|Scroll|93|0|Mental|74.99|25|7
+22|Night Vision Drops Basic|Low light visibility improvement|Tome|22|1|Perception|22.99|180|8
+23|Night Vision Drops Enhanced|Clear sight in darkness|PDF|50|1|Perception|29.99|100|8
+24|Night Vision Drops Perfect|Complete darkness penetration|Scroll|82|0|Perception|39.99|45|8
+25|Antidote Solution Weak|Cures minor poisons|Tome|20|1|Cure|14.99|220|9
+26|Antidote Solution Strong|Neutralizes most toxins|PDF|48|1|Cure|22.99|130|9
+27|Antidote Solution Universal|Cures all known poisons|Scroll|80|0|Cure|34.99|50|9
+28|Luck Charm Liquid Minor|Slight luck improvement|Tome|38|1|Fortune|54.99|95|10
+29|Luck Charm Liquid Major|Significant fortune boost|PDF|65|1|Fortune|69.99|55|10
+30|Luck Charm Liquid Supreme|Maximum luck enhancement|Scroll|96|0|Fortune|94.99|20|10
+31|Teleportation Essence Short|Short range teleportation|Tome|42|1|Travel|89.99|70|11
+32|Teleportation Essence Medium|Medium distance transport|PDF|70|1|Travel|109.99|40|11
+33|Teleportation Essence Long|Long range teleportation|Scroll|97|0|Travel|149.99|15|11
+34|Shield Barrier Basic|Light protective barrier|Tome|32|1|Defense|32.99|145|12
+35|Shield Barrier Strong|Durable shield protection|PDF|58|1|Defense|44.99|85|12
+36|Shield Barrier Ultimate|Impenetrable barrier shield|Scroll|89|0|Defense|62.99|30|12
+37|Mind Reading Starter|Basic thought perception|Tome|44|1|Psychic|64.99|60|13
+38|Mind Reading Advanced|Deep thought reading ability|PDF|73|1|Psychic|84.99|35|13
+39|Mind Reading Master|Complete mental access|Scroll|99|0|Psychic|114.99|10|13
+40|Underwater Breath Short|Brief underwater breathing|Tome|26|1|Survival|27.99|155|14
+41|Underwater Breath Long|Extended aquatic survival|PDF|54|1|Survival|37.99|90|14
+42|Underwater Breath Infinite|Unlimited underwater time|Scroll|86|0|Survival|52.99|40|14
+43|Flying Feather Glide|Gentle floating descent|Tome|36|1|Movement|74.99|80|15
+44|Flying Feather Hover|Sustained aerial hovering|PDF|64|1|Movement|94.99|45|15
+45|Flying Feather Flight|True flying capability|Scroll|94|0|Movement|124.99|18|15
+46|Stone Skin Light|Minor physical resistance|Tome|29|1|Defense|42.99|135|16
+47|Stone Skin Medium|Moderate damage reduction|PDF|57|1|Defense|54.99|75|16
+48|Stone Skin Heavy|Maximum physical protection|Scroll|87|0|Defense|72.99|28|16
+49|Electric Shock Mild|Light electrical damage|Tome|31|1|Attack|36.99|125|17
+50|Electric Shock Strong|Powerful lightning strike|PDF|59|1|Attack|48.99|70|17

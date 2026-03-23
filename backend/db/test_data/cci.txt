@@ -1,0 +1,50 @@
+1|4532015112830366|123|03/28|Visa|John|Smith|123 Main Street|Apt 4B|New York|NY|United States|10001|1
+2|5425233430109903|456|07/27|Mastercard|Jane|Doe|456 Oak Avenue||Los Angeles|CA|United States|90001|2
+3|374245455400126|789|11/26|American Express|Michael|Johnson|789 Pine Road|Suite 100|Chicago|IL|United States|60601|3
+4|6011000990139424|234|05/28|Discover|Emily|Williams|321 Elm Street||Houston|TX|United States|77001|4
+5|4916338506082832|567|09/27|Visa|David|Brown|654 Maple Drive|Unit 12|Phoenix|AZ|United States|85001|5
+6|5425230225012346|890|01/29|Mastercard|Sarah|Jones|987 Cedar Lane||Philadelphia|PA|United States|19101|6
+7|378282246310005|321|04/27|American Express|Christopher|Garcia|147 Birch Court|Apt 7|San Antonio|TX|United States|78201|7
+8|6011111111111117|654|08/28|Discover|Jessica|Miller|258 Walnut Way||San Diego|CA|United States|92101|8
+9|4539578763621486|987|12/26|Visa|Matthew|Davis|369 Cherry Boulevard|Floor 3|Dallas|TX|United States|75201|9
+10|5168441223630339|147|02/28|Mastercard|Ashley|Rodriguez|741 Spruce Avenue||San Jose|CA|United States|95101|10
+11|371449635398431|258|06/27|American Express|Daniel|Martinez|852 Willow Street|Apt 22|Austin|TX|United States|78701|11
+12|6011500080009080|369|10/28|Discover|Amanda|Anderson|963 Hickory Lane||Jacksonville|FL|United States|32201|12
+13|4716266321405531|741|03/27|Visa|Joshua|Taylor|159 Ash Drive|Suite 45|Fort Worth|TX|United States|76101|13
+14|5264731020812116|852|07/29|Mastercard|Stephanie|Thomas|267 Poplar Road||Columbus|OH|United States|43201|14
+15|340000000000009|963|11/27|American Express|Andrew|Hernandez|378 Magnolia Court|Unit 8|Charlotte|NC|United States|28201|15
+16|6011000000000012|159|05/28|Discover|Nicole|Moore|489 Sycamore Way||San Francisco|CA|United States|94101|16
+17|4929000000006|267|09/26|Visa|Ryan|Martin|591 Redwood Boulevard|Apt 15|Indianapolis|IN|United States|46201|17
+18|5100000000000008|378|01/28|Mastercard|Elizabeth|Jackson|612 Cypress Street||Seattle|WA|United States|98101|18
+19|378734493671000|489|04/29|American Express|Brandon|Thompson|723 Palm Avenue|Floor 2|Denver|CO|United States|80201|19
+20|6011601160116611|591|08/27|Discover|Megan|White|834 Olive Drive||Washington|DC|United States|20001|20
+21|4485983356242217|612|12/28|Visa|Justin|Lopez|945 Juniper Lane|Suite 30|Boston|MA|United States|02101|21
+22|5200533989557118|723|02/27|Mastercard|Rachel|Lee|156 Dogwood Road||El Paso|TX|United States|79901|22
+23|370000000000002|834|06/29|American Express|Kevin|Gonzalez|267 Cottonwood Court|Apt 9|Nashville|TN|United States|37201|23
+24|6011016011016011|945|10/27|Discover|Lauren|Harris|378 Beech Way||Detroit|MI|United States|48201|24
+25|4916449628236742|156|03/28|Visa|Tyler|Clark|489 Locust Boulevard|Unit 5|Oklahoma City|OK|United States|73101|25
+26|5431111111111111|267|07/26|Mastercard|Amber|Lewis|591 Chestnut Street||Portland|OR|United States|97201|26
+27|373953192351004|378|11/28|American Express|Jason|Robinson|612 Alder Avenue|Floor 4|Las Vegas|NV|United States|89101|27
+28|6011000400000000|489|05/27|Discover|Brittany|Walker|723 Fir Drive||Memphis|TN|United States|38101|28
+29|4532756279624064|591|09/29|Visa|Aaron|Perez|834 Hemlock Lane|Apt 18|Louisville|KY|United States|40201|29
+30|5500000000000004|612|01/27|Mastercard|Samantha|Hall|945 Sequoia Road||Baltimore|MD|United States|21201|30
+31|374200000000004|723|04/28|American Express|Nathan|Young|156 Aspen Court|Suite 12|Milwaukee|WI|United States|53201|31
+32|6011111111111117|834|08/29|Discover|Kayla|Allen|267 Buckeye Way||Albuquerque|NM|United States|87101|32
+33|4916188093226163|945|12/27|Visa|Patrick|Sanchez|378 Catalpa Boulevard|Unit 20|Tucson|AZ|United States|85701|33
+34|5425232820001308|156|02/28|Mastercard|Victoria|King|489 Ginkgo Street||Fresno|CA|United States|93701|34
+35|370000000100018|267|06/26|American Express|Sean|Wright|591 Hawthorn Avenue|Apt 6|Sacramento|CA|United States|95801|35
+36|6011601160116611|378|10/28|Discover|Rebecca|Scott|612 Larch Drive||Kansas City|MO|United States|64101|36
+37|4539944678312776|489|03/29|Visa|Eric|Torres|723 Mulberry Lane|Floor 5|Mesa|AZ|United States|85201|37
+38|5163613672178482|591|07/27|Mastercard|Christina|Nguyen|834 Pecan Road||Atlanta|GA|United States|30301|38
+39|379950725161002|612|11/29|American Express|Brian|Hill|945 Sassafras Court|Suite 8|Colorado Springs|CO|United States|80901|39
+40|6011543512039098|723|05/28|Discover|Michelle|Flores|156 Sweetgum Way||Omaha|NE|United States|68101|40
+41|4716057358360|834|09/26|Visa|Steven|Green|267 Tamarack Boulevard|Unit 14|Raleigh|NC|United States|27601|41
+42|5370542151639794|945|01/29|Mastercard|Heather|Adams|378 Tupelo Street||Miami|FL|United States|33101|42
+43|345678901234564|156|04/27|American Express|Timothy|Nelson|489 Yew Avenue|Apt 25|Long Beach|CA|United States|90801|43
+44|6011123443211234|267|08/28|Discover|Kimberly|Baker|591 Zelkova Drive||Virginia Beach|VA|United States|23451|44
+45|4485711093222318|378|12/29|Visa|Mark|Rivera|612 Acacia Lane|Floor 6|Oakland|CA|United States|94601|45
+46|5143221234561234|489|02/26|Mastercard|Jennifer|Campbell|723 Banyan Road||Minneapolis|MN|United States|55401|46
+47|378901234567890|591|06/28|American Express|Paul|Mitchell|834 Camphor Court|Suite 17|Tulsa|OK|United States|74101|47
+48|6011444433332222|612|10/27|Discover|Melissa|Carter|945 Date Way||Tampa|FL|United States|33601|48
+49|4929123456781234|723|03/28|Visa|Gregory|Roberts|156 Elder Boulevard|Unit 3|Arlington|TX|United States|76001|49
+50|5234567890123456|834|07/29|Mastercard|Angela|Phillips|267 Fig Street||New Orleans|LA|United States|70112|50

@@ -1,0 +1,97 @@
+"""Data Access Object for the USER18.INVENTORY DB2 table."""
+
+from typing import Any, Dict, List
+import ibm_db_dbi  # type: ignore[import-untyped]
+from db.dao.abstract_record import DatabaseAccessObject, rbac_action
+
+
+class InventoryDAO(DatabaseAccessObject):
+    '''
+    Data Access Object for the INVENTORY table in DB2.
+    Provides database operations for inventory records.
+    '''
+
+    def __init__(self, connection: ibm_db_dbi.Connection):
+        '''
+        Initialize the InventoryDAO with the INVENTORY table.
+
+        Args:
+            connection (ibm_db_dbi.Connection): The DB2 connection object
+        '''
+        super().__init__("USER12.INVENTORY", connection)
+
+    def _get_primary_key(self) -> str:
+        '''
+        Returns the primary key column name for the INVENTORY table.
+
+        Returns:
+            str: The name of the primary key column
+        '''
+        return "INVENTORY_ID"
+
+    def _dict_from_row(self, row: tuple, columns: List[str]) -> Dict[str, Any]:
+        '''
+        Converts a database row tuple into a dictionary.
+
+        Args:
+            row (tuple): The database row as a tuple
+            columns (List[str]): List of column names corresponding to the row values
+
+        Returns:
+            Dict[str, Any]: Dictionary representation of the database row
+        '''
+        return dict(zip(columns, row))
+
+    @rbac_action("read")
+    def get_item_by_baseinfo(self, item_id: int) -> List[Any]:
+        '''
+        Retrieves inventory item details by BASEINFO identifier.
+
+        Fetches NAME, DESCRIPTION, FORMAT, POTENCY, REUSABLE, CATEGORY, PRICE,
+        and AMOUNT for the matching record.
+
+        Args:
+            item_id (str): The BASEINFO value to look up.
+
+        Returns:
+            ResponseCode: A ResponseCode wrapping a dict of the matching row,
+                          or a ResourceNotFound ResponseCode if no record exists.
+        '''
+        select_stmt = (
+            f"SELECT ITEMID, NAME, DESCRIPTION, FORMAT, POTENCY, REUSABLE, CATEGORY, PRICE, AMOUNT"
+            f" FROM {self._table_name} WHERE BASEINFO = ?"
+        )
+        cursor = self._execute_query(select_stmt, (item_id,))
+        rows = cursor.fetchall()
+
+        # if row is None:
+        #     return ResponseCode(error_tag="ResourceNotFound")
+
+        # columns = [desc[0] for desc in cursor.description]
+        # return self._dict_from_row(row, columns)
+        return rows
+
+    def get_amount_by_itemid(self, item_id: int) -> int:
+
+        select_stmt = f"SELECT AMOUNT FROM {self._table_name} WHERE ITEMID = ?"
+        cursor = self._execute_query(select_stmt, (item_id,))
+        rows = cursor.fetchall()
+
+        return rows[0][0]
+    
+    def decrement_amount(self, item_id: int, new_amount: int) -> int:
+
+        update_stmt = (
+            f"UPDATE {self._table_name} "
+            f"SET AMOUNT = ? "
+            f"WHERE ITEMID = ?"
+        )
+        update_paras = [new_amount, item_id]
+        cursor = self._execute_query(update_stmt, tuple(update_paras))
+
+        # Check the update was successful
+        select_stmt = f"SELECT AMOUNT FROM {self._table_name} WHERE ITEMID = ?"
+        cursor = self._execute_query(select_stmt, (item_id,))
+        rows = cursor.fetchall()
+
+        return rows[0][0]

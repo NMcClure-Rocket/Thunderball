@@ -1,0 +1,40 @@
+﻿name: Backend Tests
+
+on:
+  push:
+    branches: [ main, dev, 'feat-**' ]
+  pull_request:
+    branches: [ main, dev, 'feat-**' ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+        cache-dependency-path: backend/requirements.txt
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r backend/requirements.txt
+
+    - name: Run tests with coverage
+      env:
+        PYTHONPATH: backend
+      run: |
+        pytest tests/backend/ --cov=backend/api --cov-report=xml:coverage.xml --cov-report=term
+
+    - name: Upload coverage reports
+      uses: codecov/codecov-action@v5
+      if: success() && hashFiles('backend/coverage.xml') != '' && hashFiles('coverage.xml') != ''
+      with:
+        files: ./coverage.xml
+        flags: backend
+        name: backend-coverage

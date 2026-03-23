@@ -1,0 +1,12 @@
+1|Firewall Spell|114.99|/assets/base/firewall-spell.png
+2|Encryption Hex|149.99|/assets/base/encryption-hex.png
+3|Bug Banish|59.99|/assets/base/bug-banish.png
+4|Deploy Surge|199.99|/assets/base/deploy-surge.png
+5|Cache Conjure|99.50|/assets/base/cache-conjure.png
+6|Recursive Loop|130.75|/assets/base/recursive-loop.png
+7|Patch Ward|89.99|/assets/base/patch-ward.png
+8|Quantum Compile|29.99|/assets/base/quantum-compile.png
+9|Cloud Summon|224.50|/assets/base/cloud-summon.png
+10|Binary Barrier|113.25|/assets/base/binary-barrier.png
+11|Null Pointer Curse|89.00|/assets/base/null-pointer-curse.png
+12|Merge Conflict Doom|139.99|/assets/base/merge-conflict-doom.png

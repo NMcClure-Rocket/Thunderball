@@ -1,0 +1,35 @@
+[MASTER]
+# Add the backend directory so pylint can resolve backend.* imports
+init-hook='import sys; sys.path.insert(0, "backend"); sys.path.insert(0, ".")'
+
+[MESSAGES CONTROL]
+disable=
+    # Intentional TODOs are work items, not errors
+    W0511,
+    # DAO wrappers must catch all exceptions to always return a ResponseCode
+    W0718,
+    # Common pattern: parameter named 'filter', 'id', 'type' etc
+    W0622,
+    # Entity / value classes often have fewer than 2 public methods
+    R0903,
+    # Established API names like 'ID', 'numReturned' break camelCase/UPPER rules
+    C0103,
+    # ResponseCode intentionally carries many fields for structured error context
+    R0902,
+    # ResponseCode.__init__ has many optional keyword args by design
+    R0913,
+    R0917,
+    # ibm_db is a C extension; pylint cannot introspect its members at lint time
+    I1101,
+
+[FORMAT]
+# Docstrings and log messages in DB2 query methods routinely exceed 100 chars
+max-line-length=160
+
+[DESIGN]
+# Small utility classes are fine with fewer methods
+min-public-methods=1
+
+[SIMILARITIES]
+# Ignore imports when checking for duplicate code
+ignore-imports=yes
