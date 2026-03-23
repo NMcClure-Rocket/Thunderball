@@ -7,7 +7,7 @@
 7|Bug Banish|Summons a swarm of linting sprites that hunt down and eliminate code defects.|Tome|4|1|Debugging|99.99|15|3
 8|Bug Banish|Portable debugging guide that highlights stack traces and suggests fixes.|PDF|3|0|Debugging|69.50|12|3
 9|Deploy Surge|Triggers a CI/CD pipeline blast that pushes code to production at lightning speed.|Tome|7|1|Deployment|299.99|4|4
-10|Deploy Surge|Compact deployment manual for zero-downtime rolling updates.|PDF|5|1|Deployment|199.00|7|4
+10|Deploy Surge|Compact deployment manual for zero-downtime rolling updates.|PDF|5|1|Deployment|249.99|7|4
 11|Deploy Surge|Emergency hotfix scroll that force-deploys a critical patch instantly.|Scroll|8|0|Deployment|375.00|2|4
 12|Cache Conjure|Materializes a Redis-infused memory cache that accelerates data retrieval tenfold.|Tome|6|1|Optimization|149.99|9|5
 13|Cache Conjure|Pocket reference for configuring distributed caches and TTL strategies.|PDF|4|1|Optimization|109.25|6|5

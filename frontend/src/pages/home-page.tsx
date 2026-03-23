@@ -13,10 +13,10 @@ export const HomePage: React.FC = () => {
   const navigate = useNavigate();
   const baseURL = "http://localhost:8000";
   const featuredSpells = [
-    { name: 'Null Pointer Curse', price: '8.50', img: '/assets/base/null-pointer-curse.png' },
-    { name: 'Merge Conflict Doom', price: '17.00', img: '/assets/base/merge-conflict-doom.png' },
-    { name: 'Cloud Summon', price: '22.50', img: '/assets/base/cloud-summon.png' },
-    { name: 'Deploy Surge', price: '24.99', img: '/assets/base/deploy-surge.png' },
+    { name: 'Null Pointer Curse', price: '89.99', img: '/assets/base/null-pointer-curse.png' },
+    { name: 'Merge Conflict Doom', price: '139.99', img: '/assets/base/merge-conflict-doom.png' },
+    { name: 'Cloud Summon', price: '224.50', img: '/assets/base/cloud-summon.png' },
+    { name: 'Deploy Surge', price: '199.99', img: '/assets/base/deploy-surge.png' },
   ];
 
   useEffect(() => {

@@ -101,6 +101,7 @@ class OrderDAO(DatabaseAccessObject):
             f"INNER JOIN USER12.BASEPRICE "
             f"ON INVENTORY.BASEINFO = BASEPRICE.PRICEID "
             f"WHERE INVORDER.CUSTOMERID = ? "
+            f"ORDER BY INVORDER.ORDERID"
         )
         cursor = self._execute_query(select_stmt, (customerid,))
         rows = cursor.fetchall()
