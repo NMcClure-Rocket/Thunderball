@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 import loginPanel from '../../assets/LoginPanel.png';
 
 interface LoginFormProps {
@@ -12,8 +12,8 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [isLoginHovered, setIsLoginHovered] = useState(false);
-  const [isCreateHovered, setIsCreateHovered] = useState(false);
-  const navigate = useNavigate();
+  // const [isCreateHovered, setIsCreateHovered] = useState(false);
+  // const navigate = useNavigate();
   const baseURL = "http://localhost:8000";
   
   const handleSubmit = async (e: React.FormEvent) => {
@@ -68,9 +68,9 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
     }
   };
 
-  const handleCreateAccount = () => {
-    navigate('/create-account');
-  };
+  // const handleCreateAccount = () => {
+  //   navigate('/create-account');
+  // };
 // type="email" <----- PUT THIS IN THE EMAIL INPUT BOX (LINE 72)
   return (
     <div style={{
@@ -178,7 +178,7 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
         </button>
       </form>
 
-      <button
+      {/* <button
         onClick={handleCreateAccount}
         disabled={loading}
         onMouseEnter={() => setIsCreateHovered(true)}
@@ -205,7 +205,7 @@ export default function LoginForm({ onLogin }: LoginFormProps) {
         }}
       >
         Create Account
-      </button>
+      </button> */}
       </div>
     </div>
   );

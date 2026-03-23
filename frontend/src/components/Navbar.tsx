@@ -69,7 +69,8 @@ function NavIconLink({ to, children }: { to: string; children: React.ReactNode }
         padding: '4px 8px',
         display: 'inline-flex',
         alignItems: 'center',
-        border: 'none',
+        border: '1px solid var(--font-light)',
+        borderRadius: '8px',
         background: 'transparent',
         outline: 'none',
         lineHeight: 0,
@@ -141,7 +142,7 @@ export default function Navbar({ onLogout }: NavbarProps) {
         <NavLink to="/">Home</NavLink>
         <NavLink to="/catalog">Catalog</NavLink>
         <NavLink to="/order-history">Order History</NavLink>
-        <NavExternalLink href="https://spellstack.com">Docs</NavExternalLink>
+        <NavExternalLink href="http://127.0.0.1:8001/Release-Notes/Release-Notes-v-0.0.1/">Documents</NavExternalLink>
       </div>
       <div style={{ display: 'flex', alignItems: 'center' }}>
         <NavIconLink to="/shopping-cart">
