@@ -16,7 +16,7 @@ interface OrderHistoryEntryProps {
 }
 
 export default function OrderHistoryEntry({ 
-  itemid,
+  itemid: _itemid,
   name,
   description,
   format,

@@ -1,7 +1,6 @@
 import { Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './Navbar';
 import { HomePage } from '../pages/home-page';
-import Main from '../pages/main';
 import Catalog from '../pages/catalog';
 import Checkout from '../pages/checkout';
 //import CreateAccount from '../pages/create-acc';
