@@ -110,7 +110,7 @@ export default function OrderHistory() {
         {orders.map((order) => (
           <OrderHistoryEntry 
             key={order.itemid}
-            itemid={order.itemid}
+            // itemid={order.itemid}
             name={order.name}
             description={order.description}
             format={order.format}

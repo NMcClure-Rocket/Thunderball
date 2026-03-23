@@ -32,6 +32,34 @@ function NavLink({ to, children }: { to: string; children: React.ReactNode }) {
   );
 }
 
+function NavExternalLink({ href, children }: { href: string; children: React.ReactNode }) {
+  const [hovered, setHovered] = useState(false);
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        marginRight: '10px',
+        padding: '11px 20px',
+        fontWeight: 600,
+        fontSize: '1.02rem',
+        textDecoration: 'none',
+        borderRadius: '8px',
+        border: '1px solid var(--font-light)',
+        display: 'inline-block',
+        transition: 'background-color 0.2s, color 0.2s',
+        backgroundColor: hovered ? 'var(--font-light)' : 'transparent',
+        color: hovered ? 'var(--color-primary)' : 'var(--font-light)',
+      }}
+    >
+      {children}
+    </a>
+  );
+}
+
 function NavIconLink({ to, children }: { to: string; children: React.ReactNode }) {
   return (
     <Link
@@ -41,7 +69,8 @@ function NavIconLink({ to, children }: { to: string; children: React.ReactNode }
         padding: '4px 8px',
         display: 'inline-flex',
         alignItems: 'center',
-        border: 'none',
+        border: '1px solid var(--font-light)',
+        borderRadius: '8px',
         background: 'transparent',
         outline: 'none',
         lineHeight: 0,
@@ -113,6 +142,7 @@ export default function Navbar({ onLogout }: NavbarProps) {
         <NavLink to="/">Home</NavLink>
         <NavLink to="/catalog">Catalog</NavLink>
         <NavLink to="/order-history">Order History</NavLink>
+        <NavExternalLink href="http://127.0.0.1:8001">Documents</NavExternalLink>
       </div>
       <div style={{ display: 'flex', alignItems: 'center' }}>
         <NavIconLink to="/shopping-cart">

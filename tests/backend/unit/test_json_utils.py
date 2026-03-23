@@ -2,7 +2,7 @@
 
 import json
 import pytest
-from api.utils.json_utils import inventory_json, baseprice_json
+from api.utils.json_utils import inventory_json, baseprice_json, order_history_json
 
 
 # ---------------------------------------------------------------------------
@@ -131,3 +131,74 @@ class TestBasePriceJson:
     def test_empty_rows_returns_empty_items_list(self):
         parsed = json.loads(baseprice_json([]))
         assert parsed == {"items": []}
+
+
+# ===========================================================================
+# order_history_json
+# ===========================================================================
+
+class TestOrderHistoryJson:
+    def _row(self, itemid=1, name="Fire Spell", desc="Burns things", fmt="instant",
+             potency=5, reusable=True, category="offensive",
+             amount=2, transaction=9.99, purchase_time="2024-01-01",
+             delivery_est="2024-01-05", imagelink="/img/spell.png"):
+        return (itemid, name, desc, fmt, potency, reusable, category,
+                amount, transaction, purchase_time, delivery_est, imagelink)
+
+    def test_returns_valid_json_string(self):
+        result = order_history_json([self._row()])
+        parsed = json.loads(result)
+        assert isinstance(parsed, dict)
+
+    def test_top_level_key_is_rows(self):
+        parsed = json.loads(order_history_json([self._row()]))
+        assert "rows" in parsed
+
+    def test_single_row_fields_mapped_correctly(self):
+        row = self._row(itemid=7, name="Ice Spell", desc="Freezes", fmt="channel",
+                        potency=3, reusable=False, category="defensive",
+                        amount=1, transaction=12.5, purchase_time="2024-03-01",
+                        delivery_est="2024-03-05", imagelink="/img/ice.png")
+        parsed = json.loads(order_history_json([row]))
+        r = parsed["rows"][0]
+        assert r["itemid"] == 7
+        assert r["name"] == "Ice Spell"
+        assert r["description"] == "Freezes"
+        assert r["format"] == "channel"
+        assert r["potency"] == 3
+        assert r["reusable"] is False
+        assert r["category"] == "defensive"
+        assert r["amount"] == 1
+        assert r["transaction"] == 12.5
+        assert r["imagelink"] == "/img/ice.png"
+
+    def test_transaction_coerced_to_float(self):
+        row = self._row(transaction="15")
+        parsed = json.loads(order_history_json([row]))
+        assert isinstance(parsed["rows"][0]["transaction"], float)
+        assert parsed["rows"][0]["transaction"] == 15.0
+
+    def test_purchase_time_is_string(self):
+        row = self._row(purchase_time="2024-01-01")
+        parsed = json.loads(order_history_json([row]))
+        assert isinstance(parsed["rows"][0]["purchase_time"], str)
+
+    def test_delivery_est_is_string(self):
+        row = self._row(delivery_est="2024-01-10")
+        parsed = json.loads(order_history_json([row]))
+        assert isinstance(parsed["rows"][0]["delivery_est"], str)
+
+    def test_empty_rows_returns_empty_list(self):
+        parsed = json.loads(order_history_json([]))
+        assert parsed == {"rows": []}
+
+    def test_multiple_rows_all_present(self):
+        rows = [self._row(itemid=1), self._row(itemid=2)]
+        parsed = json.loads(order_history_json(rows))
+        assert len(parsed["rows"]) == 2
+        assert parsed["rows"][0]["itemid"] == 1
+        assert parsed["rows"][1]["itemid"] == 2
+
+    def test_returns_json_string_not_dict(self):
+        result = order_history_json([self._row()])
+        assert isinstance(result, str)

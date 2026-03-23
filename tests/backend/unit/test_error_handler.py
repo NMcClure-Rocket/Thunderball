@@ -448,3 +448,38 @@ class TestHelperFunctions:
     def test_permission_error_has_warning_severity(self):
         rc = permission_error()
         assert rc.severity == ErrorSeverity.WARNING
+
+
+# ===========================================================================
+# DB2ErrorHandler.parse_db2_error  (lines 219-243)
+# ===========================================================================
+
+class TestParseDB2Error:
+    @pytest.fixture(autouse=True)
+    def patch_logger(self):
+        with patch.object(_eh_module, "logger", MagicMock()):
+            yield
+
+    def test_returns_response_code_instance(self):
+        rc = DB2ErrorHandler.parse_db2_error(None)
+        assert isinstance(rc, ResponseCode)
+
+    def test_happy_path_returns_response_code(self):
+        # ibm_db is mocked via sys.modules; conn_error/conn_errormsg return MagicMocks
+        rc = DB2ErrorHandler.parse_db2_error(None)
+        assert rc is not None
+
+    def test_conn_error_exception_returns_critical_response(self):
+        with patch.object(_eh_module.ibm_db, "conn_error", side_effect=RuntimeError("mock")):
+            rc = DB2ErrorHandler.parse_db2_error(None)
+        assert rc.severity == ErrorSeverity.CRITICAL
+
+    def test_conn_error_exception_uses_unknown_error_tag(self):
+        with patch.object(_eh_module.ibm_db, "conn_error", side_effect=AttributeError("fail")):
+            rc = DB2ErrorHandler.parse_db2_error(None)
+        assert rc.error_tag == DB2ErrorCode.UNKNOWN_ERROR.value
+
+    def test_conn_error_exception_message_contains_error_text(self):
+        with patch.object(_eh_module.ibm_db, "conn_error", side_effect=RuntimeError("conn broke")):
+            rc = DB2ErrorHandler.parse_db2_error(None)
+        assert "conn broke" in rc.message

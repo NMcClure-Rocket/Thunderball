@@ -8,7 +8,7 @@ module level so that tests run without a live DB2 connection or logging config.
 # pylint: disable=redefined-outer-name,protected-access,wrong-import-position
 
 import sys
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 import pytest
 
 # ---------------------------------------------------------------------------
@@ -657,3 +657,273 @@ class TestCCIDaoCustomMethods:
             if "INSERT" in str(call)
         ]
         assert len(insert_calls) == 1
+
+
+# ===========================================================================
+# AbstractRecord – NotImplementedError for abstract stubs
+# ===========================================================================
+
+class TestAbstractRecordNotImplemented:
+    def _make_bare_dao(self, mock_connection):
+        from backend.db.dao.abstract_record import DatabaseAccessObject
+
+        class _BareDAO(DatabaseAccessObject):
+            def __init__(self, conn):
+                super().__init__("TEST.TABLE", conn)
+
+        return _BareDAO(mock_connection)
+
+    def test_get_primary_key_raises_not_implemented(self, mock_connection):
+        dao = self._make_bare_dao(mock_connection)
+        with pytest.raises(NotImplementedError):
+            dao._get_primary_key()
+
+    def test_dict_from_row_raises_not_implemented(self, mock_connection):
+        dao = self._make_bare_dao(mock_connection)
+        with pytest.raises(NotImplementedError):
+            dao._dict_from_row((1, "a"), ["COL1", "COL2"])
+
+
+# ===========================================================================
+# AbstractRecord – _execute_query exception propagation
+# ===========================================================================
+
+class TestExecuteQueryException:
+    def test_execute_query_propagates_db_error(self, customer_dao, mock_cursor):
+        mock_cursor.execute.side_effect = RuntimeError("DB timeout")
+        with pytest.raises(RuntimeError, match="DB timeout"):
+            customer_dao._execute_query("SELECT 1", (1,))
+
+    def test_execute_query_no_params_propagates_error(self, customer_dao, mock_cursor):
+        mock_cursor.execute.side_effect = ValueError("bad query")
+        with pytest.raises(ValueError):
+            customer_dao._execute_query("BAD SQL")
+
+
+# ===========================================================================
+# AbstractRecord – get_short_record partial results warning path
+# ===========================================================================
+
+class TestGetShortRecordPartial:
+    def test_partial_results_still_returns_records(self, customer_dao, mock_cursor):
+        mock_cursor.fetchall.return_value = [(42, "Alice", "Smith")]
+        mock_cursor.description = [("CUSTOMERID",), ("FIRST_NAME",), ("LAST_NAME",)]
+        result = customer_dao.get_short_record(numReturned=5)
+        assert isinstance(result, list)
+        assert len(result) == 1
+
+    def test_partial_results_maps_rows_to_dicts(self, customer_dao, mock_cursor):
+        mock_cursor.fetchall.return_value = [(42, "Alice", "Smith")]
+        mock_cursor.description = [("CUSTOMERID",), ("FIRST_NAME",), ("LAST_NAME",)]
+        result = customer_dao.get_short_record(numReturned=5)
+        assert result[0] == {"CUSTOMERID": 42, "FIRST_NAME": "Alice", "LAST_NAME": "Smith"}
+
+
+# ===========================================================================
+# CustomerDAO – get_user_by_name  (lines 56-60)
+# ===========================================================================
+
+class TestCustomerDAOGetUserByName:
+    def test_always_returns_empty_list(self, customer_dao, mock_cursor):
+        result = customer_dao.get_user_by_name("alice@test.com")
+        assert result == []
+
+    def test_returns_empty_for_any_username(self, customer_dao, mock_cursor):
+        assert customer_dao.get_user_by_name("") == []
+        assert customer_dao.get_user_by_name("unknown@example.com") == []
+
+    def test_returns_list_type(self, customer_dao, mock_cursor):
+        result = customer_dao.get_user_by_name("user@test.com")
+        assert isinstance(result, list)
+
+
+# ===========================================================================
+# CustomerDAO – get_customer_by_email_and_password  (lines 74-84)
+# ===========================================================================
+
+class TestGetCustomerByEmailAndPassword:
+    def test_returns_tuple_when_found(self, customer_dao, mock_cursor):
+        mock_cursor.fetchone.return_value = (42,)
+        result = customer_dao.get_customer_by_email_and_password("alice@test.com", "secret")
+        assert result == (42,)
+
+    def test_returns_none_when_not_found(self, customer_dao, mock_cursor):
+        mock_cursor.fetchone.return_value = None
+        result = customer_dao.get_customer_by_email_and_password("x@test.com", "wrong")
+        assert result is None
+
+    def test_query_filters_by_email_and_password(self, customer_dao, mock_cursor):
+        customer_dao.get_customer_by_email_and_password("alice@test.com", "secret")
+        sql, params = mock_cursor.execute.call_args[0]
+        assert "EMAIL = ?" in sql
+        assert "PASSWORD = ?" in sql
+        assert "alice@test.com" in params
+        assert "secret" in params
+
+    def test_query_selects_customerid(self, customer_dao, mock_cursor):
+        customer_dao.get_customer_by_email_and_password("alice@test.com", "secret")
+        sql = mock_cursor.execute.call_args[0][0]
+        assert "CUSTOMERID" in sql
+
+    def test_query_targets_correct_table(self, customer_dao, mock_cursor):
+        customer_dao.get_customer_by_email_and_password("alice@test.com", "secret")
+        sql = mock_cursor.execute.call_args[0][0]
+        assert "USER12.CUSTOMER" in sql
+
+
+# ===========================================================================
+# InventoryDAO – get_amount_by_itemid  (lines 76-80)
+# ===========================================================================
+
+class TestInventoryDAOGetAmountByItemId:
+    @pytest.fixture
+    def inv_dao(self, mock_connection):
+        return InventoryDAO(mock_connection)
+
+    def test_returns_amount(self, inv_dao, mock_cursor):
+        mock_cursor.fetchall.return_value = [(10,)]
+        result = inv_dao.get_amount_by_itemid(1)
+        assert result == 10
+
+    def test_query_filters_by_itemid(self, inv_dao, mock_cursor):
+        mock_cursor.fetchall.return_value = [(5,)]
+        inv_dao.get_amount_by_itemid(42)
+        sql, params = mock_cursor.execute.call_args[0]
+        assert "ITEMID = ?" in sql
+        assert 42 in params
+
+    def test_query_selects_amount_column(self, inv_dao, mock_cursor):
+        mock_cursor.fetchall.return_value = [(3,)]
+        inv_dao.get_amount_by_itemid(1)
+        sql = mock_cursor.execute.call_args[0][0]
+        assert "AMOUNT" in sql
+
+
+# ===========================================================================
+# InventoryDAO – decrement_amount  (lines 84-97)
+# ===========================================================================
+
+class TestInventoryDAODecrementAmount:
+    @pytest.fixture
+    def inv_dao(self, mock_connection):
+        return InventoryDAO(mock_connection)
+
+    def test_returns_new_amount(self, inv_dao, mock_cursor):
+        mock_cursor.fetchall.return_value = [(8,)]
+        result = inv_dao.decrement_amount(1, 8)
+        assert result == 8
+
+    def test_update_stmt_sets_amount(self, inv_dao, mock_cursor):
+        mock_cursor.fetchall.return_value = [(5,)]
+        inv_dao.decrement_amount(7, 5)
+        first_call_sql = mock_cursor.execute.call_args_list[0][0][0]
+        assert "SET AMOUNT = ?" in first_call_sql
+        assert "ITEMID = ?" in first_call_sql
+
+    def test_select_after_update_uses_itemid(self, inv_dao, mock_cursor):
+        mock_cursor.fetchall.return_value = [(5,)]
+        inv_dao.decrement_amount(99, 5)
+        last_call_sql = mock_cursor.execute.call_args_list[-1][0][0]
+        assert "ITEMID = ?" in last_call_sql
+
+
+# ===========================================================================
+# OrderDAO – insert_order and get_history  (lines 58-108)
+# ===========================================================================
+
+class TestOrderDAOCustomMethods:
+    @pytest.fixture
+    def order_dao(self, mock_connection):
+        return OrderDAO(mock_connection)
+
+    def test_insert_order_qty_zero_returns_false(self, order_dao):
+        entry = {"itemid": 1, "qty": 0, "transaction": 9.99,
+                 "customerid": 1, "addressid": 1, "ccid": 1}
+        with patch("db.dao.inventory_dao.InventoryDAO") as MockInvDAO:
+            MockInvDAO.return_value.get_amount_by_itemid.return_value = 10
+            result = order_dao.insert_order(entry)
+        assert result is False
+
+    def test_insert_order_negative_qty_returns_false(self, order_dao):
+        entry = {"itemid": 1, "qty": -1, "transaction": 9.99,
+                 "customerid": 1, "addressid": 1, "ccid": 1}
+        with patch("db.dao.inventory_dao.InventoryDAO") as MockInvDAO:
+            MockInvDAO.return_value.get_amount_by_itemid.return_value = 10
+            result = order_dao.insert_order(entry)
+        assert result is False
+
+    def test_insert_order_qty_exceeds_inventory_returns_false(self, order_dao):
+        entry = {"itemid": 1, "qty": 20, "transaction": 9.99,
+                 "customerid": 1, "addressid": 1, "ccid": 1}
+        with patch("db.dao.inventory_dao.InventoryDAO") as MockInvDAO:
+            MockInvDAO.return_value.get_amount_by_itemid.return_value = 5
+            result = order_dao.insert_order(entry)
+        assert result is False
+
+    def test_insert_order_success_returns_true(self, order_dao, mock_cursor):
+        entry = {"itemid": 1, "qty": 2, "transaction": 9.99,
+                 "customerid": 1, "addressid": 1, "ccid": 1}
+        mock_cursor.fetchall.side_effect = [
+            [(3,)],      # COUNT(*) for new ORDERID
+            [("row",)],  # SELECT after INSERT confirms success
+        ]
+        mock_inv = MagicMock()
+        mock_inv.get_amount_by_itemid.return_value = 10
+        mock_inv.decrement_amount.return_value = 8   # 10 - 2 = 8
+        with patch("db.dao.inventory_dao.InventoryDAO", return_value=mock_inv):
+            result = order_dao.insert_order(entry)
+        assert result is True
+
+    def test_insert_order_empty_select_after_insert_returns_false(self, order_dao, mock_cursor):
+        entry = {"itemid": 1, "qty": 2, "transaction": 9.99,
+                 "customerid": 1, "addressid": 1, "ccid": 1}
+        mock_cursor.fetchall.side_effect = [
+            [(3,)],  # COUNT(*)
+            [],      # SELECT after INSERT → empty means insert failed
+        ]
+        mock_inv = MagicMock()
+        mock_inv.get_amount_by_itemid.return_value = 10
+        mock_inv.decrement_amount.return_value = 8
+        with patch("db.dao.inventory_dao.InventoryDAO", return_value=mock_inv):
+            result = order_dao.insert_order(entry)
+        assert result is False
+
+    def test_insert_order_decrement_mismatch_returns_false(self, order_dao, mock_cursor):
+        entry = {"itemid": 1, "qty": 2, "transaction": 9.99,
+                 "customerid": 1, "addressid": 1, "ccid": 1}
+        mock_cursor.fetchall.side_effect = [
+            [(3,)],
+            [("row",)],
+        ]
+        mock_inv = MagicMock()
+        mock_inv.get_amount_by_itemid.return_value = 10
+        mock_inv.decrement_amount.return_value = 5  # wrong: should be 8
+        with patch("db.dao.inventory_dao.InventoryDAO", return_value=mock_inv):
+            result = order_dao.insert_order(entry)
+        assert result is False
+
+    def test_get_history_returns_rows(self, order_dao, mock_cursor):
+        rows = [(1, "Spell", "desc", "instant", 5, "1", "Protection",
+                 2, 9.99, "2024-01-01", "2024-01-05", "/img/spell.png")]
+        mock_cursor.fetchall.return_value = rows
+        result = order_dao.get_history(1)
+        assert result == rows
+
+    def test_get_history_empty_returns_empty_list(self, order_dao, mock_cursor):
+        mock_cursor.fetchall.return_value = []
+        result = order_dao.get_history(9999)
+        assert result == []
+
+    def test_get_history_query_uses_customerid(self, order_dao, mock_cursor):
+        mock_cursor.fetchall.return_value = []
+        order_dao.get_history(42)
+        sql, params = mock_cursor.execute.call_args[0]
+        assert "CUSTOMERID = ?" in sql
+        assert params == (42,)
+
+    def test_get_history_joins_inventory_and_baseprice(self, order_dao, mock_cursor):
+        mock_cursor.fetchall.return_value = []
+        order_dao.get_history(1)
+        sql = mock_cursor.execute.call_args[0][0]
+        assert "INVENTORY" in sql
+        assert "BASEPRICE" in sql

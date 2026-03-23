@@ -1,7 +1,7 @@
 //import { useState, useEffect } from 'react';
 
 interface OrderHistoryEntryProps {
-  itemid: number;
+  // itemid: number;
   name: string;
   description: string;
   format: string;
@@ -16,7 +16,6 @@ interface OrderHistoryEntryProps {
 }
 
 export default function OrderHistoryEntry({ 
-  itemid,
   name,
   description,
   format,
